@@ -73,8 +73,8 @@ const config: Config = {
           to:   { transform: "rotate(360deg)" },
         },
         marquee: {
-          "0%": { transform: "translateX(100%)" },
-          "100%": { transform: "translateX(-100%)" },
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
         },
         "fade-out": {
           "0%": { opacity: "1" },
@@ -99,7 +99,7 @@ const config: Config = {
         "badge-pop":     "badge-pop 0.4s cubic-bezier(0.36,0.07,0.19,0.97)",
         "heart-beat":    "heart-beat 0.45s ease-in-out",
         "spin-slow":     "spin-slow 1s linear infinite",
-        marquee:         "marquee 15s linear infinite",
+        marquee:         "marquee 2s linear infinite",
         "fade-out":      "fade-out 0.5s ease-out forwards",
         "scale-x":       "scale-x 1.5s ease-in-out infinite",
         "reel-slide":    "reel-slide 40s linear infinite",
