@@ -5,11 +5,10 @@ import { Play, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const REELS = [
-  { id: 1, videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", title: "Summer Glow Up" },
-  { id: 2, videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4", title: "Accessories Haul" },
-  { id: 3, videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4", title: "Behind the Scenes" },
-  { id: 4, videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4", title: "New Arrivals" },
-  { id: 5, videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", title: "Customer Reviews" },
+  { id: 1, videoUrl: "/video/Ranique_reel1.mp4", title: "Summer Glow Up" },
+  { id: 2, videoUrl: "/video/Ranique_reel2.MOV", title: "Accessories Haul" },
+  { id: 3, videoUrl: "/video/Ranique_reel1.mp4", title: "Behind the Scenes" },
+  { id: 4, videoUrl: "/video/Ranique_reel2.MOV", title: "New Arrivals" },
 ];
 
 export function ReelsSection() {
