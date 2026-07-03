@@ -85,6 +85,10 @@ const config: Config = {
           "50%": { transform: "scaleX(1)", transformOrigin: "left" },
           "50.1%": { transform: "scaleX(1)", transformOrigin: "right" },
           "100%": { transform: "scaleX(0)", transformOrigin: "right" },
+        },
+        "reel-slide": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
         }
       },
       animation: {
@@ -98,6 +102,7 @@ const config: Config = {
         marquee:         "marquee 15s linear infinite",
         "fade-out":      "fade-out 0.5s ease-out forwards",
         "scale-x":       "scale-x 1.5s ease-in-out infinite",
+        "reel-slide":    "reel-slide 40s linear infinite",
       },
       backgroundImage: {
         shimmer:

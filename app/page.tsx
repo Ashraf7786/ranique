@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MOCK_PRODUCTS } from "@/lib/mockData";
 import { ProductGrid } from "@/components/shop/ProductGrid";
+import { ReelsSection } from "@/components/shop/ReelsSection";
 import { Sparkles, Gem, Disc3, ShoppingBag, Truck, RefreshCcw, Lock } from "lucide-react";
 
 // ─── Hero Section ─────────────────────────────────────────────────────────────
@@ -272,6 +273,7 @@ export default function HomePage() {
       <Hero />
       <TrustBar />
       <CategoryGrid />
+      <ReelsSection />
       <FeaturedProducts />
     </>
   );
