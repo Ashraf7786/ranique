@@ -265,14 +265,14 @@ export function Header() {
                 className="shrink-0 flex items-center group transition-colors"
                 aria-label="Ranique Home"
               >
-                <svg width="130" height="36" viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-brand-ink group-hover:text-brand-rose transition-colors duration-300">
-                  {/* R Monogram */}
-                  <path d="M14 6h16c7 0 12 4 12 11.5 0 5-3 9-8.5 10.5L43 38h-6.5l-8.5-9.5H19V38h-5V6zm5 4.5V24h10.5c5 0 7.5-2.5 7.5-6.5 0-4.5-3-6.5-8-6.5H19z" fill="currentColor" />
-                  {/* anique text */}
-                  <text x="48" y="32" fontFamily="Georgia, serif" fontSize="26" fontWeight="600" fill="currentColor" letterSpacing="2">anique</text>
-                  {/* Decorative element on hover */}
-                  <circle cx="23" cy="22" r="20" stroke="#C9748A" strokeWidth="1.5" className="opacity-0 group-hover:opacity-50 transition-opacity duration-500" />
-                </svg>
+                <svg viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[100px] sm:w-[130px] h-auto text-brand-ink group-hover:text-brand-rose transition-colors duration-300">
+                {/* R Monogram */}
+                <path d="M14 6h16c7 0 12 4 12 11.5 0 5-3 9-8.5 10.5L43 38h-6.5l-8.5-9.5H19V38h-5V6zm5 4.5V24h10.5c5 0 7.5-2.5 7.5-6.5 0-4.5-3-6.5-8-6.5H19z" fill="currentColor" />
+                {/* anique text */}
+                <text x="48" y="32" fontFamily="Georgia, serif" fontSize="26" fontWeight="600" fill="currentColor" letterSpacing="2">anique</text>
+                {/* Decorative element on hover */}
+                <circle cx="23" cy="22" r="20" stroke="#C9748A" strokeWidth="1.5" className="opacity-0 group-hover:opacity-50 transition-opacity duration-500" />
+              </svg>
               </Link>
             </div>
 
@@ -293,13 +293,13 @@ export function Header() {
             <SearchBar className="hidden md:flex flex-1 max-w-md mx-4 lg:mx-8" />
 
             {/* Right icons */}
-            <div className="flex items-center gap-0.5 sm:gap-1">
+            <div className="flex items-center gap-0">
               {/* Wishlist */}
               <Link
                 href="/wishlist"
                 id="header-wishlist-btn"
                 aria-label="Wishlist"
-                className="relative p-2.5 rounded-full hover:bg-brand-blush transition-colors group"
+                className="relative p-2 sm:p-2.5 rounded-full hover:bg-brand-blush transition-colors group"
               >
                 <HeartIcon className="w-5 h-5 text-brand-slate group-hover:text-brand-rose transition-colors" />
               </Link>
@@ -308,7 +308,7 @@ export function Header() {
               <button
                 id="header-account-btn"
                 aria-label="Account"
-                className="relative p-2.5 rounded-full hover:bg-brand-blush transition-colors group"
+                className="relative p-2 sm:p-2.5 rounded-full hover:bg-brand-blush transition-colors group"
               >
                 <UserIcon className="w-5 h-5 text-brand-slate group-hover:text-brand-rose transition-colors" />
               </button>
@@ -318,7 +318,7 @@ export function Header() {
                 id="header-cart-btn"
                 onClick={handleCartClick}
                 aria-label={mounted ? `Shopping bag, ${totalItems} items` : "Shopping bag"}
-                className="relative p-2.5 rounded-full hover:bg-brand-blush transition-colors group"
+                className="relative p-2 sm:p-2.5 rounded-full hover:bg-brand-blush transition-colors group"
               >
                 <BagIcon className="w-5 h-5 text-brand-slate group-hover:text-brand-rose transition-colors" />
                 <CartBadge count={totalItems} />
