@@ -227,6 +227,12 @@ export function Header() {
             : "bg-white border-b border-brand-border"
         )}
       >
+        {/* Announcement Bar */}
+        <div className="bg-brand-rose text-white overflow-hidden py-2 flex items-center">
+          <div className="animate-marquee whitespace-nowrap text-xs sm:text-sm font-medium font-sans w-full">
+            Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
+          </div>
+        </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Desktop / Tablet row */}
           <div className="flex items-center h-16 gap-4">

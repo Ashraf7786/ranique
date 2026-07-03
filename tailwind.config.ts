@@ -72,6 +72,10 @@ const config: Config = {
           from: { transform: "rotate(0deg)" },
           to:   { transform: "rotate(360deg)" },
         },
+        marquee: {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
       },
       animation: {
         "fade-in":       "fade-in 0.35s ease forwards",
@@ -81,6 +85,7 @@ const config: Config = {
         "badge-pop":     "badge-pop 0.4s cubic-bezier(0.36,0.07,0.19,0.97)",
         "heart-beat":    "heart-beat 0.45s ease-in-out",
         "spin-slow":     "spin-slow 1s linear infinite",
+        marquee:         "marquee 15s linear infinite",
       },
       backgroundImage: {
         shimmer:
