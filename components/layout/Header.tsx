@@ -237,22 +237,11 @@ export function Header() {
         )}
       >
         {/* Announcement Bar */}
-        <div className="bg-brand-rose text-white py-2 flex items-center w-full overflow-hidden relative">
-            {/* Using a custom marquee animation structure that loops infinitely */}
-            <div className="whitespace-nowrap animate-marquee flex w-max shrink-0">
-              <span className="text-xs sm:text-sm font-medium font-sans px-4">
-                Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
-              </span>
-              <span className="text-xs sm:text-sm font-medium font-sans px-4" aria-hidden="true">
-                Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
-              </span>
-              <span className="text-xs sm:text-sm font-medium font-sans px-4" aria-hidden="true">
-                Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
-              </span>
-              <span className="text-xs sm:text-sm font-medium font-sans px-4" aria-hidden="true">
-                Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
-              </span>
-            </div>
+        <div className="bg-brand-rose text-white py-2 flex items-center w-full overflow-hidden h-8 sm:h-9">
+            {/* @ts-expect-error marquee is deprecated but requested by user */}
+            <marquee scrollamount="20" scrolldelay="0" className="w-full text-xs sm:text-sm font-medium font-sans flex items-center">
+              Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
+            </marquee>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Desktop / Tablet row */}
