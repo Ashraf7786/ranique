@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/hooks/useCart";
 import { cn } from "@/lib/utils";
 
@@ -95,13 +96,21 @@ function CartBadge({ count }: { count: number }) {
 // ─── Search Bar ───────────────────────────────────────────────────────────────
 
 function SearchBar({ className }: { className?: string }) {
+  const router = useRouter();
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (value.trim()) {
+      router.push(`/shop?q=${encodeURIComponent(value.trim())}`);
+    }
+  };
 
   return (
     <form
       role="search"
-      onSubmit={(e) => e.preventDefault()}
+      onSubmit={handleSubmit}
       className={cn("relative flex items-center", className)}
     >
       <label htmlFor="header-search" className="sr-only">

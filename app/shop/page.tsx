@@ -21,6 +21,7 @@ const DEFAULT_FILTERS: ActiveFilters = {
 function ShopContent() {
   const searchParams = useSearchParams();
   const urlCategory = (searchParams.get("category") as ProductCategory | null) ?? "all";
+  const searchQuery = searchParams.get("q")?.toLowerCase() || "";
 
   const [filters, setFilters] = useState<ActiveFilters>({
     ...DEFAULT_FILTERS,
@@ -61,16 +62,23 @@ function ShopContent() {
         return false;
       }
 
+      // Search query
+      if (searchQuery) {
+        const matchTitle = p.name.toLowerCase().includes(searchQuery);
+        const matchDesc = p.description.toLowerCase().includes(searchQuery);
+        if (!matchTitle && !matchDesc) return false;
+      }
+
       return true;
     });
-  }, [filters, urlCategory]);
+  }, [filters, urlCategory, searchQuery]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Page header */}
       <div className="mb-6">
         <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-brand-ink mb-1">
-          {urlCategory === "all" ? "All Products" : capitalize(urlCategory)}
+          {searchQuery ? `Search Results for "${searchParams.get("q")}"` : urlCategory === "all" ? "All Products" : capitalize(urlCategory)}
         </h1>
         <p className="text-sm text-brand-slate">
           {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
