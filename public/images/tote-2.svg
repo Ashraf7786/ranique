@@ -1,0 +1,8 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+  <rect width="600" height="800" fill="#C8A87A"/>
+  <rect x="40" y="40" width="520" height="720" rx="16" fill="rgba(255,255,255,0.08)"/>
+  <text x="300" y="350" font-family="Georgia,serif" font-size="120" text-anchor="middle" dominant-baseline="middle">🛍️</text>
+  <text x="300" y="500" font-family="Georgia,serif" font-size="28" font-weight="600" fill="#F7E8E8" text-anchor="middle">Straw Tote Detail</text>
+  <text x="300" y="548" font-family="Arial,sans-serif" font-size="18" fill="#F7E8E8" opacity="0.6" text-anchor="middle">Ranique Luxury</text>
+  <rect x="220" y="590" width="160" height="3" rx="2" fill="#F7E8E8" opacity="0.3"/>
+</svg>

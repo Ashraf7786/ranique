@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── USER & AUTH ─────────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  role      String   @default("CUSTOMER") // Role enum
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders    Order[]
+  wallet    Wallet?
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  balance   Float    @default(0.0)
+  currency  String   @default("USD")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── CATALOG (HYBRID PATTERN) ────────────────────────────────────────────────
+
+model Product {
+  id             String      @id @default(uuid())
+  slug           String      @unique
+  name           String
+  brand          String
+  category       String      // Category enum
+  price          Float
+  compareAtPrice Float?
+  currency       String      @default("USD")
+  rating         Float       @default(0.0)
+  reviewCount    Int         @default(0)
+  description    String
+  shippingInfo   String?
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Hybrid Document Storage
+  // Stores diverse attributes (Cosmetics shades, Bangle sizes, Purse materials)
+  // Note: Using String in SQLite to hold JSON. In PostgreSQL this would be JSONB.
+  attributes     String      @default("{}")
+  images         ProductImage[]
+  inventory      Inventory[]
+  orderItems     OrderItem[]
+
+  @@index([category])
+  @@index([brand])
+}
+
+model ProductImage {
+  id        String  @id @default(uuid())
+  productId String
+  url       String
+  altText   String?
+  isPrimary Boolean @default(false)
+  
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Inventory {
+  id            String  @id @default(uuid())
+  productId     String
+  sku           String  @unique
+  variantLabel  String? // e.g., "Rosewood", "Size M (60mm)"
+  stockQuantity Int     @default(0)
+  reservedQty   Int     @default(0) // For distributed locking
+
+  product       Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ─── ORDERS & TRANSACTIONS ───────────────────────────────────────────────────
+
+model Order {
+  id            String      @id @default(uuid())
+  userId        String
+  status        String      @default("PENDING") // OrderStatus enum
+  totalAmount   Float
+  currency      String      @default("USD")
+  idempotencyKey String?    @unique
+  trackingNumber String?    @unique
+  shippedAt     DateTime?
+  deliveredAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  user          User        @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  sku       String
+  quantity  Int
+  price     Float
+
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+}
