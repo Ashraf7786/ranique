@@ -152,12 +152,12 @@ function SearchBar({ className }: { className?: string }) {
 // ─── Mobile Menu ──────────────────────────────────────────────────────────────
 
 const NAV_LINKS = [
-  { href: "/",           label: "Home" },
-  { href: "/shop",       label: "Shop All" },
-  { href: "/shop?category=cosmetics",    label: "Cosmetics" },
+  { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop All" },
+  { href: "/shop?category=cosmetics", label: "Cosmetics" },
   { href: "/shop?category=accessories", label: "Accessories" },
-  { href: "/shop?category=bangles",     label: "Bangles" },
-  { href: "/shop?category=purses",      label: "Purses" },
+  { href: "/shop?category=bangles", label: "Bangles" },
+  { href: "/shop?category=purses", label: "Purses" },
 ];
 
 function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -238,10 +238,10 @@ export function Header() {
       >
         {/* Announcement Bar */}
         <div className="bg-brand-rose text-white py-2 flex items-center w-full overflow-hidden h-8 sm:h-9">
-            {/* @ts-expect-error marquee is deprecated but requested by user */}
-            <marquee scrollamount="20" scrolldelay="0" className="w-full text-xs sm:text-sm font-medium font-sans flex items-center">
-              Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
-            </marquee>
+          {/* @ts-expect-error marquee is deprecated but requested by user */}
+          <marquee scrollamount="20" scrolldelay="200" className="w-full text-xs sm:text-sm font-medium font-sans flex items-center">
+            Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
+          </marquee>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Desktop / Tablet row */}
@@ -264,7 +264,7 @@ export function Header() {
             >
               <svg width="130" height="36" viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-brand-ink group-hover:text-brand-rose transition-colors duration-300">
                 {/* R Monogram */}
-                <path d="M14 6h16c7 0 12 4 12 11.5 0 5-3 9-8.5 10.5L43 38h-6.5l-8.5-9.5H19V38h-5V6zm5 4.5V24h10.5c5 0 7.5-2.5 7.5-6.5 0-4.5-3-6.5-8-6.5H19z" fill="currentColor"/>
+                <path d="M14 6h16c7 0 12 4 12 11.5 0 5-3 9-8.5 10.5L43 38h-6.5l-8.5-9.5H19V38h-5V6zm5 4.5V24h10.5c5 0 7.5-2.5 7.5-6.5 0-4.5-3-6.5-8-6.5H19z" fill="currentColor" />
                 {/* anique text */}
                 <text x="48" y="32" fontFamily="Georgia, serif" fontSize="26" fontWeight="600" fill="currentColor" letterSpacing="2">anique</text>
                 {/* Decorative element on hover */}
