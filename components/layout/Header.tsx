@@ -238,10 +238,11 @@ export function Header() {
       >
         {/* Announcement Bar */}
         <div className="bg-brand-rose text-white py-2 flex items-center w-full overflow-hidden h-8 sm:h-9">
-          {/* @ts-expect-error marquee is deprecated but requested by user */}
-          <marquee scrollamount="20" scrolldelay="200" className="w-full text-xs sm:text-sm font-medium font-sans flex items-center">
-            Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
-          </marquee>
+          {React.createElement(
+            'marquee' as any,
+            { scrollamount: "20", scrolldelay: "200", className: "w-full text-xs sm:text-sm font-medium font-sans flex items-center" },
+            <>Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a></>
+          )}
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row */}
