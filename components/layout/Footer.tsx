@@ -216,11 +216,6 @@ export function Footer() {
               <span className="text-white/60">[Your GSTIN Number]</span>
             </div>
           </div>
-          <div className="mt-6 pt-6 border-t border-white/10 text-sm">
-            <p className="text-brand-gold-light/90 italic">
-              "Ranique is a brand owned and operated by Rani Sringar & General Store. All invoices and GST tax invoices are issued under the legal business name Rani Sringar & General Store."
-            </p>
-          </div>
         </div>
 
         {/* Trust & Security + Payment Methods */}
