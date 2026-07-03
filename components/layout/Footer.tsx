@@ -195,28 +195,7 @@ export function Footer() {
           </nav>
         </div>
 
-        {/* Legal Information Section */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 lg:p-8 mb-12">
-          <h3 className="font-serif text-xl font-semibold mb-6 text-brand-blush">Legal Information</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
-            <div>
-              <strong className="text-white/90 block mb-1">Brand Name</strong>
-              <span className="text-white/60">Ranique</span>
-            </div>
-            <div>
-              <strong className="text-white/90 block mb-1">Legal Business Name</strong>
-              <span className="text-white/60">Rani Sringar & General Store</span>
-            </div>
-            <div>
-              <strong className="text-white/90 block mb-1">Business Type</strong>
-              <span className="text-white/60">Proprietorship</span>
-            </div>
-            <div>
-              <strong className="text-white/90 block mb-1">GSTIN</strong>
-              <span className="text-white/60">[Your GSTIN Number]</span>
-            </div>
-          </div>
-        </div>
+
 
         {/* Trust & Security + Payment Methods */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 border-b border-white/10 pb-12 mb-8">
