@@ -25,10 +25,10 @@ const COLOR_OPTIONS = [
 ];
 
 const PRICE_RANGES = [
-  { label: "Under $50",    min: 0,   max: 50 },
-  { label: "$50–$100",     min: 50,  max: 100 },
-  { label: "$100–$200",    min: 100, max: 200 },
-  { label: "$200+",        min: 200, max: Infinity },
+  { label: "Under ₹3999",    min: 0,   max: 50 },
+  { label: "₹3999–₹7999",     min: 50,  max: 100 },
+  { label: "₹7999–₹15999",    min: 100, max: 200 },
+  { label: "₹15999+",        min: 200, max: Infinity },
 ];
 
 const MATERIAL_OPTIONS = ["Leather", "Silk", "Gold Plated", "Sterling Silver", "Velvet", "Brass", "Acetate"];

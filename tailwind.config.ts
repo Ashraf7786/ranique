@@ -76,6 +76,16 @@ const config: Config = {
           "0%": { transform: "translateX(100%)" },
           "100%": { transform: "translateX(-100%)" },
         },
+        "fade-out": {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0", visibility: "hidden" },
+        },
+        "scale-x": {
+          "0%": { transform: "scaleX(0)", transformOrigin: "left" },
+          "50%": { transform: "scaleX(1)", transformOrigin: "left" },
+          "50.1%": { transform: "scaleX(1)", transformOrigin: "right" },
+          "100%": { transform: "scaleX(0)", transformOrigin: "right" },
+        }
       },
       animation: {
         "fade-in":       "fade-in 0.35s ease forwards",
@@ -86,6 +96,8 @@ const config: Config = {
         "heart-beat":    "heart-beat 0.45s ease-in-out",
         "spin-slow":     "spin-slow 1s linear infinite",
         marquee:         "marquee 15s linear infinite",
+        "fade-out":      "fade-out 0.5s ease-out forwards",
+        "scale-x":       "scale-x 1.5s ease-in-out infinite",
       },
       backgroundImage: {
         shimmer:

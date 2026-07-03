@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { MOCK_PRODUCTS } from "@/lib/mockData";
 import { ProductGrid } from "@/components/shop/ProductGrid";
+import { Sparkles, Gem, Disc3, ShoppingBag, Truck, RefreshCcw, Lock } from "lucide-react";
 
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 
@@ -52,14 +53,14 @@ function Hero() {
             <Link
               href="/shop"
               id="hero-shop-now"
-              className="h-12 px-8 rounded-full bg-brand-rose text-white font-sans font-semibold text-sm hover:bg-brand-rose-dark active:scale-[0.97] transition-all shadow-sm hover:shadow-md"
+              className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-brand-rose text-white font-sans font-semibold text-sm hover:bg-brand-rose-dark active:scale-[0.97] transition-all shadow-sm hover:shadow-md"
             >
               Shop Now
             </Link>
             <Link
               href="/shop?category=cosmetics"
               id="hero-explore-cosmetics"
-              className="h-12 px-8 rounded-full border border-brand-border bg-white text-brand-ink font-sans font-semibold text-sm hover:border-brand-rose hover:text-brand-rose active:scale-[0.97] transition-all"
+              className="inline-flex items-center justify-center h-12 px-8 rounded-full border border-brand-border bg-white text-brand-ink font-sans font-semibold text-sm hover:border-brand-rose hover:text-brand-rose active:scale-[0.97] transition-all"
             >
               Explore Cosmetics
             </Link>
@@ -76,28 +77,28 @@ const CATEGORY_CARDS = [
   {
     id: "cosmetics",
     label: "Cosmetics",
-    emoji: "💄",
+    icon: <Sparkles className="w-8 h-8 text-brand-rose" strokeWidth={1.5} />,
     bg: "from-[#F7E8E8] to-[#EEC5CF]",
     description: "Lip serums, highlighters & fragrances",
   },
   {
     id: "accessories",
     label: "Accessories",
-    emoji: "💎",
+    icon: <Gem className="w-8 h-8 text-[#C9A96E]" strokeWidth={1.5} />,
     bg: "from-[#F0DDB8] to-[#E8D5A3]",
     description: "Earrings, headbands & sunglasses",
   },
   {
     id: "bangles",
     label: "Bangles",
-    emoji: "📿",
+    icon: <Disc3 className="w-8 h-8 text-[#8B9DB8]" strokeWidth={1.5} />,
     bg: "from-[#E8EEF7] to-[#C5D5EE]",
     description: "Gold-plated, crystal & enamel",
   },
   {
     id: "purses",
     label: "Purses",
-    emoji: "👜",
+    icon: <ShoppingBag className="w-8 h-8 text-brand-slate" strokeWidth={1.5} />,
     bg: "from-[#F0F0F0] to-[#E0E0D8]",
     description: "Velvet clutches, crossbodies & totes",
   },
@@ -123,7 +124,7 @@ function CategoryGrid() {
               "flex flex-col gap-2 min-h-[140px] sm:min-h-[160px]"
             )}
           >
-            <span className="text-3xl sm:text-4xl">{cat.emoji}</span>
+            <div className="mb-2">{cat.icon}</div>
             <h3 className="font-serif text-base sm:text-lg font-semibold text-brand-ink group-hover:text-brand-rose transition-colors">
               {cat.label}
             </h3>
@@ -180,10 +181,10 @@ function FeaturedProducts() {
 
 function TrustBar() {
   const items = [
-    { icon: "🚚", title: "Free Shipping", desc: "On orders over $50" },
-    { icon: "↩️", title: "Easy Returns", desc: "30-day hassle-free returns" },
-    { icon: "🔒", title: "Secure Payment", desc: "256-bit SSL encryption" },
-    { icon: "💎", title: "Luxury Quality", desc: "Curated premium products" },
+    { icon: <Truck className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Free Shipping", desc: "On orders over ₹3999" },
+    { icon: <RefreshCcw className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Easy Returns", desc: "30-day hassle-free returns" },
+    { icon: <Lock className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Secure Payment", desc: "256-bit SSL encryption" },
+    { icon: <Gem className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Luxury Quality", desc: "Curated premium products" },
   ];
   return (
     <section aria-label="Trust signals" className="border-y border-brand-border bg-white">
@@ -191,7 +192,7 @@ function TrustBar() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {items.map((item) => (
             <div key={item.title} className="flex items-start gap-3 p-2">
-              <span className="text-2xl shrink-0">{item.icon}</span>
+              <div className="shrink-0 mt-0.5">{item.icon}</div>
               <div>
                 <p className="font-sans font-semibold text-sm text-brand-ink">{item.title}</p>
                 <p className="font-sans text-xs text-brand-slate mt-0.5">{item.desc}</p>

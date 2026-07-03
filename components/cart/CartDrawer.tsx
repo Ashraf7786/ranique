@@ -270,7 +270,7 @@ export function CartDrawer() {
             <div className="flex items-center justify-between">
               <span className="font-sans text-sm text-brand-slate">Subtotal</span>
               <span className="font-sans font-semibold text-brand-ink">
-                {formatPrice(totalPrice, "USD")}
+                {formatPrice(totalPrice, "INR")}
               </span>
             </div>
             <p className="text-2xs text-brand-slate">
@@ -286,7 +286,7 @@ export function CartDrawer() {
               {isCheckingOut ? (
                 <span className="animate-pulse">Processing Secure Checkout...</span>
               ) : (
-                `Checkout · ${formatPrice(totalPrice, "USD")}`
+                `Checkout · ${formatPrice(totalPrice, "INR")}`
               )}
             </button>
             <button

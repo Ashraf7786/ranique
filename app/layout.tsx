@@ -5,6 +5,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 
+import { GlobalLoader } from "@/components/ui/GlobalLoader";
+
 export const metadata: Metadata = {
   title: {
     default: "Ranique — Luxury Ladies' Boutique",
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
     title: "Ranique — Luxury Ladies' Boutique",
     description: "Curated luxury for the modern woman.",
     type: "website",
-    locale: "en_US",
+    locale: "en_IN",
   },
   robots: { index: true, follow: true },
 };
@@ -34,6 +36,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="antialiased">
+        <GlobalLoader />
         <CartProvider>
           {/* Skip to content */}
           <a
