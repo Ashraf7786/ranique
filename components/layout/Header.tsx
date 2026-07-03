@@ -237,9 +237,20 @@ export function Header() {
         )}
       >
         {/* Announcement Bar */}
-        <div className="bg-brand-rose text-white overflow-hidden py-2 flex items-center">
-          <div className="animate-marquee whitespace-nowrap text-xs sm:text-sm font-medium font-sans w-full">
-            Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
+        <div className="bg-brand-rose text-white py-2 flex items-center w-full overflow-hidden relative">
+          <div className="w-full flex">
+            {/* Using a custom marquee animation structure that loops infinitely */}
+            <div className="whitespace-nowrap animate-marquee flex shrink-0">
+              <span className="text-xs sm:text-sm font-medium font-sans px-4">
+                Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
+              </span>
+              <span className="text-xs sm:text-sm font-medium font-sans px-4" aria-hidden="true">
+                Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
+              </span>
+              <span className="text-xs sm:text-sm font-medium font-sans px-4" aria-hidden="true">
+                Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
+              </span>
+            </div>
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
