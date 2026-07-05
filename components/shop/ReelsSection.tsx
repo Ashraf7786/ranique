@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Play, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +10,43 @@ const REELS = [
   { id: 3, videoUrl: "/video/Ranique_reel1.mp4", title: "Behind the Scenes" },
   { id: 4, videoUrl: "/video/Ranique_reel2.MOV", title: "New Arrivals" },
 ];
+
+function ReelVideo({ src }: { src: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Use IntersectionObserver to pause video when off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {}); // catch auto-play restrictions
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(video);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      muted
+      loop
+      playsInline
+      className="w-full h-full object-cover scale-105 group-hover/reel:scale-100 transition-transform duration-700"
+    />
+  );
+}
 
 export function ReelsSection() {
   const [activeReel, setActiveReel] = useState<string | null>(null);
@@ -24,23 +61,17 @@ export function ReelsSection() {
       </div>
 
       <div className="relative group flex overflow-hidden w-full">
+        {/* We use 3 sets to ensure enough width for desktop infinite scrolling, reducing DOM nodes slightly */}
         <div className="flex gap-4 px-4 w-max animate-reel-slide group-hover:[animation-play-state:paused]">
-          {[...REELS, ...REELS, ...REELS, ...REELS].map((reel, idx) => (
+          {[...REELS, ...REELS, ...REELS].map((reel, idx) => (
             <div
               key={`${reel.id}-${idx}`}
-              className="relative shrink-0 w-[200px] h-[350px] sm:w-[240px] sm:h-[420px] rounded-2xl overflow-hidden cursor-pointer group/reel shadow-sm hover:shadow-card-hover transition-all bg-brand-mist"
+              className="relative shrink-0 w-[200px] h-[350px] sm:w-[240px] sm:h-[420px] rounded-2xl overflow-hidden cursor-pointer group/reel shadow-sm hover:shadow-card-hover transition-all bg-brand-mist transform-gpu"
               onClick={() => setActiveReel(reel.videoUrl)}
             >
-              <video
-                src={reel.videoUrl}
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="w-full h-full object-cover scale-105 group-hover/reel:scale-100 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-80 group-hover/reel:opacity-100 transition-opacity" />
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
+              <ReelVideo src={reel.videoUrl} />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-80 group-hover/reel:opacity-100 transition-opacity pointer-events-none" />
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white pointer-events-none">
                 <span className="font-sans font-medium text-sm truncate drop-shadow-md">{reel.title}</span>
                 <Play className="w-6 h-6 drop-shadow-md text-white/80 group-hover/reel:text-white transition-colors" fill="currentColor" />
               </div>
