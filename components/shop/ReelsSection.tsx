@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 const REELS = [
   { id: 1, videoUrl: "/video/Ranique_reel1.mp4", title: "Summer Glow Up" },
-  { id: 2, videoUrl: "/video/Ranique_reel2.MOV", title: "Accessories Haul" },
+  { id: 2, videoUrl: "/video/ranique_reel2.mp4", title: "Accessories Haul" },
   { id: 3, videoUrl: "/video/Ranique_reel1.mp4", title: "Behind the Scenes" },
   { id: 4, videoUrl: "/video/Ranique_reel2.MOV", title: "New Arrivals" },
 ];
@@ -21,7 +21,7 @@ function ReelVideo({ src, isMuted }: { src: string; isMuted: boolean }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          video.play().catch(() => {}); // catch auto-play restrictions
+          video.play().catch(() => { }); // catch auto-play restrictions
         } else {
           video.pause();
         }
@@ -74,10 +74,10 @@ function ReelCard({ reel }: { reel: any }) {
       onContextMenu={(e) => e.preventDefault()} // Security: Prevent right-click to save
     >
       <ReelVideo src={reel.videoUrl} isMuted={isMuted} />
-      
+
       {/* Overlay blocks right-clicks on the video underneath */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-80 group-hover/reel:opacity-100 transition-opacity" />
-      
+
       <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white pointer-events-none">
         <span className="font-sans font-medium text-sm truncate drop-shadow-md">{reel.title}</span>
       </div>
@@ -92,12 +92,12 @@ export function ReelsSection() {
   // Auto-scroll logic
   useEffect(() => {
     if (isHovered) return;
-    
+
     const interval = setInterval(() => {
       if (scrollRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
         const maxScroll = scrollWidth - clientWidth;
-        
+
         // If we reach the end, snap back to start
         if (scrollLeft >= maxScroll - 10) {
           scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
@@ -132,17 +132,17 @@ export function ReelsSection() {
           </h2>
           <p className="text-brand-slate text-sm mt-1">Watch our latest styles in motion</p>
         </div>
-        
+
         {/* Desktop Navigation Arrows */}
         <div className="hidden md:flex items-center gap-2">
-          <button 
+          <button
             onClick={scrollLeft}
             className="p-2 rounded-full bg-white border border-brand-border hover:border-brand-rose hover:text-brand-rose transition-colors shadow-sm"
             aria-label="Scroll left"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
           </button>
-          <button 
+          <button
             onClick={scrollRight}
             className="p-2 rounded-full bg-white border border-brand-border hover:border-brand-rose hover:text-brand-rose transition-colors shadow-sm"
             aria-label="Scroll right"
@@ -152,14 +152,14 @@ export function ReelsSection() {
         </div>
       </div>
 
-      <div 
+      <div
         className="relative group w-full max-w-7xl mx-auto"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onTouchStart={() => setIsHovered(true)}
         onTouchEnd={() => setIsHovered(false)}
       >
-        <div 
+        <div
           ref={scrollRef}
           className="flex gap-2 md:gap-4 px-4 sm:px-6 lg:px-8 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}

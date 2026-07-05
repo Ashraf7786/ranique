@@ -5,6 +5,8 @@ import Link from "next/link";
 import { MOCK_PRODUCTS } from "@/lib/mockData";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { ReelsSection } from "@/components/shop/ReelsSection";
+import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+import { WhatsAppOrderBanner } from "@/components/home/WhatsAppOrderBanner";
 import { Sparkles, Gem, Disc3, ShoppingBag, Truck, RefreshCcw, Lock } from "lucide-react";
 
 // ─── Hero Section ─────────────────────────────────────────────────────────────
@@ -274,6 +276,8 @@ export default function HomePage() {
       <TrustBar />
       <CategoryGrid />
       <ReelsSection />
+      <TestimonialsSection />
+      <WhatsAppOrderBanner />
       <FeaturedProducts />
     </>
   );

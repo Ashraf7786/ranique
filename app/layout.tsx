@@ -11,7 +11,8 @@ import { CartProvider } from "@/components/providers/CartProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
-
+import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
+import { MobileSnackbar } from "@/components/ui/MobileSnackbar";
 import { GlobalLoader } from "@/components/ui/GlobalLoader";
 
 export const metadata: Metadata = {
@@ -63,6 +64,12 @@ export default function RootLayout({
 
           {/* Global cart drawer */}
           <CartDrawer />
+
+          {/* Floating WhatsApp order button */}
+          <WhatsAppButton />
+
+          {/* Mobile-only WhatsApp snackbar */}
+          <MobileSnackbar />
         </CartProvider>
       </body>
     </html>
