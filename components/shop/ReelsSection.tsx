@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Play, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const REELS = [
@@ -11,7 +10,7 @@ const REELS = [
   { id: 4, videoUrl: "/video/Ranique_reel2.MOV", title: "New Arrivals" },
 ];
 
-function ReelVideo({ src }: { src: string }) {
+function ReelVideo({ src, isMuted }: { src: string; isMuted: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -36,6 +35,19 @@ function ReelVideo({ src }: { src: string }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+      if (!isMuted) {
+        // Attempt to play with sound when unmuted
+        videoRef.current.play().catch(() => {
+          // If browser blocks unmuted play without prior interaction, fallback to muted
+          if (videoRef.current) videoRef.current.muted = true;
+        });
+      }
+    }
+  }, [isMuted]);
+
   return (
     <video
       ref={videoRef}
@@ -43,13 +55,37 @@ function ReelVideo({ src }: { src: string }) {
       muted
       loop
       playsInline
-      className="w-full h-full object-cover scale-105 group-hover/reel:scale-100 transition-transform duration-700"
+      disablePictureInPicture
+      controlsList="nodownload noplaybackrate"
+      className="w-full h-full object-cover scale-105 group-hover/reel:scale-100 transition-transform duration-700 pointer-events-none"
     />
   );
 }
 
+function ReelCard({ reel }: { reel: any }) {
+  const [isMuted, setIsMuted] = useState(true);
+
+  return (
+    <div
+      className="relative shrink-0 w-[calc(50%-4px)] md:w-[calc(20%-12.8px)] aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer group/reel shadow-sm hover:shadow-card-hover transition-all bg-brand-mist snap-start"
+      onMouseEnter={() => setIsMuted(false)}
+      onMouseLeave={() => setIsMuted(true)}
+      onClick={() => setIsMuted(!isMuted)} // Toggle sound on mobile tap
+      onContextMenu={(e) => e.preventDefault()} // Security: Prevent right-click to save
+    >
+      <ReelVideo src={reel.videoUrl} isMuted={isMuted} />
+      
+      {/* Overlay blocks right-clicks on the video underneath */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-80 group-hover/reel:opacity-100 transition-opacity" />
+      
+      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white pointer-events-none">
+        <span className="font-sans font-medium text-sm truncate drop-shadow-md">{reel.title}</span>
+      </div>
+    </div>
+  );
+}
+
 export function ReelsSection() {
-  const [activeReel, setActiveReel] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -130,43 +166,10 @@ export function ReelsSection() {
         >
           {/* We duplicate REELS enough times so it can scroll for a long time */}
           {[...REELS, ...REELS, ...REELS, ...REELS, ...REELS].map((reel, idx) => (
-            <div
-              key={`${reel.id}-${idx}`}
-              // Mobile: 2 items (gap-2 = 8px => calc(50% - 4px))
-              // Desktop: 5 items (gap-4 = 16px => calc(20% - 12.8px))
-              className="relative shrink-0 w-[calc(50%-4px)] md:w-[calc(20%-12.8px)] aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer group/reel shadow-sm hover:shadow-card-hover transition-all bg-brand-mist snap-start"
-              onClick={() => setActiveReel(reel.videoUrl)}
-            >
-              <ReelVideo src={reel.videoUrl} />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-80 group-hover/reel:opacity-100 transition-opacity pointer-events-none" />
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white pointer-events-none">
-                <span className="font-sans font-medium text-sm truncate drop-shadow-md">{reel.title}</span>
-                <Play className="w-6 h-6 drop-shadow-md text-white/80 group-hover/reel:text-white transition-colors" fill="currentColor" />
-              </div>
-            </div>
+            <ReelCard key={`${reel.id}-${idx}`} reel={reel} />
           ))}
         </div>
       </div>
-
-      {activeReel && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm animate-fade-in p-4 sm:p-8">
-          <button
-            onClick={() => setActiveReel(null)}
-            className="absolute top-4 right-4 sm:top-8 sm:right-8 p-3 text-white/60 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-all z-10"
-          >
-            <X className="w-6 h-6" />
-          </button>
-
-          <div className="relative w-full max-w-sm aspect-[9/16] bg-black rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10 animate-slide-up">
-            <video
-              src={activeReel}
-              autoPlay
-              controls
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-      )}
     </section>
   );
 }
