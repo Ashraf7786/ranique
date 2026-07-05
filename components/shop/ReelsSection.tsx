@@ -50,23 +50,88 @@ function ReelVideo({ src }: { src: string }) {
 
 export function ReelsSection() {
   const [activeReel, setActiveReel] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Auto-scroll logic
+  useEffect(() => {
+    if (isHovered) return;
+    
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        const maxScroll = scrollWidth - clientWidth;
+        
+        // If we reach the end, snap back to start
+        if (scrollLeft >= maxScroll - 10) {
+          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+        }
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isHovered]);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+    }
+  };
 
   return (
     <section aria-label="Reels" className="py-16 bg-brand-mist/20 overflow-hidden border-t border-brand-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-        <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-brand-ink">
-          Ranique on Reels
-        </h2>
-        <p className="text-brand-slate text-sm mt-1">Watch our latest styles in motion</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 flex items-end justify-between">
+        <div>
+          <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-brand-ink">
+            Ranique on Reels
+          </h2>
+          <p className="text-brand-slate text-sm mt-1">Watch our latest styles in motion</p>
+        </div>
+        
+        {/* Desktop Navigation Arrows */}
+        <div className="hidden md:flex items-center gap-2">
+          <button 
+            onClick={scrollLeft}
+            className="p-2 rounded-full bg-white border border-brand-border hover:border-brand-rose hover:text-brand-rose transition-colors shadow-sm"
+            aria-label="Scroll left"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <button 
+            onClick={scrollRight}
+            className="p-2 rounded-full bg-white border border-brand-border hover:border-brand-rose hover:text-brand-rose transition-colors shadow-sm"
+            aria-label="Scroll right"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+          </button>
+        </div>
       </div>
 
-      <div className="relative group flex overflow-hidden w-full">
-        {/* We use 3 sets to ensure enough width for desktop infinite scrolling, reducing DOM nodes slightly */}
-        <div className="flex gap-4 px-4 w-max animate-reel-slide group-hover:[animation-play-state:paused]">
+      <div 
+        className="relative group w-full"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onTouchStart={() => setIsHovered(true)}
+        onTouchEnd={() => setIsHovered(false)}
+      >
+        <div 
+          ref={scrollRef}
+          className="flex gap-4 px-4 sm:px-6 lg:px-8 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {/* Duplicate reels to ensure enough items to scroll through smoothly */}
           {[...REELS, ...REELS, ...REELS].map((reel, idx) => (
             <div
               key={`${reel.id}-${idx}`}
-              className="relative shrink-0 w-[200px] h-[350px] sm:w-[240px] sm:h-[420px] rounded-2xl overflow-hidden cursor-pointer group/reel shadow-sm hover:shadow-card-hover transition-all bg-brand-mist transform-gpu"
+              className="relative shrink-0 w-[200px] h-[350px] sm:w-[240px] sm:h-[420px] rounded-2xl overflow-hidden cursor-pointer group/reel shadow-sm hover:shadow-card-hover transition-all bg-brand-mist snap-start"
               onClick={() => setActiveReel(reel.videoUrl)}
             >
               <ReelVideo src={reel.videoUrl} />
