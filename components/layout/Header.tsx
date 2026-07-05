@@ -238,7 +238,7 @@ export function Header() {
       >
         {/* Announcement Bar */}
         <div className="bg-brand-rose text-white py-2 flex items-center w-full overflow-hidden h-8 sm:h-9 relative">
-          <div className="flex w-max animate-[marquee_20s_linear_infinite]">
+          <div className="flex w-max animate-marquee">
             <div className="flex px-4 whitespace-nowrap text-xs sm:text-sm font-medium font-sans items-center gap-1">
               Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
             </div>

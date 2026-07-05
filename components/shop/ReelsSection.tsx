@@ -66,23 +66,24 @@ export function ReelsSection() {
         if (scrollLeft >= maxScroll - 10) {
           scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
         } else {
-          scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+          // Slide by full visible width
+          scrollRef.current.scrollBy({ left: clientWidth, behavior: "smooth" });
         }
       }
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [isHovered]);
 
   const scrollLeft = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
+      scrollRef.current.scrollBy({ left: -scrollRef.current.clientWidth, behavior: "smooth" });
     }
   };
 
   const scrollRight = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+      scrollRef.current.scrollBy({ left: scrollRef.current.clientWidth, behavior: "smooth" });
     }
   };
 
@@ -124,14 +125,16 @@ export function ReelsSection() {
       >
         <div 
           ref={scrollRef}
-          className="flex gap-4 px-4 sm:px-6 lg:px-8 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4"
+          className="flex gap-2 md:gap-4 px-4 sm:px-6 lg:px-8 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {/* Duplicate reels to ensure enough items to scroll through smoothly */}
-          {[...REELS, ...REELS, ...REELS].map((reel, idx) => (
+          {/* We duplicate REELS enough times so it can scroll for a long time */}
+          {[...REELS, ...REELS, ...REELS, ...REELS, ...REELS].map((reel, idx) => (
             <div
               key={`${reel.id}-${idx}`}
-              className="relative shrink-0 w-[200px] h-[350px] sm:w-[240px] sm:h-[420px] rounded-2xl overflow-hidden cursor-pointer group/reel shadow-sm hover:shadow-card-hover transition-all bg-brand-mist snap-start"
+              // Mobile: 2 items (gap-2 = 8px => calc(50% - 4px))
+              // Desktop: 5 items (gap-4 = 16px => calc(20% - 12.8px))
+              className="relative shrink-0 w-[calc(50%-4px)] md:w-[calc(20%-12.8px)] aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer group/reel shadow-sm hover:shadow-card-hover transition-all bg-brand-mist snap-start"
               onClick={() => setActiveReel(reel.videoUrl)}
             >
               <ReelVideo src={reel.videoUrl} />

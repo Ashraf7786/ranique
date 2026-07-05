@@ -99,7 +99,7 @@ const config: Config = {
         "badge-pop":     "badge-pop 0.4s cubic-bezier(0.36,0.07,0.19,0.97)",
         "heart-beat":    "heart-beat 0.45s ease-in-out",
         "spin-slow":     "spin-slow 1s linear infinite",
-        marquee:         "marquee 2s linear infinite",
+        marquee:         "marquee 20s linear infinite",
         "fade-out":      "fade-out 0.5s ease-out forwards",
         "scale-x":       "scale-x 1.5s ease-in-out infinite",
         "reel-slide":    "reel-slide 40s linear infinite",
