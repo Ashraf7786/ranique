@@ -117,7 +117,7 @@ export function ReelsSection() {
       </div>
 
       <div 
-        className="relative group w-full"
+        className="relative group w-full max-w-7xl mx-auto"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onTouchStart={() => setIsHovered(true)}

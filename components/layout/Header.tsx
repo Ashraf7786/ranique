@@ -237,21 +237,17 @@ export function Header() {
         )}
       >
         {/* Announcement Bar */}
-        <div className="bg-brand-rose text-white py-2 flex items-center w-full overflow-hidden h-8 sm:h-9 relative">
-          <div className="flex w-max animate-marquee">
-            <div className="flex px-4 whitespace-nowrap text-xs sm:text-sm font-medium font-sans items-center gap-1">
-              Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
-            </div>
-            {/* Duplicate for seamless loop */}
-            <div className="flex px-4 whitespace-nowrap text-xs sm:text-sm font-medium font-sans items-center gap-1" aria-hidden="true">
-              Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a>
-            </div>
-          </div>
+        <div className="bg-brand-rose text-white py-2 flex items-center w-full overflow-hidden h-8 sm:h-9">
+          {React.createElement(
+            'marquee' as any,
+            { scrollamount: "20", scrolldelay: "200", className: "w-full text-xs sm:text-sm font-medium font-sans flex items-center" },
+            <>Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a></>
+          )}
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row */}
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
-            
+
             {/* Left Section: Menu & Logo */}
             <div className="flex items-center">
               {/* Mobile hamburger */}
@@ -271,13 +267,13 @@ export function Header() {
                 aria-label="Ranique Home"
               >
                 <svg viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[100px] sm:w-[130px] h-auto text-brand-ink group-hover:text-brand-rose transition-colors duration-300">
-                {/* R Monogram */}
-                <path d="M14 6h16c7 0 12 4 12 11.5 0 5-3 9-8.5 10.5L43 38h-6.5l-8.5-9.5H19V38h-5V6zm5 4.5V24h10.5c5 0 7.5-2.5 7.5-6.5 0-4.5-3-6.5-8-6.5H19z" fill="currentColor" />
-                {/* anique text */}
-                <text x="48" y="32" fontFamily="Georgia, serif" fontSize="26" fontWeight="600" fill="currentColor" letterSpacing="2">anique</text>
-                {/* Decorative element on hover */}
-                <circle cx="23" cy="22" r="20" stroke="#C9748A" strokeWidth="1.5" className="opacity-0 group-hover:opacity-50 transition-opacity duration-500" />
-              </svg>
+                  {/* R Monogram */}
+                  <path d="M14 6h16c7 0 12 4 12 11.5 0 5-3 9-8.5 10.5L43 38h-6.5l-8.5-9.5H19V38h-5V6zm5 4.5V24h10.5c5 0 7.5-2.5 7.5-6.5 0-4.5-3-6.5-8-6.5H19z" fill="currentColor" />
+                  {/* anique text */}
+                  <text x="48" y="32" fontFamily="Georgia, serif" fontSize="26" fontWeight="600" fill="currentColor" letterSpacing="2">anique</text>
+                  {/* Decorative element on hover */}
+                  <circle cx="23" cy="22" r="20" stroke="#C9748A" strokeWidth="1.5" className="opacity-0 group-hover:opacity-50 transition-opacity duration-500" />
+                </svg>
               </Link>
             </div>
 
@@ -330,7 +326,7 @@ export function Header() {
               </button>
             </div>
           </div>
-          
+
           {/* Mobile Search Row (Hidden on md and up) */}
           <div className="md:hidden pb-3">
             <SearchBar className="w-full" />
