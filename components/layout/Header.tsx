@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/hooks/useCart";
 import { cn } from "@/lib/utils";
 
@@ -206,16 +207,29 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
   );
 }
 
-// ─── Header ───────────────────────────────────────────────────────────────────
-
 export function Header() {
   const { totalItems, openCart } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -297,7 +311,7 @@ export function Header() {
             <div className="flex items-center gap-0">
               {/* Wishlist */}
               <Link
-                href="/wishlist"
+                href={session ? "/account/wishlist" : "/wishlist"}
                 id="header-wishlist-btn"
                 aria-label="Wishlist"
                 className="relative p-2 sm:p-2.5 rounded-full hover:bg-brand-blush transition-colors group"
@@ -305,14 +319,79 @@ export function Header() {
                 <HeartIcon className="w-5 h-5 text-brand-slate group-hover:text-brand-rose transition-colors" />
               </Link>
 
-              {/* Account */}
-              <button
-                id="header-account-btn"
-                aria-label="Account"
-                className="relative p-2 sm:p-2.5 rounded-full hover:bg-brand-blush transition-colors group"
-              >
-                <UserIcon className="w-5 h-5 text-brand-slate group-hover:text-brand-rose transition-colors" />
-              </button>
+              {/* Account / Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => {
+                    if (session) {
+                      setUserDropdownOpen(!userDropdownOpen);
+                    } else {
+                      router.push("/account");
+                    }
+                  }}
+                  id="header-account-btn"
+                  aria-label="Account"
+                  className="relative p-2 sm:p-2.5 rounded-full hover:bg-brand-blush transition-colors group flex items-center outline-none"
+                >
+                  <UserIcon className="w-5 h-5 text-brand-slate group-hover:text-brand-rose transition-colors" />
+                </button>
+
+                {/* Dropdown Menu */}
+                {userDropdownOpen && session && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="px-4 py-2 border-b border-gray-50 mb-1">
+                      <p className="text-sm font-semibold text-brand-ink truncate">{session.user?.name || (session.user as any)?.firstName || "User"}</p>
+                      <p className="text-xs text-gray-500 truncate">{session.user?.email}</p>
+                    </div>
+
+                    {(session.user as any)?.role === "ADMIN" ? (
+                      <>
+                        <Link
+                          href="/admin"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-mist hover:text-brand-rose transition-colors"
+                        >
+                          Admin Panel
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          href="/account"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-mist hover:text-brand-rose transition-colors"
+                        >
+                          My Dashboard
+                        </Link>
+                        <Link
+                          href="/account/orders"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-mist hover:text-brand-rose transition-colors"
+                        >
+                          My Orders
+                        </Link>
+                        <Link
+                          href="/wishlist"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-mist hover:text-brand-rose transition-colors"
+                        >
+                          Wishlist
+                        </Link>
+                      </>
+                    )}
+                    
+                    <button
+                      onClick={() => {
+                        setUserDropdownOpen(false);
+                        signOut({ callbackUrl: "/" });
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-gray-50 mt-1"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {/* Cart */}
               <button

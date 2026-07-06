@@ -7,10 +7,11 @@ import { ProductCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface CategoryTabsProps {
-  activeCategory?: ProductCategory | "all";
+  activeCategory?: ProductCategory | "all" | string;
+  categories: any[];
 }
 
-export function CategoryTabs({ activeCategory = "all" }: CategoryTabsProps) {
+export function CategoryTabs({ activeCategory = "all", categories }: CategoryTabsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -30,15 +31,33 @@ export function CategoryTabs({ activeCategory = "all" }: CategoryTabsProps) {
       aria-label="Product categories"
       className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1"
     >
-      {CATEGORIES.map((cat) => {
-        const isActive = activeCategory === cat.id;
+      <button
+        id="category-tab-all"
+        role="tab"
+        aria-selected={activeCategory === "all"}
+        onClick={() => handleSelect("all")}
+        className={cn(
+          "shrink-0 inline-flex items-center gap-1.5 px-4 h-10 rounded-full",
+          "font-sans text-sm font-medium transition-all duration-200",
+          "border whitespace-nowrap",
+          "active:scale-95",
+          activeCategory === "all"
+            ? "bg-brand-rose border-brand-rose text-white shadow-sm"
+            : "bg-white border-brand-border text-brand-slate hover:border-brand-rose hover:text-brand-rose"
+        )}
+      >
+        <span aria-hidden>✨</span>
+        All Products
+      </button>
+      {categories.map((cat) => {
+        const isActive = activeCategory === cat.slug;
         return (
           <button
             key={cat.id}
-            id={`category-tab-${cat.id}`}
+            id={`category-tab-${cat.slug}`}
             role="tab"
             aria-selected={isActive}
-            onClick={() => handleSelect(cat.id)}
+            onClick={() => handleSelect(cat.slug)}
             className={cn(
               "shrink-0 inline-flex items-center gap-1.5 px-4 h-10 rounded-full",
               "font-sans text-sm font-medium transition-all duration-200",
@@ -49,8 +68,8 @@ export function CategoryTabs({ activeCategory = "all" }: CategoryTabsProps) {
                 : "bg-white border-brand-border text-brand-slate hover:border-brand-rose hover:text-brand-rose"
             )}
           >
-            <span aria-hidden>{cat.emoji}</span>
-            {cat.label}
+            <span aria-hidden>{cat.emoji || "🛍️"}</span>
+            {cat.name}
           </button>
         );
       })}

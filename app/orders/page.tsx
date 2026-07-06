@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CheckCircle2, PackageSearch, Truck, Gift, Home, Banknote, Smartphone, CreditCard, Building2, Package, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "My Orders | Ranique — Track Your Order",
@@ -19,18 +20,18 @@ const WA_TRACK_MSG = encodeURIComponent("Hii Ranique! 🌸 Mujhe apna order trac
 const WA_NEW_ORDER_MSG = encodeURIComponent("Hii Ranique! 🌸 Mujhe ek naya order place karna hai.");
 
 const ORDER_STEPS = [
-  { emoji: "✅", label: "Order Confirmed", desc: "Aapka order receive ho gaya" },
-  { emoji: "📦", label: "Packing in Progress", desc: "Hum aapka order pack kar rahe hain" },
-  { emoji: "🚚", label: "Shipped", desc: "Order dispatch ho gaya — tracking link milega" },
-  { emoji: "🎀", label: "Out for Delivery", desc: "Aaj aapke paas pahunch jaayega!" },
-  { emoji: "🏠", label: "Delivered", desc: "Order pahunch gaya! Enjoy karein 💕" },
+  { icon: CheckCircle2, label: "Order Confirmed", desc: "Aapka order receive ho gaya" },
+  { icon: PackageSearch, label: "Packing in Progress", desc: "Hum aapka order pack kar rahe hain" },
+  { icon: Truck, label: "Shipped", desc: "Order dispatch ho gaya — tracking link milega" },
+  { icon: Gift, label: "Out for Delivery", desc: "Aaj aapke paas pahunch jaayega!" },
+  { icon: Home, label: "Delivered", desc: "Order pahunch gaya! Enjoy karein 💕" },
 ];
 
 const PAYMENT_MODES = [
-  { emoji: "💵", label: "Cash on Delivery", desc: "Sabse popular — order aane pe pay karo" },
-  { emoji: "📱", label: "UPI / PhonePe / GPay", desc: "Instant payment — koi charges nahi" },
-  { emoji: "💳", label: "Debit / Credit Card", desc: "Visa, Mastercard, RuPay sab chalega" },
-  { emoji: "🏦", label: "Net Banking", desc: "Direct bank transfer" },
+  { icon: Banknote, label: "Cash on Delivery", desc: "Sabse popular — order aane pe pay karo" },
+  { icon: Smartphone, label: "UPI / PhonePe / GPay", desc: "Instant payment — koi charges nahi" },
+  { icon: CreditCard, label: "Debit / Credit Card", desc: "Visa, Mastercard, RuPay sab chalega" },
+  { icon: Building2, label: "Net Banking", desc: "Direct bank transfer" },
 ];
 
 export default function OrdersPage() {
@@ -59,7 +60,7 @@ export default function OrdersPage() {
 
         {/* ── Track Order Card ─────────────────────────────────────── */}
         <div className="bg-white rounded-2xl border border-brand-border shadow-card p-6 sm:p-8 max-w-2xl mx-auto text-center">
-          <div className="text-5xl mb-4">📦</div>
+          <Package className="w-12 h-12 mx-auto mb-4 text-brand-rose" />
           <h2 className="font-serif text-xl font-semibold text-brand-ink mb-2">Order Track Karna Hai?</h2>
           <p className="font-sans text-sm text-brand-slate mb-6 leading-relaxed">
             WhatsApp pe apna <strong className="text-brand-ink">Order ID ya naam</strong> bhejo — hum turant shipping update de denge. Tracking link bhi milega jab order dispatch ho jaaye!
@@ -83,7 +84,7 @@ export default function OrdersPage() {
         {/* ── Order Status Timeline ─────────────────────────────────── */}
         <div className="max-w-2xl mx-auto">
           <h2 className="font-serif text-xl font-semibold text-brand-ink text-center mb-6">
-            Order Ka Safar 🗺️
+            Order Ka Safar
           </h2>
           <div className="relative">
             {/* Vertical line */}
@@ -91,8 +92,8 @@ export default function OrdersPage() {
             <div className="space-y-6">
               {ORDER_STEPS.map((step, i) => (
                 <div key={step.label} className="flex items-start gap-5 pl-1">
-                  <div className="relative z-10 w-12 h-12 rounded-full bg-white border-2 border-brand-border flex items-center justify-center text-xl shrink-0 shadow-sm">
-                    {step.emoji}
+                  <div className="relative z-10 w-12 h-12 rounded-full bg-white border-2 border-brand-border flex items-center justify-center text-xl shrink-0 shadow-sm text-brand-ink">
+                    <step.icon className="w-5 h-5 text-brand-rose" />
                   </div>
                   <div className="pt-1.5 pb-4">
                     <p className="font-sans font-semibold text-sm text-brand-ink">{step.label}</p>
@@ -115,15 +116,16 @@ export default function OrdersPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {PAYMENT_MODES.map((m) => (
               <div key={m.label} className="bg-white rounded-xl border border-brand-border p-4 text-center hover:border-brand-rose hover:shadow-card transition-all duration-200">
-                <div className="text-3xl mb-2">{m.emoji}</div>
+                <m.icon className="w-8 h-8 text-brand-rose mx-auto mb-3" />
                 <p className="font-sans font-semibold text-xs text-brand-ink">{m.label}</p>
                 <p className="font-sans text-[10px] text-brand-slate mt-1 leading-snug">{m.desc}</p>
               </div>
             ))}
           </div>
-          <div className="mt-5 p-4 rounded-xl bg-brand-blush border border-brand-rose-light text-center">
+          <div className="mt-5 p-4 rounded-xl bg-brand-blush border border-brand-rose-light flex items-center justify-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-brand-rose" />
             <p className="font-sans text-xs text-brand-rose-dark font-semibold">
-              🛡️ 100% Secure Payment · GST Registered Business · ₹3,999+ pe Free Shipping
+              100% Secure Payment · GST Registered Business · ₹999+ pe Free Shipping
             </p>
           </div>
         </section>

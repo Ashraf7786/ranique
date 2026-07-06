@@ -37,7 +37,7 @@ export const MOCK_PRODUCTS: Product[] = [
       "Shelf life: 24 months after opening",
     ],
     shipping:
-      "Free standard shipping on orders over ₹3999. Express (2-day) available at checkout. International shipping to 40+ countries.",
+      "Free standard shipping on orders over ₹999. Express (2-day) available at checkout. International shipping to 40+ countries.",
     material: "Cosmetic Grade",
     reviews: [
       {
@@ -82,7 +82,7 @@ export const MOCK_PRODUCTS: Product[] = [
       "Fragrance-free, suitable for sensitive skin",
       "Net weight: 8g",
     ],
-    shipping: "Free standard shipping on orders over ₹3999. Express available.",
+    shipping: "Free standard shipping on orders over ₹999. Express available.",
     material: "Pressed Powder",
   },
   {

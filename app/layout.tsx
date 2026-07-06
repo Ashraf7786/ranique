@@ -8,12 +8,9 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 import { CartProvider } from "@/components/providers/CartProvider";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { CartDrawer } from "@/components/cart/CartDrawer";
-import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
-import { MobileSnackbar } from "@/components/ui/MobileSnackbar";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GlobalLoader } from "@/components/ui/GlobalLoader";
+import { StorefrontUI } from "./StorefrontUI";
 
 export const metadata: Metadata = {
   title: {
@@ -45,32 +42,21 @@ export default function RootLayout({
       </head>
       <body className={`antialiased ${jakarta.variable} overflow-x-hidden w-full`}>
         <GlobalLoader />
-        <CartProvider>
-          {/* Skip to content */}
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-brand-rose focus:text-white focus:rounded-full focus:text-sm"
-          >
-            Skip to content
-          </a>
+        <AuthProvider>
+          <CartProvider>
+            {/* Skip to content */}
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-brand-rose focus:text-white focus:rounded-full focus:text-sm"
+            >
+              Skip to content
+            </a>
 
-          <Header />
-
-          <main id="main-content" className="min-h-screen">
-            {children}
-          </main>
-
-          <Footer />
-
-          {/* Global cart drawer */}
-          <CartDrawer />
-
-          {/* Floating WhatsApp order button */}
-          <WhatsAppButton />
-
-          {/* Mobile-only WhatsApp snackbar */}
-          <MobileSnackbar />
-        </CartProvider>
+            <StorefrontUI>
+              {children}
+            </StorefrontUI>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

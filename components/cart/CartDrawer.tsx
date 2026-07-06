@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/hooks/useCart";
 import { formatPrice, cn } from "@/lib/utils";
 
@@ -26,59 +27,11 @@ export function CartDrawer() {
   const [mounted, setMounted] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  const handleCheckout = async () => {
-    setIsCheckingOut(true);
-    try {
-      // Generate a simple idempotency key for this checkout attempt
-      const idempotencyKey = `checkout_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+  const router = useRouter();
 
-      // In reality, this token comes from a mock auth context
-      // We are simulating an active session for the backend
-      const res = await fetch('http://localhost:4000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'admin@ranique.com' })
-      });
-      // The cookie is now set automatically if we were using credentials, 
-      // but fetch in dev requires manual header passing if cors is strict.
-      // Assuming credentials 'include' works for the next request.
-
-      const response = await fetch('http://localhost:4000/checkout/process', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Idempotency-Key': idempotencyKey,
-        },
-        body: JSON.stringify({
-          items: items.map(item => ({
-            productId: item.product.id,
-            sku: item.product.id + (item.selectedColor?.label || '') + (item.selectedSize?.label || ''), // mock SKU
-            quantity: item.quantity,
-            price: item.product.price
-          })),
-          paymentIntentId: 'mock_stripe_intent_' + Date.now()
-        }),
-        // Must include credentials to send the JWT HttpOnly cookie
-        credentials: 'omit', // Simulating without full cookie context for this demo to avoid strict CORS block during rapid testing
-      });
-      
-      // Wait for async queue simulation
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      if (response.ok) {
-        clearCart();
-        closeCart();
-        alert('Order Placed Successfully! Your items are secured.');
-      } else {
-        const error = await response.json();
-        alert(error.message || 'Checkout failed due to high traffic lock. Try again.');
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Network error. Please ensure the backend is running.');
-    } finally {
-      setIsCheckingOut(false);
-    }
+  const handleCheckout = () => {
+    closeCart();
+    router.push("/checkout");
   };
 
   // Prevent hydration mismatch: cart state comes from localStorage

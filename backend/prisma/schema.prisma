@@ -15,7 +15,7 @@ model User {
   password  String
   firstName String?
   lastName  String?
-  role      String   @default("CUSTOMER") // Role enum
+  role      String   @default("CUSTOMER") // ADMIN, MANAGER, CUSTOMER
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -27,63 +27,110 @@ model Wallet {
   id        String   @id @default(uuid())
   userId    String   @unique
   balance   Float    @default(0.0)
-  currency  String   @default("USD")
+  currency  String   @default("INR")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// ─── CATALOG (HYBRID PATTERN) ────────────────────────────────────────────────
+// ─── TAXONOMY ────────────────────────────────────────────────────────────────
+
+model Category {
+  id          String     @id @default(uuid())
+  name        String
+  slug        String     @unique
+  description String?
+  image       String?
+  parentId    String?
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  products    Product[]
+}
+
+model Brand {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  logo        String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+}
+
+// ─── CATALOG (PHASE 1 CORE) ──────────────────────────────────────────────────
 
 model Product {
-  id             String      @id @default(uuid())
-  slug           String      @unique
-  name           String
-  brand          String
-  category       String      // Category enum
-  price          Float
-  compareAtPrice Float?
-  currency       String      @default("USD")
-  rating         Float       @default(0.0)
-  reviewCount    Int         @default(0)
-  description    String
-  shippingInfo   String?
-  isActive       Boolean     @default(true)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id               String   @id @default(uuid())
+  title            String
+  slug             String   @unique
+  shortDescription String?
+  fullDescription  String?
+  
+  // Categorization
+  brandId          String?
+  categoryId       String?
+  manufacturer     String?
+  productType      String?  // e.g., "Physical", "Digital"
+  
+  // Identity
+  sku              String   @unique
+  barcode          String?
+  hsnCode          String?
+  
+  // Pricing
+  sellingPrice     Float    @default(0.0)
+  originalPrice    Float?
+  costPrice        Float?
+  taxIncluded      Boolean  @default(true)
+  currency         String   @default("INR")
+  
+  // Inventory (Simplified for Phase 1)
+  trackInventory   Boolean  @default(true)
+  currentStock     Int      @default(0)
+  minStockAlert    Int      @default(5)
+  stockStatus      String   @default("IN_STOCK") // IN_STOCK, OUT_OF_STOCK, COMING_SOON
+  
+  // Variants & UI
+  colors           String?  // Stored as JSON string
+  badge            String?  // e.g., BESTSELLER, SALE
+  rating           Float    @default(4.5)
+  reviewCount      Int      @default(0)
+  
+  // Status & Visibility
+  status           String   @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
+  isFeatured       Boolean  @default(false)
+  isNewArrival     Boolean  @default(true)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  // Hybrid Document Storage
-  // Stores diverse attributes (Cosmetics shades, Bangle sizes, Purse materials)
-  // Note: Using String in SQLite to hold JSON. In PostgreSQL this would be JSONB.
-  attributes     String      @default("{}")
-  images         ProductImage[]
-  inventory      Inventory[]
-  orderItems     OrderItem[]
+  // Relationships
+  brand            Brand?         @relation(fields: [brandId], references: [id])
+  category         Category?      @relation(fields: [categoryId], references: [id])
+  images           ProductImage[]
+  orderItems       OrderItem[]
 
-  @@index([category])
-  @@index([brand])
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([status])
 }
 
 model ProductImage {
-  id        String  @id @default(uuid())
-  productId String
-  url       String
-  altText   String?
-  isPrimary Boolean @default(false)
-  
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
+  id         String   @id @default(uuid())
+  productId  String
+  url        String
+  altText    String?
+  isCover    Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
 
-model Inventory {
-  id            String  @id @default(uuid())
-  productId     String
-  sku           String  @unique
-  variantLabel  String? // e.g., "Rosewood", "Size M (60mm)"
-  stockQuantity Int     @default(0)
-  reservedQty   Int     @default(0) // For distributed locking
-
-  product       Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 // ─── ORDERS & TRANSACTIONS ───────────────────────────────────────────────────
@@ -91,9 +138,9 @@ model Inventory {
 model Order {
   id            String      @id @default(uuid())
   userId        String
-  status        String      @default("PENDING") // OrderStatus enum
+  status        String      @default("PENDING") // PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
   totalAmount   Float
-  currency      String      @default("USD")
+  currency      String      @default("INR")
   idempotencyKey String?    @unique
   trackingNumber String?    @unique
   shippedAt     DateTime?

@@ -53,11 +53,10 @@ export class CheckoutService {
                   create: {
                     id: item.productId,
                     slug: item.productId,
-                    name: 'Mock Product',
-                    brand: 'Mock Brand',
-                    category: 'COSMETICS',
-                    price: item.price,
-                    description: 'Mock Description',
+                    title: 'Mock Product',
+                    sku: item.sku,
+                    sellingPrice: item.price,
+                    shortDescription: 'Mock Description',
                   }
                 }
               },

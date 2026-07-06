@@ -1,172 +1,46 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { MOCK_PRODUCTS } from "@/lib/mockData";
+import { getProducts, getCategories } from "@/lib/api";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { Hero } from "@/components/home/Hero";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { ReelsSection } from "@/components/shop/ReelsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { WhatsAppOrderBanner } from "@/components/home/WhatsAppOrderBanner";
-import { Sparkles, Gem, Disc3, ShoppingBag, Truck, RefreshCcw, Lock } from "lucide-react";
-
-// ─── Hero Section ─────────────────────────────────────────────────────────────
-
-const HERO_SLIDES = [
-  {
-    id: 1,
-    eyebrow: "New Summer Collection",
-    title: "Luxury Crafted",
-    emphasis: "for You",
-    description: "Discover our curated edit of cosmetics, accessories, bangles, and purses — where timeless elegance meets modern femininity.",
-    primaryCta: { label: "Shop Now", href: "/shop" },
-    secondaryCta: { label: "Explore Cosmetics", href: "/shop?category=cosmetics" },
-    bgClass: "bg-hero-gradient",
-    blob1: "radial-gradient(circle, #C9748A 0%, transparent 70%)",
-    blob2: "radial-gradient(circle, #C9A96E 0%, transparent 70%)",
-  },
-  {
-    id: 2,
-    eyebrow: "Exclusive Designs",
-    title: "Radiate Your",
-    emphasis: "Inner Glow",
-    description: "Explore our latest collection of premium lip serums and illuminating highlighters tailored for the perfect finish.",
-    primaryCta: { label: "Shop Cosmetics", href: "/shop?category=cosmetics" },
-    secondaryCta: { label: "View Best Sellers", href: "/shop" },
-    bgClass: "bg-gradient-to-br from-[#F7E8E8] to-[#EEC5CF]",
-    blob1: "radial-gradient(circle, #E8D5A3 0%, transparent 70%)",
-    blob2: "radial-gradient(circle, #A85970 0%, transparent 70%)",
-  },
-  {
-    id: 3,
-    eyebrow: "Timeless Elegance",
-    title: "Accessorize with",
-    emphasis: "Confidence",
-    description: "From gold-plated bangles to velvet clutches, find the perfect statement pieces to complete your look.",
-    primaryCta: { label: "Shop Accessories", href: "/shop?category=accessories" },
-    secondaryCta: { label: "Shop Bangles", href: "/shop?category=bangles" },
-    bgClass: "bg-gradient-to-br from-[#F0DDB8] to-[#E8D5A3]",
-    blob1: "radial-gradient(circle, #C9748A 0%, transparent 70%)",
-    blob2: "radial-gradient(circle, #C9A96E 0%, transparent 70%)",
-  }
-];
-
-function Hero() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const slide = HERO_SLIDES[currentSlide];
-
-  return (
-    <section
-      aria-label="Hero"
-      className={`relative overflow-hidden transition-colors duration-700 ${slide.bgClass}`}
-    >
-      {/* Decorative blobs */}
-      <div
-        aria-hidden
-        className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20 transition-all duration-700"
-        style={{ background: slide.blob1 }}
-      />
-      <div
-        aria-hidden
-        className="absolute -bottom-12 -left-12 w-72 h-72 rounded-full opacity-10 transition-all duration-700"
-        style={{ background: slide.blob2 }}
-      />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-32 relative min-h-[500px] flex items-center">
-        <div key={currentSlide} className="max-w-2xl animate-fade-in">
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 border border-brand-border text-brand-rose text-xs font-semibold uppercase tracking-widest mb-6 animate-slide-up">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-rose animate-pulse" />
-            {slide.eyebrow}
-          </div>
-
-          {/* Headline */}
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold text-brand-ink leading-tight mb-5 animate-slide-up" style={{ animationDelay: '100ms' }}>
-            {slide.title}
-            <br />
-            <em className="text-brand-rose not-italic">{slide.emphasis}</em>
-          </h1>
-
-          <p className="font-sans text-base sm:text-lg text-brand-slate leading-relaxed mb-8 max-w-xl animate-slide-up" style={{ animationDelay: '200ms' }}>
-            {slide.description}
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-wrap gap-3 animate-slide-up" style={{ animationDelay: '300ms' }}>
-            <Link
-              href={slide.primaryCta.href}
-              className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-brand-rose text-white font-sans font-semibold text-sm hover:bg-brand-rose-dark active:scale-[0.97] transition-all shadow-sm hover:shadow-md"
-            >
-              {slide.primaryCta.label}
-            </Link>
-            <Link
-              href={slide.secondaryCta.href}
-              className="inline-flex items-center justify-center h-12 px-8 rounded-full border border-brand-border bg-white text-brand-ink font-sans font-semibold text-sm hover:border-brand-rose hover:text-brand-rose active:scale-[0.97] transition-all"
-            >
-              {slide.secondaryCta.label}
-            </Link>
-          </div>
-        </div>
-
-        {/* Slider Controls */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
-          {HERO_SLIDES.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                index === currentSlide ? "w-8 bg-brand-rose" : "w-2 bg-brand-border hover:bg-brand-rose-light"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+import { Sparkles, Gem, Disc3, ShoppingBag, Truck, RefreshCcw, Lock, Package } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // ─── Category Grid ────────────────────────────────────────────────────────────
 
-const CATEGORY_CARDS = [
-  {
-    id: "cosmetics",
-    label: "Cosmetics",
+const CATEGORY_STYLES: Record<string, { icon: React.ReactNode, bg: string }> = {
+  cosmetics: {
     icon: <Sparkles className="w-8 h-8 text-brand-rose" strokeWidth={1.5} />,
     bg: "from-[#F7E8E8] to-[#EEC5CF]",
-    description: "Lip serums, highlighters & fragrances",
   },
-  {
-    id: "accessories",
-    label: "Accessories",
+  accessories: {
     icon: <Gem className="w-8 h-8 text-[#C9A96E]" strokeWidth={1.5} />,
     bg: "from-[#F0DDB8] to-[#E8D5A3]",
-    description: "Earrings, headbands & sunglasses",
   },
-  {
-    id: "bangles",
-    label: "Bangles",
+  bangles: {
     icon: <Disc3 className="w-8 h-8 text-[#8B9DB8]" strokeWidth={1.5} />,
     bg: "from-[#E8EEF7] to-[#C5D5EE]",
-    description: "Gold-plated, crystal & enamel",
   },
-  {
-    id: "purses",
-    label: "Purses",
+  purses: {
     icon: <ShoppingBag className="w-8 h-8 text-brand-slate" strokeWidth={1.5} />,
     bg: "from-[#F0F0F0] to-[#E0E0D8]",
-    description: "Velvet clutches, crossbodies & totes",
   },
-];
+};
 
-function CategoryGrid() {
+const DEFAULT_CATEGORY_STYLE = {
+  icon: <Package className="w-8 h-8 text-gray-400" strokeWidth={1.5} />,
+  bg: "from-[#F0F0F0] to-[#E0E0D8]",
+};
+
+function CategoryGrid({ categories }: { categories: any[] }) {
+  // Filter out any categories that might not be suitable for the grid, e.g. 'all'
+  const validCategories = categories.filter(c => c.slug !== 'all');
+
   return (
     <section aria-label="Shop by category" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex items-end justify-between mb-6">
@@ -175,54 +49,54 @@ function CategoryGrid() {
         </h2>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {CATEGORY_CARDS.map((cat) => (
-          <Link
-            key={cat.id}
-            href={`/shop?category=${cat.id}`}
-            id={`category-card-${cat.id}`}
-            className={cn(
-              `bg-gradient-to-br ${cat.bg}`,
-              "rounded-2xl p-5 sm:p-6 group hover:shadow-card-hover transition-all duration-300",
-              "flex flex-col gap-2 min-h-[140px] sm:min-h-[160px]"
-            )}
-          >
-            <div className="mb-2">{cat.icon}</div>
-            <h3 className="font-serif text-base sm:text-lg font-semibold text-brand-ink group-hover:text-brand-rose transition-colors">
-              {cat.label}
-            </h3>
-            <p className="text-xs sm:text-sm text-brand-slate line-clamp-2">{cat.description}</p>
-            <span className="mt-auto text-xs font-semibold text-brand-rose flex items-center gap-1">
-              Shop now
-              <svg className="w-3 h-3 group-hover:translate-x-1 transition-transform" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 8h10M9 4l4 4-4 4" />
-              </svg>
-            </span>
-          </Link>
-        ))}
+        {validCategories.map((cat) => {
+          const style = CATEGORY_STYLES[cat.slug] || DEFAULT_CATEGORY_STYLE;
+          return (
+            <Link
+              key={cat.id}
+              href={`/shop?category=${cat.slug}`}
+              id={`category-card-${cat.slug}`}
+              className={cn(
+                `bg-gradient-to-br ${style.bg}`,
+                "rounded-2xl p-5 sm:p-6 group hover:shadow-card-hover transition-all duration-300",
+                "flex flex-col gap-2 min-h-[140px] sm:min-h-[160px]"
+              )}
+            >
+              <div className="mb-2">{style.icon}</div>
+              <h3 className="font-serif text-base sm:text-lg font-semibold text-brand-ink group-hover:text-brand-rose transition-colors">
+                {cat.name}
+              </h3>
+              <p className="text-xs sm:text-sm text-brand-slate line-clamp-2">{cat.description || "Discover our collection"}</p>
+              <span className="mt-auto text-xs font-semibold text-brand-rose flex items-center gap-1">
+                Shop now
+                <svg className="w-3 h-3 group-hover:translate-x-1 transition-transform" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
 }
 
 // ─── cn inline (avoid circular dep in RSC) ───────────────────────────────────
-
-function cn(...classes: (string | false | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
-}
+// Removed inline cn function in favor of import
 
 // ─── Featured Products ────────────────────────────────────────────────────────
 
-function FeaturedProducts() {
+function FeaturedProducts({ products }: { products: any[] }) {
   // Pick 8 products — 2 from each category
   const featured = [
-    ...MOCK_PRODUCTS.filter((p) => p.category === "cosmetics").slice(0, 2),
-    ...MOCK_PRODUCTS.filter((p) => p.category === "accessories").slice(0, 2),
-    ...MOCK_PRODUCTS.filter((p) => p.category === "bangles").slice(0, 2),
-    ...MOCK_PRODUCTS.filter((p) => p.category === "purses").slice(0, 2),
+    ...products.filter((p) => p.category === "cosmetics").slice(0, 2),
+    ...products.filter((p) => p.category === "accessories").slice(0, 2),
+    ...products.filter((p) => p.category === "bangles").slice(0, 2),
+    ...products.filter((p) => p.category === "purses").slice(0, 2),
   ];
 
   return (
-    <section aria-label="Featured products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <section aria-label="Featured products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-8">
       <div className="flex items-end justify-between mb-6">
         <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-brand-ink">
           New Arrivals
@@ -239,19 +113,40 @@ function FeaturedProducts() {
   );
 }
 
+function CategoryProductsSection({ title, category, products }: { title: string, category: string, products: any[] }) {
+  const categoryProducts = products.filter((p) => p.category === category).slice(0, 4);
+  if (categoryProducts.length === 0) return null;
+
+  return (
+    <section aria-label={`${title} products`} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <div className="flex items-end justify-between mb-6">
+        <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-brand-ink">
+          {title}
+        </h2>
+        <Link
+          href={`/shop?category=${category}`}
+          className="text-sm text-brand-rose font-medium hover:underline underline-offset-2"
+        >
+          View all →
+        </Link>
+      </div>
+      <ProductGrid products={categoryProducts} priorityCount={4} />
+    </section>
+  );
+}
+
 // ─── Trust Bar ────────────────────────────────────────────────────────────────
 
 function TrustBar() {
   const items = [
-    { icon: <Truck className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Free Shipping", desc: "On orders over ₹3999" },
-    { icon: <RefreshCcw className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Easy Returns", desc: "30-day hassle-free returns" },
+    { icon: <Truck className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Free Shipping", desc: "On orders over ₹999" },
     { icon: <Lock className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Secure Payment", desc: "256-bit SSL encryption" },
     { icon: <Gem className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Luxury Quality", desc: "Curated premium products" },
   ];
   return (
     <section aria-label="Trust signals" className="border-y border-brand-border bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {items.map((item) => (
             <div key={item.title} className="flex items-start gap-3 p-2">
               <div className="shrink-0 mt-0.5">{item.icon}</div>
@@ -269,16 +164,71 @@ function TrustBar() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [allProducts, categories, session] = await Promise.all([
+    getProducts(),
+    getCategories(),
+    getServerSession(authOptions)
+  ]);
+
+  let recentlyViewedProducts: any[] = [];
+  if (session?.user) {
+    const rv = await prisma.recentlyViewed.findMany({
+      where: { userId: (session.user as any).id },
+      orderBy: { viewedAt: 'desc' },
+      take: 4,
+      include: {
+        product: { include: { images: true } }
+      }
+    });
+    // Transform Prisma model to match standard product object expected by ProductGrid
+    recentlyViewedProducts = rv.map(r => {
+      let parsedColors = [];
+      try {
+        if (r.product.colors) parsedColors = JSON.parse(r.product.colors);
+      } catch (e) {}
+
+      return {
+        ...r.product,
+        name: r.product.title,
+        price: r.product.sellingPrice,
+        compareAtPrice: r.product.originalPrice,
+        images: r.product.images,
+        variants: {
+          colors: parsedColors.length > 0 ? parsedColors : undefined,
+        },
+      };
+    });
+  }
+
   return (
     <>
       <Hero />
       <TrustBar />
-      <CategoryGrid />
+      <CategoryGrid categories={categories} />
+      
+      <FeaturedProducts products={allProducts} />
+      
+      {recentlyViewedProducts.length > 0 && (
+        <section aria-label="Recently Viewed products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <div className="flex items-end justify-between mb-6">
+            <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-brand-ink">
+              Recently Viewed
+            </h2>
+          </div>
+          <ProductGrid products={recentlyViewedProducts} priorityCount={4} />
+        </section>
+      )}
+
+      <CategoryProductsSection title="Bangles Collection" category="bangles" products={allProducts} />
+      
+      <CategoryProductsSection title="Jewellery & Accessories" category="accessories" products={allProducts} />
+      
+      <CategoryProductsSection title="Purses & More" category="purses" products={allProducts} />
+
+      <WhatsAppOrderBanner />
       <ReelsSection />
       <TestimonialsSection />
-      <WhatsAppOrderBanner />
-      <FeaturedProducts />
     </>
   );
 }

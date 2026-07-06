@@ -35,13 +35,17 @@ export function VariantSelector({
             )}
           </div>
           <div className="flex flex-wrap gap-2.5">
-            {variants.colors.map((color) => {
-              const isSelected = selectedColor?.id === color.id;
+            {variants.colors.map((color, index) => {
+              // Fallback to hex if label is missing
+              const uniqueIdentifier = color.id || color.label || color.hex || index;
+              const isSelected = (selectedColor?.id && selectedColor.id === color.id) || 
+                                 (selectedColor?.label && selectedColor.label === color.label) || 
+                                 (selectedColor?.hex && selectedColor.hex === color.hex);
               const outOfStock = color.stock === 0;
               return (
                 <button
-                  key={color.id}
-                  id={`color-${color.id}`}
+                  key={uniqueIdentifier as React.Key}
+                  id={`color-${uniqueIdentifier}`}
                   type="button"
                   onClick={() => !outOfStock && onColorChange(color)}
                   disabled={outOfStock}
@@ -82,17 +86,19 @@ export function VariantSelector({
           <div className="flex items-center justify-between mb-3">
             <p className="font-sans text-sm font-semibold text-brand-ink">Size</p>
             <button className="text-xs text-brand-rose underline-offset-2 hover:underline">
-              Size guide
+              Size Chart
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
-            {variants.sizes.map((size) => {
-              const isSelected = selectedSize?.id === size.id;
+            {variants.sizes.map((size, index) => {
+              const uniqueIdentifier = size.id || size.label || index;
+              const isSelected = (selectedSize?.id && selectedSize.id === size.id) || 
+                                 (selectedSize?.label && selectedSize.label === size.label);
               const outOfStock = size.stock === 0;
               return (
                 <button
-                  key={size.id}
-                  id={`size-${size.id}`}
+                  key={uniqueIdentifier as React.Key}
+                  id={`size-${uniqueIdentifier}`}
                   type="button"
                   onClick={() => !outOfStock && onSizeChange(size)}
                   disabled={outOfStock}

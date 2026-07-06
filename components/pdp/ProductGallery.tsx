@@ -70,6 +70,42 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           </>
         )}
 
+        {/* Main Image Container with Zoom logic */}
+        <div 
+          className="absolute inset-0 z-20 hidden md:block cursor-crosshair"
+          onMouseMove={(e) => {
+            const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+            const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
+            const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
+            
+            const zoomBox = document.getElementById('zoom-box');
+            if (zoomBox) {
+              zoomBox.style.display = 'block';
+              zoomBox.style.backgroundImage = `url(${images[activeIdx].src})`;
+              zoomBox.style.backgroundPosition = `${x}% ${y}%`;
+            }
+          }}
+          onMouseLeave={() => {
+            const zoomBox = document.getElementById('zoom-box');
+            if (zoomBox) {
+              zoomBox.style.display = 'none';
+            }
+          }}
+        >
+          {/* Invisible hover area over the image */}
+        </div>
+
+        {/* Zoomed Box (Portal-like, absolute to the right) */}
+        <div 
+          id="zoom-box"
+          className="hidden md:block absolute left-[calc(100%+24px)] top-0 w-[450px] h-[550px] z-[100] bg-white rounded-xl shadow-2xl border border-brand-border overflow-hidden pointer-events-none"
+          style={{
+            backgroundSize: '250%',
+            backgroundRepeat: 'no-repeat',
+            display: 'none',
+          }}
+        />
+
         {/* Dot indicators (mobile) */}
         {images.length > 1 && (
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 md:hidden">

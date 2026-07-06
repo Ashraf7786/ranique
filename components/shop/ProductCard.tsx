@@ -9,6 +9,7 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { Badge } from "@/components/ui/Badge";
 import { StarRating } from "@/components/ui/StarRating";
 import { formatPrice, cn } from "@/lib/utils";
+import { ShoppingBag } from "lucide-react";
 
 // ─── Heart Icon ───────────────────────────────────────────────────────────────
 
@@ -48,7 +49,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
   const [wishlistAnim, setWishlistAnim] = useState(false);
 
   const wishlisted = isWishlisted(product.id);
-  const firstColor = product.variants.colors?.[0];
+  const firstColor = product.variants?.colors?.[0];
 
   const handleAddToCart = useCallback(
     (e: React.MouseEvent) => {
@@ -91,14 +92,20 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         tabIndex={-1}
         aria-hidden
       >
-        <Image
-          src={product.images[0].src}
-          alt={product.images[0].alt}
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          priority={priority}
-        />
+        {product.images[0]?.src ? (
+          <Image
+            src={product.images[0].src}
+            alt={product.images[0].alt || product.name}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            priority={priority}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-brand-blush">
+            <ShoppingBag className="w-12 h-12 text-brand-rose opacity-50" />
+          </div>
+        )}
         {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -178,11 +185,11 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </div>
 
         {/* Color swatches (first 4) */}
-        {product.variants.colors && product.variants.colors.length > 0 && (
+        {product.variants?.colors && product.variants.colors.length > 0 && (
           <div className="flex gap-1 mt-0.5">
-            {product.variants.colors.slice(0, 4).map((color) => (
+            {product.variants.colors.slice(0, 4).map((color, index) => (
               <span
-                key={color.id}
+                key={index}
                 title={color.label}
                 className="w-3.5 h-3.5 rounded-full border border-white shadow-sm ring-1 ring-brand-border"
                 style={{ backgroundColor: color.hex }}

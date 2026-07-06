@@ -50,3 +50,5 @@ backend/dist/
 next-env.d.ts
 
 .vercel
+
+/lib/generated/prisma
