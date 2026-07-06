@@ -259,7 +259,7 @@ export default function RegisterPage() {
                   value={password}
                   onChange={handlePasswordChange}
                   className={`appearance-none block w-full pl-3 pr-10 py-2.5 border rounded-lg focus:outline-none focus:ring-1 transition-colors ${passwordStrength === 'Weak' ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : 'border-gray-200 focus:border-brand-rose focus:ring-brand-rose'}`}
-                  style={!showPassword ? { WebkitTextSecurity: 'disc' } : undefined}
+                  style={!showPassword ? { WebkitTextSecurity: 'disc' } as any : undefined}
                 />
                 <button
                   type="button"
