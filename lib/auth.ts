@@ -67,8 +67,8 @@ export const authOptions: NextAuthOptions = {
             data: {
               email: user.email!,
               password: randomPassword,
-              firstName: profile?.given_name || user.name?.split(' ')[0] || 'Google',
-              lastName: profile?.family_name || user.name?.split(' ').slice(1).join(' ') || '',
+              firstName: (profile as any)?.given_name || user.name?.split(' ')[0] || 'Google',
+              lastName: (profile as any)?.family_name || user.name?.split(' ').slice(1).join(' ') || 'User',
               isEmailVerified: true,
               provider: 'GOOGLE',
               providerId: account.providerAccountId,
