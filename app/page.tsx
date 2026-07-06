@@ -190,22 +190,29 @@ function TrustBar() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const [allProducts, categories, session] = await Promise.all([
+  let session = null;
+  try {
+    session = await getServerSession(authOptions);
+  } catch (error) {
+    console.error("NextAuth error:", error);
+  }
+
+  const [allProducts, categories] = await Promise.all([
     getProducts(),
-    getCategories(),
-    getServerSession(authOptions)
+    getCategories()
   ]);
 
   let recentlyViewedProducts: any[] = [];
   if (session?.user) {
-    const rv = await prisma.recentlyViewed.findMany({
-      where: { userId: (session.user as any).id },
-      orderBy: { viewedAt: 'desc' },
-      take: 4,
-      include: {
-        product: { include: { images: true } }
-      }
-    });
+    try {
+      const rv = await prisma.recentlyViewed.findMany({
+        where: { userId: (session.user as any).id },
+        orderBy: { viewedAt: 'desc' },
+        take: 4,
+        include: {
+          product: { include: { images: true } }
+        }
+      });
     // Transform Prisma model to match standard product object expected by ProductGrid
     recentlyViewedProducts = rv.map(r => {
       let parsedColors = [];
@@ -224,8 +231,10 @@ export default async function HomePage() {
         },
       };
     });
+    } catch (e) {
+      console.error("Recently viewed error:", e);
+    }
   }
-
   return (
     <>
       <Hero />
