@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET || "ranique_super_secret_fallback_key_2026_do_not_use_in_prod",
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "mock-client-id",
