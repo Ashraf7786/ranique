@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import { getBrands, API_URL } from "@/lib/api";
+import { API_URL } from "@/lib/config";
 
 export default function BrandsPage() {
   const [brands, setBrands] = useState<any[]>([]);
@@ -11,8 +11,14 @@ export default function BrandsPage() {
 
   const fetchBrands = async () => {
     setLoading(true);
-    const data = await getBrands();
-    setBrands(data);
+    try {
+      const res = await fetch(`${API_URL}/brands`);
+      if (res.ok) {
+        setBrands(await res.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
     setLoading(false);
   };
 

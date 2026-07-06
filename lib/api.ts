@@ -1,13 +1,6 @@
 import { Product } from "./types";
 
-const getBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
-  if (typeof window !== 'undefined') return '/api';
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}/api`;
-  return 'http://localhost:3000/api';
-};
-
-export const API_URL = getBaseUrl();
+// Removed API_URL to avoid Client Component prisma imports
 
 // Adapter to transform backend DB model to frontend Product type
 function mapBackendProduct(dbProduct: any): Product {

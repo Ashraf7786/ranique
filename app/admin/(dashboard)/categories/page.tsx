@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Plus, Edit, Trash2 } from "lucide-react";
-import { getCategories, API_URL } from "@/lib/api";
+import { API_URL } from "@/lib/config";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -11,8 +11,14 @@ export default function CategoriesPage() {
 
   const fetchCategories = async () => {
     setLoading(true);
-    const data = await getCategories();
-    setCategories(data);
+    try {
+      const res = await fetch(`${API_URL}/categories`);
+      if (res.ok) {
+        setCategories(await res.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
     setLoading(false);
   };
 

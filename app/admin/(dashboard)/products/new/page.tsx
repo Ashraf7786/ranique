@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Save, Image as ImageIcon, IndianRupee } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { API_URL } from "@/lib/api";
+import { API_URL } from "@/lib/config";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -61,7 +61,7 @@ export default function NewProductPage() {
         colors: colors.length > 0 ? JSON.stringify(colors) : null,
       };
 
-      const { API_URL } = await import("@/lib/api");
+      const { API_URL } = await import("@/lib/config");
       const res = await fetch(`${API_URL}/products`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

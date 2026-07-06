@@ -20,6 +20,30 @@ async function main() {
     },
   });
 
+  const accessoriesCategory = await prisma.category.create({
+    data: {
+      name: 'Accessories',
+      slug: 'accessories',
+      description: 'Premium accessories for every occasion',
+    },
+  });
+
+  const banglesCategory = await prisma.category.create({
+    data: {
+      name: 'Bangles',
+      slug: 'bangles',
+      description: 'Traditional and modern bangles',
+    },
+  });
+
+  const pursesCategory = await prisma.category.create({
+    data: {
+      name: 'Purses',
+      slug: 'purses',
+      description: 'Elegant purses and handbags',
+    },
+  });
+
   // 2. Create a Brand
   const raniqueBrand = await prisma.brand.create({
     data: {
