@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { getProducts, getCategories } from "@/lib/api";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Hero } from "@/components/home/Hero";
 import { ProductGrid } from "@/components/shop/ProductGrid";
+import { RecentlyViewedSection } from "@/components/home/RecentlyViewedSection";
+import { Suspense } from "react";
+import { SkeletonGrid } from "@/components/ui/SkeletonCard";
 import { ReelsSection } from "@/components/shop/ReelsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { WhatsAppOrderBanner } from "@/components/home/WhatsAppOrderBanner";
@@ -189,52 +190,14 @@ function TrustBar() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function HomePage() {
-  let session = null;
-  try {
-    session = await getServerSession(authOptions);
-  } catch (error) {
-    console.error("NextAuth error:", error);
-  }
+export const revalidate = 60;
 
+export default async function HomePage() {
   const [allProducts, categories] = await Promise.all([
     getProducts(),
     getCategories()
   ]);
 
-  let recentlyViewedProducts: any[] = [];
-  if (session?.user) {
-    try {
-      const rv = await prisma.recentlyViewed.findMany({
-        where: { userId: (session.user as any).id },
-        orderBy: { viewedAt: 'desc' },
-        take: 4,
-        include: {
-          product: { include: { images: true } }
-        }
-      });
-    // Transform Prisma model to match standard product object expected by ProductGrid
-    recentlyViewedProducts = rv.map(r => {
-      let parsedColors = [];
-      try {
-        if (r.product.colors) parsedColors = JSON.parse(r.product.colors);
-      } catch (e) {}
-
-      return {
-        ...r.product,
-        name: r.product.title,
-        price: r.product.sellingPrice,
-        compareAtPrice: r.product.originalPrice,
-        images: r.product.images,
-        variants: {
-          colors: parsedColors.length > 0 ? parsedColors : undefined,
-        },
-      };
-    });
-    } catch (e) {
-      console.error("Recently viewed error:", e);
-    }
-  }
   return (
     <>
       <Hero />
@@ -244,16 +207,13 @@ export default async function HomePage() {
       
       <FeaturedProducts products={allProducts} />
       
-      {recentlyViewedProducts.length > 0 && (
-        <section aria-label="Recently Viewed products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-          <div className="flex items-end justify-between mb-6">
-            <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-brand-ink">
-              Recently Viewed
-            </h2>
-          </div>
-          <ProductGrid products={recentlyViewedProducts} priorityCount={4} />
+      <Suspense fallback={
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <SkeletonGrid count={4} />
         </section>
-      )}
+      }>
+        <RecentlyViewedSection />
+      </Suspense>
 
       <CategoryProductsSection title="Bangles Collection" category="bangles" products={allProducts} />
       
