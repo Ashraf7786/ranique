@@ -135,6 +135,31 @@ function CategoryProductsSection({ title, category, products }: { title: string,
   );
 }
 
+function OfferProductsSection({ products }: { products: any[] }) {
+  const offerProducts = products.filter((p) => p.offer && p.offer.isActive && new Date(p.offer.endsAt) > new Date());
+  if (offerProducts.length === 0) return null;
+
+  return (
+    <section aria-label="Special Offers" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-8">
+      <div className="flex items-end justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-brand-ink">
+            Special Offers
+          </h2>
+          <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs font-bold animate-pulse">LIVE</span>
+        </div>
+        <Link
+          href="/shop"
+          className="text-sm text-brand-rose font-medium hover:underline underline-offset-2"
+        >
+          View all →
+        </Link>
+      </div>
+      <ProductGrid products={offerProducts} priorityCount={4} />
+    </section>
+  );
+}
+
 // ─── Trust Bar ────────────────────────────────────────────────────────────────
 
 function TrustBar() {
@@ -204,6 +229,7 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
+      <OfferProductsSection products={allProducts} />
       <TrustBar />
       <CategoryGrid categories={categories} />
       

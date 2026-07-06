@@ -33,12 +33,20 @@ function mapBackendProduct(dbProduct: any): Product {
     variants: {
       colors: colors.length > 0 ? colors : undefined,
     },
+    offer: dbProduct.offer && dbProduct.offer.isActive ? {
+      discount: dbProduct.offer.discount,
+      offerPrice: dbProduct.offer.offerPrice,
+      endsAt: dbProduct.offer.endsAt.toISOString(),
+      isActive: dbProduct.offer.isActive
+    } : undefined
   };
 }
 
 import { prisma } from "./prisma";
+import { unstable_cache } from "next/cache";
 
-export async function getProducts(categorySlug?: string): Promise<Product[]> {
+export const getProducts = unstable_cache(
+  async (categorySlug?: string): Promise<Product[]> => {
   try {
     const where: any = {};
     if (categorySlug && categorySlug !== 'all') {
@@ -54,6 +62,7 @@ export async function getProducts(categorySlug?: string): Promise<Product[]> {
         images: true,
         category: true,
         brand: true,
+        offer: true,
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -63,9 +72,10 @@ export async function getProducts(categorySlug?: string): Promise<Product[]> {
     console.error("Failed to fetch products:", error);
     return [];
   }
-}
+}, ['products-cache'], { revalidate: 300 });
 
-export async function getProductBySlug(slug: string): Promise<Product | null> {
+export const getProductBySlug = unstable_cache(
+  async (slug: string): Promise<Product | null> => {
   try {
     const dbProduct = await prisma.product.findUnique({
       where: { slug },
@@ -73,6 +83,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
         images: true,
         category: true,
         brand: true,
+        offer: true,
       }
     });
     
@@ -82,9 +93,10 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     console.error(`Failed to fetch product ${slug}:`, error);
     return null;
   }
-}
+}, ['product-by-slug-cache'], { revalidate: 300 });
 
-export async function getCategories(): Promise<any[]> {
+export const getCategories = unstable_cache(
+  async (): Promise<any[]> => {
   try {
     const categories = await prisma.category.findMany({
       orderBy: { createdAt: 'desc' }
@@ -94,7 +106,7 @@ export async function getCategories(): Promise<any[]> {
     console.error("Failed to fetch categories:", error);
     return [];
   }
-}
+}, ['categories-cache'], { revalidate: 3600 });
 
 export async function getBrands(): Promise<any[]> {
   try {

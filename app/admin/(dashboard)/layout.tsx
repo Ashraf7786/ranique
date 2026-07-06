@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Package, Tags, Box, Settings, Users, ArrowLeft, ShoppingCart, MessageSquare, Inbox } from "lucide-react";
+import { LayoutDashboard, Package, Tags, Box, Settings, Users, ArrowLeft, ShoppingCart, MessageSquare, Inbox, Gift } from "lucide-react";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -32,6 +32,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/products" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
             <Package className="w-5 h-5 text-gray-400" />
             Products
+          </Link>
+          <Link href="/admin/offers" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+            <Gift className="w-5 h-5 text-gray-400" />
+            Offers
           </Link>
           <Link href="/admin/categories" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
             <Tags className="w-5 h-5 text-gray-400" />

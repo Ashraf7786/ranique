@@ -43,6 +43,13 @@ export interface ProductReview {
   verified: boolean;
 }
 
+export interface ProductOfferType {
+  discount: number;
+  offerPrice: number;
+  endsAt: string;
+  isActive: boolean;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -62,6 +69,7 @@ export interface Product {
   shipping: string;
   material?: string;
   reviews?: ProductReview[];
+  offer?: ProductOfferType;
 }
 
 // ─── Cart Types ─────────────────────────────────────────────────────────────

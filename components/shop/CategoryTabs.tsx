@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { CATEGORIES } from "@/lib/mockData";
 import { ProductCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { Sparkles, Gem, Disc3, ShoppingBag, LayoutGrid, Package } from "lucide-react";
 
 interface CategoryTabsProps {
   activeCategory?: ProductCategory | "all" | string;
@@ -24,6 +25,17 @@ export function CategoryTabs({ activeCategory = "all", categories }: CategoryTab
     }
     router.push(`/shop?${params.toString()}`);
   }
+
+  const getCategoryIcon = (slug: string, isActive: boolean) => {
+    const iconClass = cn("w-4 h-4", isActive ? "text-white" : "text-brand-slate group-hover:text-brand-rose");
+    switch (slug) {
+      case "cosmetics": return <Sparkles className={iconClass} />;
+      case "accessories": return <Gem className={iconClass} />;
+      case "bangles": return <Disc3 className={iconClass} />;
+      case "purses": return <ShoppingBag className={iconClass} />;
+      default: return <Package className={iconClass} />;
+    }
+  };
 
   return (
     <div
@@ -46,7 +58,7 @@ export function CategoryTabs({ activeCategory = "all", categories }: CategoryTab
             : "bg-white border-brand-border text-brand-slate hover:border-brand-rose hover:text-brand-rose"
         )}
       >
-        <span aria-hidden>✨</span>
+        <LayoutGrid className={cn("w-4 h-4", activeCategory === "all" ? "text-white" : "text-brand-slate group-hover:text-brand-rose")} />
         All Products
       </button>
       {categories.map((cat) => {
@@ -68,7 +80,7 @@ export function CategoryTabs({ activeCategory = "all", categories }: CategoryTab
                 : "bg-white border-brand-border text-brand-slate hover:border-brand-rose hover:text-brand-rose"
             )}
           >
-            <span aria-hidden>{cat.emoji || "🛍️"}</span>
+            {getCategoryIcon(cat.slug, isActive)}
             {cat.name}
           </button>
         );

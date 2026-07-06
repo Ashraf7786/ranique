@@ -9,7 +9,8 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { Badge } from "@/components/ui/Badge";
 import { StarRating } from "@/components/ui/StarRating";
 import { formatPrice, cn } from "@/lib/utils";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Zap } from "lucide-react";
+import { OfferCountdown } from "./OfferCountdown";
 
 // ─── Heart Icon ───────────────────────────────────────────────────────────────
 
@@ -71,10 +72,16 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
     [toggleWishlist, product.id]
   );
 
-  const discount =
-    product.compareAtPrice
+  const hasActiveOffer = product.offer && product.offer.isActive && new Date(product.offer.endsAt) > new Date();
+  
+  const discount = hasActiveOffer 
+    ? product.offer!.discount
+    : product.compareAtPrice
       ? Math.round((1 - product.price / product.compareAtPrice) * 100)
       : null;
+      
+  const currentPrice = hasActiveOffer ? product.offer!.offerPrice : product.price;
+  const originalPrice = hasActiveOffer ? product.price : product.compareAtPrice;
 
   return (
     <article
@@ -133,19 +140,22 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           />
         </button>
 
-        {/* Badge */}
-        {product.badge && (
-          <div className="absolute top-3 left-3">
-            <Badge type={product.badge} />
-          </div>
-        )}
-
-        {/* Discount */}
-        {discount && (
-          <div className="absolute bottom-3 left-3">
-            <span className="px-2 py-0.5 bg-brand-gold text-white text-2xs font-bold rounded-full">
-              -{discount}%
-            </span>
+        {/* Badges & Discount */}
+        {(discount || product.badge) && (
+          <div className="absolute top-3 left-3 flex flex-col gap-2">
+            {discount && (
+              <span 
+                className={cn(
+                  "inline-flex items-center px-2 py-0.5 rounded-full font-sans font-semibold text-2xs tracking-wide uppercase",
+                  hasActiveOffer ? "bg-red-600 text-white animate-pulse" : "bg-brand-gold text-white"
+                )}
+              >
+                {hasActiveOffer ? <><Zap className="w-3 h-3 mr-1 inline" /> {discount}% OFF SALE</> : `-${discount}%`}
+              </span>
+            )}
+            {product.badge && !hasActiveOffer && (
+              <Badge type={product.badge} />
+            )}
           </div>
         )}
       </Link>
@@ -173,16 +183,25 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         />
 
         {/* Price row */}
-        <div className="flex items-baseline gap-1.5 mt-0.5">
-          <span className="font-sans font-semibold text-brand-ink text-sm">
-            {formatPrice(product.price, product.currency)}
+        <div className="flex items-center gap-2 mb-3">
+          <span className={cn(
+            "text-lg sm:text-xl font-bold font-serif",
+            hasActiveOffer ? "text-brand-rose" : "text-brand-ink"
+          )}>
+            {formatPrice(currentPrice, product.currency)}
           </span>
-          {product.compareAtPrice && (
-            <span className="text-2xs text-brand-slate line-through">
-              {formatPrice(product.compareAtPrice, product.currency)}
+          {originalPrice && (
+            <span className="text-sm text-gray-400 line-through">
+              {formatPrice(originalPrice, product.currency)}
             </span>
           )}
         </div>
+        
+        {hasActiveOffer && (
+          <div className="mt-2 mb-3">
+            <OfferCountdown endsAt={product.offer!.endsAt} compact />
+          </div>
+        )}
 
         {/* Color swatches (first 4) */}
         {product.variants?.colors && product.variants.colors.length > 0 && (

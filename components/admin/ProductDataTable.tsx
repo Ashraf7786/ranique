@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, Edit2, Trash2, Eye, Package, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Search, Edit2, Trash2, Eye, Package, ChevronLeft, ChevronRight, X, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 export function ProductDataTable({ initialProducts }: { initialProducts: any[] }) {
   const [products, setProducts] = useState(initialProducts);
@@ -15,6 +15,13 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Selection & Delete State
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [productsToDeleteBulk, setProductsToDeleteBulk] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+
   // Derived State
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
@@ -26,6 +33,23 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const currentItems = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Selection Handlers
+  const toggleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      const newIds = currentItems.map((p: any) => p.id);
+      setSelectedIds(prev => Array.from(new Set([...prev, ...newIds])));
+    } else {
+      const currentIds = currentItems.map((p: any) => p.id);
+      setSelectedIds(prev => prev.filter(id => !currentIds.includes(id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
 
   // Handlers
   const handleEditSave = async (e: React.FormEvent) => {
@@ -59,13 +83,46 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
     }
   };
 
+  const confirmDelete = async (ids: string[]) => {
+    setIsDeleting(true);
+    try {
+      await Promise.all(ids.map(id => 
+        fetch(`/api/products/${id}`, { method: "DELETE" })
+      ));
+      
+      setProducts((prev) => prev.filter((p) => !ids.includes(p.id)));
+      setSelectedIds(prev => prev.filter(id => !ids.includes(id)));
+      setProductToDelete(null);
+      setProductsToDeleteBulk([]);
+      
+      setShowSuccessToast(true);
+      setTimeout(() => setShowSuccessToast(false), 3000);
+    } catch (error) {
+      alert("Failed to delete product. Check console.");
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <>
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {/* Toolbar */}
         <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          {selectedIds.length > 0 ? (
+            <div className="flex items-center gap-3 bg-red-50 text-red-600 px-4 py-2 rounded-lg border border-red-100 animate-in fade-in zoom-in-95 duration-200">
+              <span className="text-sm font-medium">{selectedIds.length} product(s) selected</span>
+              <button 
+                onClick={() => setProductsToDeleteBulk(selectedIds)}
+                className="text-sm font-bold hover:underline flex items-center gap-1"
+              >
+                <Trash2 className="w-4 h-4" /> Delete Selected
+              </button>
+            </div>
+          ) : (
+            <div className="relative w-full sm:w-72">
+              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input 
               type="text" 
               placeholder="Search by name or SKU..." 
@@ -74,6 +131,7 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
               className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blush focus:border-brand-rose transition-all"
             />
           </div>
+          )}
           <div className="flex gap-2 w-full sm:w-auto">
             <select 
               value={statusFilter}
@@ -92,6 +150,14 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold">
               <tr>
+                <th className="px-6 py-4 w-12">
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-gray-300 text-brand-rose focus:ring-brand-rose w-4 h-4 cursor-pointer"
+                    checked={currentItems.length > 0 && currentItems.every((p: any) => selectedIds.includes(p.id))}
+                    onChange={toggleSelectAll}
+                  />
+                </th>
                 <th className="px-6 py-4">Product</th>
                 <th className="px-6 py-4">SKU</th>
                 <th className="px-6 py-4">Status</th>
@@ -109,7 +175,15 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
                 </tr>
               ) : (
                 currentItems.map((product: any) => (
-                  <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={product.id} className={`hover:bg-gray-50 transition-colors ${selectedIds.includes(product.id) ? 'bg-brand-blush/30' : ''}`}>
+                    <td className="px-6 py-4">
+                      <input 
+                        type="checkbox"
+                        className="rounded border-gray-300 text-brand-rose focus:ring-brand-rose w-4 h-4 cursor-pointer"
+                        checked={selectedIds.includes(product.id)}
+                        onChange={() => toggleSelect(product.id)}
+                      />
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 shrink-0 rounded bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden">
@@ -155,7 +229,7 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
                         <button onClick={() => setEditingProduct(product)} className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors" title="Quick Edit">
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button className="p-1.5 text-gray-400 hover:text-red-600 transition-colors" title="Delete">
+                        <button onClick={() => setProductToDelete(product.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors" title="Delete">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -280,6 +354,48 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
                 {isSaving ? "Saving..." : "Save Changes"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {(productToDelete || productsToDeleteBulk.length > 0) && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden flex flex-col p-6 items-center text-center zoom-in-95 animate-in duration-200">
+            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4 text-red-600">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h3 className="font-serif font-bold text-gray-900 text-lg mb-2">Are you absolutely sure?</h3>
+            <p className="text-sm text-gray-500 mb-6">
+              This action cannot be undone. This will permanently delete 
+              {productsToDeleteBulk.length > 0 ? ` ${productsToDeleteBulk.length} products` : " this product"}.
+            </p>
+            <div className="flex w-full gap-3">
+              <button 
+                onClick={() => { setProductToDelete(null); setProductsToDeleteBulk([]); }}
+                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => confirmDelete(productsToDeleteBulk.length > 0 ? productsToDeleteBulk : [productToDelete as string])}
+                className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Yes, delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Toast */}
+      {showSuccessToast && (
+        <div className="fixed bottom-6 right-6 z-[70] animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-green-400" />
+            <span className="font-medium text-sm">Successfully deleted!</span>
           </div>
         </div>
       )}
