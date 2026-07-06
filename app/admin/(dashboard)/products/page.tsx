@@ -1,10 +1,17 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { getProducts } from "@/lib/api";
+import { prisma } from "@/lib/prisma";
 import { ProductDataTable } from "@/components/admin/ProductDataTable";
 
 export default async function AdminProductsPage() {
-  const products = await getProducts();
+  const products = await prisma.product.findMany({
+    include: {
+      images: true,
+      category: true,
+      brand: true,
+    },
+    orderBy: { createdAt: 'desc' }
+  });
 
   return (
     <div>
