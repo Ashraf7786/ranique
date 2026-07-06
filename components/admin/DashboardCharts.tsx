@@ -51,7 +51,7 @@ export function DashboardCharts({ data }: { data: ChartData[] }) {
                 dx={-10}
               />
               <Tooltip 
-                formatter={(value: number) => [formatCurrency(value), "Revenue"]}
+                formatter={(value: any) => [formatCurrency(value || 0), "Revenue"]}
                 contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
               />
               <Area 

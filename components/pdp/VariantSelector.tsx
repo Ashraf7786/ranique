@@ -50,7 +50,7 @@ export function VariantSelector({
                   onClick={() => !outOfStock && onColorChange(color)}
                   disabled={outOfStock}
                   aria-label={`${color.label}${outOfStock ? " — out of stock" : ""}`}
-                  aria-pressed={isSelected}
+                  aria-pressed={!!isSelected}
                   title={outOfStock ? `${color.label} — out of stock` : color.label}
                   className={cn(
                     "relative w-9 h-9 rounded-full transition-all duration-200",
@@ -103,7 +103,7 @@ export function VariantSelector({
                   onClick={() => !outOfStock && onSizeChange(size)}
                   disabled={outOfStock}
                   aria-label={`Size ${size.label}${outOfStock ? " — out of stock" : ""}`}
-                  aria-pressed={isSelected}
+                  aria-pressed={!!isSelected}
                   className={cn(
                     "relative h-10 px-4 rounded-full border font-sans text-sm",
                     "transition-all duration-150 active:scale-95",
