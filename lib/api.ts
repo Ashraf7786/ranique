@@ -58,7 +58,7 @@ export async function getProducts(categorySlug?: string): Promise<Product[]> {
         }
         
         const dbProducts = await prisma.product.findMany({
-          where,
+          where: { ...where, deletedAt: null },
           include: {
             images: true,
             category: true,
@@ -85,8 +85,8 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   const fetchProduct = unstable_cache(
     async (s) => {
       try {
-        const dbProduct = await prisma.product.findUnique({
-          where: { slug: s },
+        const dbProduct = await prisma.product.findFirst({
+          where: { slug: s, deletedAt: null },
           include: {
             images: true,
             category: true,

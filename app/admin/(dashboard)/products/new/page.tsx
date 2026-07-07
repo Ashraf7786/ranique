@@ -177,25 +177,31 @@ export default function NewProductPage() {
 
               {images.length < 5 && (
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors flex flex-col items-center justify-center">
-                  <CldUploadWidget 
-                    signatureEndpoint="/api/upload"
-                    onSuccess={(result: any) => {
-                      if (result.info?.secure_url) {
-                        setImages(prev => [...prev, result.info.secure_url]);
-                      }
-                    }}
-                    options={{
-                      maxFiles: 5 - images.length,
-                      resourceType: "image",
-                      clientAllowedFormats: ["jpg", "jpeg", "png", "webp"]
-                    }}
-                  >
-                    {({ open }) => (
-                      <button type="button" onClick={() => open()} className="mb-4 inline-flex items-center gap-2 px-4 py-2 bg-brand-rose/10 text-brand-rose font-semibold rounded-lg hover:bg-brand-rose/20 transition-colors">
-                        Upload Files
-                      </button>
-                    )}
-                  </CldUploadWidget>
+                  {!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
+                    <div className="mb-4 text-sm text-red-600 bg-red-50 p-3 rounded-lg text-left">
+                      <strong>Cloudinary Error:</strong> You must add <code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME</code> to your Vercel Environment Variables for uploads to work!
+                    </div>
+                  ) : (
+                    <CldUploadWidget 
+                      signatureEndpoint="/api/upload"
+                      onSuccess={(result: any) => {
+                        if (result.info?.secure_url) {
+                          setImages(prev => [...prev, result.info.secure_url]);
+                        }
+                      }}
+                      options={{
+                        maxFiles: 5 - images.length,
+                        resourceType: "image",
+                        clientAllowedFormats: ["jpg", "jpeg", "png", "webp"]
+                      }}
+                    >
+                      {({ open }) => (
+                        <button type="button" onClick={() => open()} className="mb-4 inline-flex items-center gap-2 px-4 py-2 bg-brand-rose/10 text-brand-rose font-semibold rounded-lg hover:bg-brand-rose/20 transition-colors">
+                          Upload Files
+                        </button>
+                      )}
+                    </CldUploadWidget>
+                  )}
                   
                   <div className="w-full max-w-sm flex items-center gap-2 mt-2">
                     <input 
