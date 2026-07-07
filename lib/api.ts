@@ -11,11 +11,26 @@ function mapBackendProduct(dbProduct: any): Product {
     console.error("Failed to parse colors for product", dbProduct.slug);
   }
 
+  // Inject Bangle Sizes
+  let sizes = undefined;
+  const isBangle = dbProduct.category?.slug === 'bangles' || 
+                   dbProduct.category?.name?.toLowerCase().includes('bangle') ||
+                   dbProduct.title?.toLowerCase().includes('bangle');
+
+  if (isBangle) {
+    const bangleSizes = ['2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '2.10', 'Free Size'];
+    sizes = bangleSizes.map(size => ({
+      id: size.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      label: size,
+      stock: dbProduct.currentStock > 0 ? 10 : 0 // Fake some stock based on product stock
+    }));
+  }
+
   return {
     id: dbProduct.id,
     slug: dbProduct.slug,
     name: dbProduct.title,
-    brand: dbProduct.brand?.name || 'Unknown',
+    brand: dbProduct.brand?.name || 'Ranique',
     category: (dbProduct.category?.slug as any) || 'cosmetics',
     price: dbProduct.sellingPrice,
     compareAtPrice: dbProduct.originalPrice || undefined,
@@ -32,6 +47,7 @@ function mapBackendProduct(dbProduct: any): Product {
     })) || [],
     variants: {
       colors: colors.length > 0 ? colors : undefined,
+      sizes: sizes,
     },
     offer: dbProduct.offer && dbProduct.offer.isActive ? {
       discount: dbProduct.offer.discount,
