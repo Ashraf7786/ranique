@@ -41,7 +41,7 @@ export async function PATCH(
       where: { id },
       data
     });
-    revalidateTag('products');
+    revalidateTag('products', 'max');
     revalidatePath('/', 'layout');
     return NextResponse.json(offer);
   } catch (error) {
@@ -58,7 +58,7 @@ export async function DELETE(
     await prisma.productOffer.delete({
       where: { id }
     });
-    revalidateTag('products');
+    revalidateTag('products', 'max');
     revalidatePath('/', 'layout');
     return NextResponse.json({ success: true });
   } catch (error) {
