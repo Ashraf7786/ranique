@@ -821,27 +821,33 @@ Please confirm this order and share payment details. Thank you! 💕`
                       </button>
                     </div>
 
-                    {/* Online payment (coming soon) */}
-                    <div className="border-2 border-gray-100 rounded-2xl p-6 bg-gray-50 opacity-70 relative overflow-hidden">
-                      <div className="absolute top-3 right-3">
-                        <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">Coming Soon</span>
-                      </div>
+                    {/* Online payment */}
+                    <div className="border-2 border-brand-rose/20 rounded-2xl p-6 bg-white relative overflow-hidden transition-all hover:border-brand-rose/50">
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gray-200 flex items-center justify-center shrink-0">
-                          <CreditCard className="w-7 h-7 text-gray-400" />
+                        <div className="w-12 h-12 rounded-xl bg-brand-rose/10 flex items-center justify-center shrink-0">
+                          <CreditCard className="w-7 h-7 text-brand-rose" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-gray-500 text-lg">Online Payment</h4>
-                          <p className="text-gray-400 text-sm mt-1">Pay securely via UPI, Credit/Debit Card, Net Banking. (Launching soon!)</p>
+                          <h4 className="font-bold text-gray-900 text-lg">Online Payment</h4>
+                          <p className="text-gray-500 text-sm mt-1">Pay securely via UPI, Credit/Debit Card, or Net Banking.</p>
                           <div className="flex gap-2 mt-3">
                             {["UPI", "Visa", "Mastercard", "RuPay"].map(m => (
-                              <span key={m} className="px-2 py-1 bg-white border border-gray-200 text-gray-400 text-xs rounded-md">{m}</span>
+                              <span key={m} className="px-2 py-1 bg-gray-50 border border-gray-200 text-gray-600 text-xs font-medium rounded-md">{m}</span>
                             ))}
                           </div>
                         </div>
                       </div>
-                      <button disabled className="mt-5 w-full py-3.5 bg-gray-200 text-gray-400 font-bold rounded-xl cursor-not-allowed text-base">
-                        Online Payment — Coming Soon
+                      <button 
+                        onClick={() => placeOrder("ONLINE")}
+                        disabled={loading}
+                        className="mt-5 w-full py-3.5 bg-brand-rose text-white font-bold rounded-xl hover:bg-brand-rose-light transition-all shadow-sm flex items-center justify-center gap-2 text-base disabled:opacity-60"
+                      >
+                        {loading && paymentMethod === "ONLINE" ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <CreditCard className="w-5 h-5" />
+                        )}
+                        Pay Now via Razorpay
                       </button>
                     </div>
                   </div>
