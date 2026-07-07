@@ -281,9 +281,8 @@ export function Header() {
                 className="shrink-0 flex items-center group transition-colors"
                 aria-label="Ranique Home"
               >
-                <div className="flex items-center gap-1 group-hover:opacity-80 transition-opacity duration-300">
-                  <Image src="/icon.svg" alt="Ranique Logo" width={32} height={32} className="w-8 sm:w-9 h-auto" />
-                  <span className="font-serif text-2xl sm:text-[26px] font-semibold text-brand-ink tracking-wide mt-1">anique</span>
+                <div className="flex items-center group-hover:opacity-80 transition-opacity duration-300">
+                  <Image src="/logo.svg" alt="Ranique Logo" width={130} height={40} className="w-[110px] sm:w-[130px] h-auto" priority />
                 </div>
               </Link>
             </div>
