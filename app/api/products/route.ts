@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
@@ -9,11 +10,18 @@ export async function GET(request: Request) {
     const categoryId = searchParams.get('categoryId');
     const status = searchParams.get('status');
     const isFeatured = searchParams.get('isFeatured');
+    const trash = searchParams.get('trash');
 
     const where: any = {};
     if (categoryId) where.categoryId = categoryId;
     if (status) where.status = status;
     if (isFeatured === 'true') where.isFeatured = true;
+    
+    if (trash === 'true') {
+      where.deletedAt = { not: null };
+    } else {
+      where.deletedAt = null;
+    }
 
     const products = await prisma.product.findMany({
       where,
@@ -53,6 +61,7 @@ export async function POST(request: Request) {
         brand: true,
       }
     });
+    revalidatePath('/', 'layout');
     return NextResponse.json(product, { status: 201 });
   } catch (error: any) {
     if (error.code === 'P2002') {

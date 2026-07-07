@@ -2,9 +2,9 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, Edit2, Trash2, Eye, Package, ChevronLeft, ChevronRight, X, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Search, Edit2, Trash2, Eye, Package, ChevronLeft, ChevronRight, X, AlertTriangle, CheckCircle2, RotateCcw } from "lucide-react";
 
-export function ProductDataTable({ initialProducts }: { initialProducts: any[] }) {
+export function ProductDataTable({ initialProducts, isTrashMode = false }: { initialProducts: any[], isTrashMode?: boolean }) {
   const [products, setProducts] = useState(initialProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
@@ -87,7 +87,7 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
     setIsDeleting(true);
     try {
       await Promise.all(ids.map(id => 
-        fetch(`/api/products/${id}`, { method: "DELETE" })
+        fetch(`/api/products/${id}${isTrashMode ? '?hard=true' : ''}`, { method: "DELETE" })
       ));
       
       setProducts((prev) => prev.filter((p) => !ids.includes(p.id)));
@@ -98,12 +98,27 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
       setShowSuccessToast(true);
       setTimeout(() => setShowSuccessToast(false), 3000);
     } catch (error) {
-      alert("Failed to delete product. Check console.");
-      console.error(error);
+      alert("Failed to delete products");
     } finally {
       setIsDeleting(false);
     }
   };
+
+  const handleRestore = async (id: string) => {
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deletedAt: null }),
+      });
+      if (res.ok) {
+        setProducts((prev) => prev.filter((p) => p.id !== id));
+      }
+    } catch (error) {
+      alert("Failed to restore product");
+    }
+  };
+
 
   return (
     <>
@@ -222,14 +237,23 @@ export function ProductDataTable({ initialProducts }: { initialProducts: any[] }
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link href={`/product/${product.slug}`} target="_blank" className="p-1.5 text-gray-400 hover:text-brand-ink transition-colors" title="View Storefront">
-                          <Eye className="w-4 h-4" />
-                        </Link>
-                        <button onClick={() => setEditingProduct(product)} className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors" title="Quick Edit">
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => setProductToDelete(product.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors" title="Delete">
+                      <div className="flex items-center gap-1">
+                        {!isTrashMode && (
+                          <>
+                            <Link href={`/product/${product.slug}`} target="_blank" className="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100 transition-colors">
+                              <Eye className="w-4 h-4" />
+                            </Link>
+                            <button onClick={() => setEditingProduct(product)} className="p-1.5 text-gray-400 hover:text-blue-600 rounded hover:bg-blue-50 transition-colors">
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                        {isTrashMode && (
+                          <button onClick={() => handleRestore(product.id)} className="p-1.5 text-green-500 hover:text-green-600 rounded hover:bg-green-50 transition-colors" title="Restore Product">
+                            <RotateCcw className="w-4 h-4" />
+                          </button>
+                        )}
+                        <button onClick={() => setProductToDelete(product.id)} className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-red-50 transition-colors" title={isTrashMode ? "Delete Permanently" : "Move to Trash"}>
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

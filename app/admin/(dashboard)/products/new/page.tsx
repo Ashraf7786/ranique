@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Save, Image as ImageIcon, IndianRupee } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { CldUploadWidget } from "next-cloudinary";
 import { API_URL } from "@/lib/config";
 
 export default function NewProductPage() {
@@ -11,6 +12,8 @@ export default function NewProductPage() {
   const [loading, setLoading] = useState(false);
   const [colors, setColors] = useState<{label: string, hex: string}[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [images, setImages] = useState<string[]>([]);
+  const [tempUrl, setTempUrl] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -20,7 +23,6 @@ export default function NewProductPage() {
     originalPrice: "",
     currentStock: "",
     status: "DRAFT",
-    imageUrl: "",
     categoryId: "",
   });
 
@@ -57,7 +59,7 @@ export default function NewProductPage() {
         currentStock: Number(formData.currentStock),
         status: formData.status,
         categoryId: formData.categoryId ? formData.categoryId : null,
-        images: formData.imageUrl ? [{ url: formData.imageUrl, isCover: true }] : [],
+        images: images.map((img, index) => ({ url: img, isCover: index === 0 })),
         colors: colors.length > 0 ? JSON.stringify(colors) : null,
       };
 
@@ -144,27 +146,80 @@ export default function NewProductPage() {
 
           {/* Media Card */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
-              <ImageIcon className="w-5 h-5 text-gray-400" />
-              Media
-            </h2>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:bg-gray-50 transition-colors">
-              <div className="max-w-md mx-auto">
-                <p className="text-sm text-gray-500 mb-4">Paste an image URL for Phase 1. (File upload coming in Phase 2)</p>
-                <input 
-                  type="url" 
-                  name="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blush focus:border-brand-rose outline-none"
-                />
-                {formData.imageUrl && (
-                  <div className="mt-4 rounded-lg overflow-hidden border border-gray-200 inline-block h-32">
-                    <img src={formData.imageUrl} alt="Preview" className="h-full object-cover" />
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-gray-400" />
+                Media ({images.length}/5)
+              </h2>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Image Previews */}
+              {images.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
+                  {images.map((img, idx) => (
+                    <div key={idx} className="relative group rounded-lg overflow-hidden border border-gray-200 aspect-square">
+                      <img src={img} alt={`Product ${idx}`} className="w-full h-full object-cover" />
+                      {idx === 0 && (
+                        <span className="absolute top-2 left-2 bg-brand-ink text-white text-[10px] px-2 py-1 rounded-full uppercase tracking-wider font-bold">Cover</span>
+                      )}
+                      <button 
+                        type="button"
+                        onClick={() => setImages(images.filter((_, i) => i !== idx))}
+                        className="absolute top-2 right-2 bg-white/90 text-red-500 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {images.length < 5 && (
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors flex flex-col items-center justify-center">
+                  <CldUploadWidget 
+                    signatureEndpoint="/api/upload"
+                    onSuccess={(result: any) => {
+                      if (result.info?.secure_url) {
+                        setImages(prev => [...prev, result.info.secure_url]);
+                      }
+                    }}
+                    options={{
+                      maxFiles: 5 - images.length,
+                      resourceType: "image",
+                      clientAllowedFormats: ["jpg", "jpeg", "png", "webp"]
+                    }}
+                  >
+                    {({ open }) => (
+                      <button type="button" onClick={() => open()} className="mb-4 inline-flex items-center gap-2 px-4 py-2 bg-brand-rose/10 text-brand-rose font-semibold rounded-lg hover:bg-brand-rose/20 transition-colors">
+                        Upload Files
+                      </button>
+                    )}
+                  </CldUploadWidget>
+                  
+                  <div className="w-full max-w-sm flex items-center gap-2 mt-2">
+                    <input 
+                      type="url" 
+                      value={tempUrl}
+                      onChange={(e) => setTempUrl(e.target.value)}
+                      placeholder="Or paste image URL..."
+                      className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blush outline-none"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        if (tempUrl && images.length < 5) {
+                          setImages([...images, tempUrl]);
+                          setTempUrl("");
+                        }
+                      }}
+                      className="px-3 py-2 text-sm bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200"
+                    >
+                      Add
+                    </button>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
