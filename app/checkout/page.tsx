@@ -48,12 +48,12 @@ function StepBadge({ label, icon: Icon, active, done }: { label: string; icon: a
 function OrderSummary({ 
   items, subtotal, shipping, discount, finalTotal, 
   couponCode, setCouponCode, applyCoupon, removeCoupon, 
-  appliedCoupon, validatingCoupon, discountLabel 
+  appliedCoupon, validatingCoupon, discountLabel, couponError
 }: { 
   items: any[]; subtotal: number; shipping: number; discount: number; finalTotal: number;
   couponCode: string; setCouponCode: (c: string) => void; applyCoupon: () => void; 
   removeCoupon: () => void; appliedCoupon: any; validatingCoupon: boolean;
-  discountLabel: string;
+  discountLabel: string; couponError: string | null;
 }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-24">
@@ -123,21 +123,30 @@ function OrderSummary({
             <button onClick={removeCoupon} className="text-green-700 hover:text-green-900 text-sm font-medium">Remove</button>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
-            <input 
-              type="text" 
-              placeholder="Coupon Code" 
-              value={couponCode}
-              onChange={e => setCouponCode(e.target.value.toUpperCase())}
-              className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-brand-blush"
-            />
-            <button 
-              onClick={applyCoupon}
-              disabled={validatingCoupon || !couponCode}
-              className="px-4 py-2 bg-brand-ink text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
-            >
-              {validatingCoupon ? "..." : "Apply"}
-            </button>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <input 
+                type="text" 
+                placeholder="Coupon Code" 
+                value={couponCode}
+                onChange={e => setCouponCode(e.target.value.toUpperCase())}
+                className={`flex-1 px-3 py-2 border rounded-lg text-sm outline-none transition-all ${
+                  couponError ? 'border-red-400 focus:border-red-500 bg-red-50' : 'border-gray-200 focus:border-brand-blush'
+                }`}
+              />
+              <button 
+                onClick={applyCoupon}
+                disabled={validatingCoupon || !couponCode}
+                className="px-4 py-2 bg-brand-ink text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
+              >
+                {validatingCoupon ? "..." : "Apply"}
+              </button>
+            </div>
+            {couponError && (
+              <p className="text-xs text-red-500 font-medium ml-1 animate-in slide-in-from-top-1 fade-in duration-200">
+                {couponError}
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -161,6 +170,7 @@ export default function CheckoutPage() {
 
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
   const [isFirstOrder, setIsFirstOrder] = useState(false);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
 
@@ -189,6 +199,7 @@ export default function CheckoutPage() {
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
     setValidatingCoupon(true);
+    setCouponError(null);
     try {
       const res = await fetch("/api/coupons/validate", {
         method: "POST",
@@ -207,7 +218,7 @@ export default function CheckoutPage() {
       if (!res.ok) throw new Error(data.error || "Failed to validate coupon");
       setAppliedCoupon(data);
     } catch (e: any) {
-      alert(e.message);
+      setCouponError(e.message);
       setAppliedCoupon(null);
     } finally {
       setValidatingCoupon(false);
@@ -217,6 +228,7 @@ export default function CheckoutPage() {
   const removeCoupon = () => {
     setCouponCode("");
     setAppliedCoupon(null);
+    setCouponError(null);
   };
 
   const [form, setForm] = useState<ShippingForm>({
@@ -728,12 +740,13 @@ Please confirm this order and share payment details. Thank you! 💕`
               discount={discount} 
               finalTotal={finalTotal} 
               couponCode={couponCode}
-              setCouponCode={setCouponCode}
+              setCouponCode={(c) => { setCouponCode(c); setCouponError(null); }}
               applyCoupon={applyCoupon}
               removeCoupon={removeCoupon}
               appliedCoupon={appliedCoupon}
               validatingCoupon={validatingCoupon}
               discountLabel={discountLabel}
+              couponError={couponError}
             />
           </div>
         </div>
