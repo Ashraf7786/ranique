@@ -3,13 +3,13 @@ import Link from "next/link";
 import { Heart, Star, Globe, Leaf, Users, Award, ShieldCheck, Truck } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Us | Ranique — Luxury Ladies' Boutique",
+  title: "About Us | Ranique — Premium Ladies' Boutique",
   description:
-    "Learn about Ranique — India's curated luxury boutique for women. Discover our mission, values, and the story behind our premium cosmetics, bangles, accessories, and purses.",
-  keywords: ["about Ranique", "luxury boutique India", "women's fashion brand", "Ranique story", "premium cosmetics India"],
+    "Learn about Ranique — India's curated premium boutique for women. Discover our mission, values, and the story behind our premium cosmetics, bangles, accessories, and purses.",
+  keywords: ["about Ranique", "premium boutique India", "women's fashion brand", "Ranique story", "premium cosmetics India"],
   openGraph: {
     title: "About Us | Ranique",
-    description: "India's curated luxury boutique for modern women. Premium cosmetics, bangles, accessories & purses.",
+    description: "India's curated premium boutique for modern women. Premium cosmetics, bangles, accessories & purses.",
     type: "website",
     locale: "en_IN",
   },
@@ -21,7 +21,7 @@ const VALUES = [
     color: "text-brand-gold",
     bg: "from-[#F0DDB8] to-[#E8D5A3]",
     title: "Uncompromising Quality",
-    desc: "Every product is hand-selected and quality-tested before it reaches you. We believe luxury should feel real — not just look it.",
+    desc: "Every product is hand-selected and quality-tested before it reaches you. We believe premium should feel real — not just look it.",
   },
   {
     icon: Heart,
@@ -58,7 +58,7 @@ const TEAM = [
     name: "Rania Kapoor",
     role: "Founder & Creative Director",
     emoji: "👩‍💼",
-    bio: "With a passion for fashion and a decade of retail experience, Rania started Ranique to bring affordable luxury to every Indian woman.",
+    bio: "With a passion for fashion and a decade of retail experience, Rania started Ranique to bring affordable premium to every Indian woman.",
   },
   {
     name: "Priya Mehta",
@@ -81,7 +81,7 @@ const structuredData = {
   legalName: "Rani Sringar & General Store",
   url: "https://ranique.in",
   description:
-    "Ranique is India's premier curated luxury boutique for women, offering premium cosmetics, bangles, accessories, purses, and lifestyle essentials.",
+    "Ranique is India's premier curated premium boutique for women, offering premium cosmetics, bangles, accessories, purses, and lifestyle essentials.",
   foundingDate: "2019",
   foundingLocation: "Jaipur, Rajasthan, India",
   address: {
@@ -114,7 +114,7 @@ export default function AboutPage() {
             About Ranique
           </div>
           <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold text-brand-ink leading-tight mb-6">
-            Curated Luxury,{" "}
+            Curated Premium,{" "}
             <em className="not-italic text-brand-rose">Crafted for You</em>
           </h1>
           <p className="font-sans text-base sm:text-lg text-brand-slate max-w-2xl mx-auto leading-relaxed mb-8">

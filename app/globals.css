@@ -240,12 +240,12 @@ img {
 .group:hover .group-hover\:translate-x-1 { transform: translateX(0.25rem); }
 
 /* ─── Prose ─────────────────────────────────────────────────── */
-.prose-luxury {
+.prose-premium {
   font-size: 0.9375rem;
   line-height: 1.75;
   color: #6B7280;
 }
-.prose-luxury p + p { margin-top: 0.75rem; }
-.prose-luxury ul { padding-left: 1.25rem; margin-top: 0.5rem; }
-.prose-luxury li { margin-bottom: 0.25rem; }
-.prose-luxury .font-semibold { font-weight: 600; }
+.prose-premium p + p { margin-top: 0.75rem; }
+.prose-premium ul { padding-left: 1.25rem; margin-top: 0.5rem; }
+.prose-premium li { margin-bottom: 0.25rem; }
+.prose-premium .font-semibold { font-weight: 600; }

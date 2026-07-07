@@ -95,7 +95,7 @@ const TESTIMONIALS = [
     rating: 5,
     avatar: "FS",
     avatarBg: "from-[#8B9DB8] to-[#A85970]",
-    product: "Luxury Fragrance Mist",
+    product: "Premium Fragrance Mist",
     review:
       "Mashallah kya fragrance hai! 🌸 Subah lagao toh shaam tak rehta hai. Itni meheki rehti hoon ki log poochte hain 'kaunsa perfume hai?' — bada wala flaunt moment hota hai. Packaging gift dene ke liye perfect hai. 5 stars se bhi zyada dena chahti hoon!",
     verified: true,

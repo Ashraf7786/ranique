@@ -14,15 +14,15 @@ import { StorefrontUI } from "./StorefrontUI";
 
 export const metadata: Metadata = {
   title: {
-    default: "Ranique — Luxury Ladies' Boutique",
+    default: "Ranique — Premium Ladies' Boutique",
     template: "%s | Ranique",
   },
   description:
-    "Discover curated luxury cosmetics, accessories, bangles, and purses. Ranique — elegance crafted for the modern woman.",
-  keywords: ["luxury cosmetics", "designer bangles", "luxury purses", "women accessories", "Ranique"],
+    "Discover curated premium cosmetics, accessories, bangles, and purses. Ranique — elegance crafted for the modern woman.",
+  keywords: ["premium cosmetics", "designer bangles", "premium purses", "women accessories", "Ranique"],
   openGraph: {
-    title: "Ranique — Luxury Ladies' Boutique",
-    description: "Curated luxury for the modern woman.",
+    title: "Ranique — Premium Ladies' Boutique",
+    description: "Curated premium for the modern woman.",
     type: "website",
     locale: "en_IN",
   },

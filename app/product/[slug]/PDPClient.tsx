@@ -52,7 +52,7 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
       id: "description",
       label: "Description",
       content: (
-        <div className="prose-luxury">
+        <div className="prose-premium">
           <p>{product.description}</p>
           {product.details.length > 0 && (
             <>
@@ -71,7 +71,7 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
       id: "shipping",
       label: "Shipping & Returns",
       content: (
-        <div className="prose-luxury">
+        <div className="prose-premium">
           <p>{product.shipping}</p>
           <p className="mt-3">
             We accept returns within 30 days of delivery for unused, unopened items in original packaging. Final sale items cannot be returned.

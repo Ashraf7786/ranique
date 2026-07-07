@@ -13,7 +13,7 @@ export default function ShippingPolicyPage() {
         
         <div className="prose prose-brand max-w-none text-gray-600">
           <p className="lead text-lg mb-8 text-brand-ink">
-            At Ranique, we are committed to delivering your favorite luxury cosmetics and accessories safely and on time. We partner with reliable courier services to ensure a seamless unboxing experience.
+            At Ranique, we are committed to delivering your favorite premium cosmetics and accessories safely and on time. We partner with reliable courier services to ensure a seamless unboxing experience.
           </p>
 
           <h2 className="text-xl font-bold text-brand-ink mt-8 mb-4">1. Processing Time</h2>

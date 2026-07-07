@@ -50,7 +50,7 @@ export function OfferLoader() {
             Loading Ranique...
           </h2>
           <p className="text-sm text-brand-slate animate-pulse">
-            Curating luxury just for you
+            Curating premium just for you
           </p>
         </div>
 

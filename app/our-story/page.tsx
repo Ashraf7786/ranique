@@ -4,8 +4,8 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Our Story | Ranique — From Jaipur to Every Indian Woman",
   description:
-    "The story of Ranique — how a vision born in the lanes of Jaipur became India's most loved women's luxury boutique. Read about our journey, milestones, and dreams.",
-  keywords: ["Ranique story", "Ranique history", "Indian women boutique", "luxury brand India", "Jaipur fashion brand"],
+    "The story of Ranique — how a vision born in the lanes of Jaipur became India's most loved women's premium boutique. Read about our journey, milestones, and dreams.",
+  keywords: ["Ranique story", "Ranique history", "Indian women boutique", "premium brand India", "Jaipur fashion brand"],
   openGraph: {
     title: "Our Story | Ranique",
     description: "From a small passion project in Jaipur to serving 10,000+ women across India — this is the Ranique story.",
@@ -62,9 +62,9 @@ const TIMELINE = [
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "The Story of Ranique — Luxury Crafted for Every Indian Woman",
+  headline: "The Story of Ranique — Premium Crafted for Every Indian Woman",
   description:
-    "From a passion project in Jaipur to India's favourite women's luxury boutique — the journey of Ranique.",
+    "From a passion project in Jaipur to India's favourite women's premium boutique — the journey of Ranique.",
   author: { "@type": "Organization", name: "Ranique" },
   publisher: { "@type": "Organization", name: "Ranique" },
   datePublished: "2024-01-01",

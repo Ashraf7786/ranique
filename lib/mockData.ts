@@ -151,7 +151,7 @@ export const MOCK_PRODUCTS: Product[] = [
       "18k gold-plated 925 sterling silver",
       "Hypoallergenic",
       "Length: 3.5cm drop",
-      "Presented in luxury gift box",
+      "Presented in premium gift box",
     ],
     shipping: "Free shipping & free returns. Gift wrapping available.",
     material: "Sterling Silver / Gold Plated",
@@ -395,7 +395,7 @@ export const MOCK_PRODUCTS: Product[] = [
       ],
     },
     description:
-      "Icon meets everyday luxury. Diamond-quilted lambskin leather with 24k gold-tone hardware. Adjustable chain strap — wear as crossbody or shoulder.",
+      "Icon meets everyday premium. Diamond-quilted lambskin leather with 24k gold-tone hardware. Adjustable chain strap — wear as crossbody or shoulder.",
     details: [
       "Diamond-quilted lambskin leather",
       "24k gold-plated hardware",

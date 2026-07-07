@@ -63,7 +63,7 @@ export function Footer() {
     "@type": "Store",
     "name": "Ranique",
     "legalName": "RANI SHRINGAR & GENERAL STORE",
-    "description": "Curated luxury for the modern woman. Discover premium cosmetics, elegant bangles, accessories, purses, and lifestyle essentials designed to elevate your everyday style.",
+    "description": "Curated premium for the modern woman. Discover premium cosmetics, elegant bangles, accessories, purses, and lifestyle essentials designed to elevate your everyday style.",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Aurangabad",
@@ -91,7 +91,7 @@ export function Footer() {
               Ranique
             </Link>
             <p className="text-sm text-white/70 leading-relaxed mb-8 max-w-md">
-              Curated luxury for the modern woman. Discover premium cosmetics, elegant bangles, accessories, purses, and lifestyle essentials designed to elevate your everyday style.
+              Curated premium for the modern woman. Discover premium cosmetics, elegant bangles, accessories, purses, and lifestyle essentials designed to elevate your everyday style.
             </p>
             
             <address className="not-italic space-y-4 text-sm text-white/70">

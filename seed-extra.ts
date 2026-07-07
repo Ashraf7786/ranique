@@ -41,8 +41,8 @@ async function main() {
       imageUrl: 'https://images.unsplash.com/photo-1599643478524-fb66f7f3299c?q=80&w=1000&auto=format&fit=crop'
     },
     {
-      title: 'Luxury Leather Tote',
-      slug: 'luxury-leather-tote',
+      title: 'Premium Leather Tote',
+      slug: 'premium-leather-tote',
       shortDescription: 'A spacious and stylish leather purse.',
       sku: 'PRS-001',
       sellingPrice: 8500,

@@ -182,7 +182,7 @@ const ALL_POSTS = [
       },
       {
         heading: "Type 3 — Clutch (₹200–₹500)",
-        body: "Shaadi, function, date — clutch ek luxury feel deta hai. Embroidered ya metallic — haath mein pakad ke chalo, confidence naturally aayega.",
+        body: "Shaadi, function, date — clutch ek premium feel deta hai. Embroidered ya metallic — haath mein pakad ke chalo, confidence naturally aayega.",
       },
       {
         heading: "Type 4 — Drawstring Pouch (₹150–₹300)",

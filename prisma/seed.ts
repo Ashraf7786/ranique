@@ -49,7 +49,7 @@ async function main() {
     data: {
       name: 'Ranique',
       slug: 'ranique',
-      description: 'The official Ranique luxury line.',
+      description: 'The official Ranique premium line.',
     },
   });
 

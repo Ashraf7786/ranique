@@ -44,7 +44,7 @@ const HERO_SLIDES = [
   {
     id: 1,
     eyebrow: "New Summer Collection",
-    title: "Luxury Crafted",
+    title: "Premium Crafted",
     emphasis: "for You",
     description: "Discover our curated edit of Indian cosmetics, accessories, and purses — where timeless elegance meets modern femininity.",
     primaryCta: { label: "Shop Now", href: "/shop" },

@@ -18,7 +18,7 @@ const COLORS = [
   { label: 'Champagne', hex: '#f7e7ce', priceModifier: 0 },
 ];
 
-const ADJECTIVES = ['Velvet', 'Luxury', 'Royal', 'Radiant', 'Signature', 'Classic', 'Ethereal', 'Timeless', 'Enchanted', 'Modern', 'Vintage'];
+const ADJECTIVES = ['Velvet', 'Premium', 'Royal', 'Radiant', 'Signature', 'Classic', 'Ethereal', 'Timeless', 'Enchanted', 'Modern', 'Vintage'];
 const NOUNS = {
   cosmetics: ['Lipstick', 'Foundation', 'Palette', 'Glow Serum', 'Mascara', 'Blush', 'Highlighter', 'Concealer', 'Eyeliner', 'Lip Gloss'],
   accessories: ['Necklace', 'Earrings', 'Pendant', 'Choker', 'Ring', 'Bracelet', 'Anklet', 'Hair Clip', 'Brooch', 'Studs'],
@@ -50,7 +50,7 @@ function getRandomImages(count: number, category: string, index: number) {
 }
 
 function generateDescription(name: string, category: string) {
-  return `Experience the epitome of elegance with our ${name}. Crafted for the modern connoisseur, this ${category} piece seamlessly blends timeless tradition with contemporary luxury. Whether you're dressing up for a grand celebration or adding a touch of sophistication to your daily ensemble, the ${name} is designed to make a statement. Meticulously detailed and crafted with premium materials to ensure lasting brilliance and unparalleled quality.\n\nHighlights:\n- Premium quality craftsmanship\n- Designed for maximum comfort and style\n- Perfect for both festive and casual occasions\n- Guaranteed to turn heads`;
+  return `Experience the epitome of elegance with our ${name}. Crafted for the modern connoisseur, this ${category} piece seamlessly blends timeless tradition with contemporary premium. Whether you're dressing up for a grand celebration or adding a touch of sophistication to your daily ensemble, the ${name} is designed to make a statement. Meticulously detailed and crafted with premium materials to ensure lasting brilliance and unparalleled quality.\n\nHighlights:\n- Premium quality craftsmanship\n- Designed for maximum comfort and style\n- Perfect for both festive and casual occasions\n- Guaranteed to turn heads`;
 }
 
 async function main() {
