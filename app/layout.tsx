@@ -27,6 +27,12 @@ export const metadata: Metadata = {
     locale: "en_IN",
   },
   robots: { index: true, follow: true },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.ranique.in'),
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION && {
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    },
+  }),
 };
 
 export default function RootLayout({
