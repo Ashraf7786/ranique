@@ -55,6 +55,7 @@ function ReelVideo({ src, isMuted }: { src: string; isMuted: boolean }) {
       muted
       loop
       playsInline
+      preload="none"
       disablePictureInPicture
       controlsList="nodownload noplaybackrate"
       className="w-full h-full object-cover scale-105 group-hover/reel:scale-100 transition-transform duration-700 pointer-events-none"
