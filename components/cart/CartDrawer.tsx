@@ -116,8 +116,9 @@ export function CartDrawer() {
             </div>
           ) : (
             items.map((item) => {
-              const price =
-                item.product.price + (item.selectedColor?.priceModifier ?? 0);
+              const hasActiveOffer = item.product.offer && item.product.offer.isActive && new Date(item.product.offer.endsAt) > new Date();
+              const basePrice = hasActiveOffer ? item.product.offer!.offerPrice : item.product.price;
+              const price = basePrice + (item.selectedColor?.priceModifier ?? 0);
               return (
                 <div
                   key={item.cartItemId}

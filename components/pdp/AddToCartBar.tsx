@@ -20,8 +20,11 @@ export function AddToCartBar({
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
+  const hasActiveOffer = product.offer && product.offer.isActive && new Date(product.offer.endsAt) > new Date();
+  const basePrice = hasActiveOffer ? product.offer!.offerPrice : product.price;
+
   const effectivePrice =
-    product.price + (selectedColor?.priceModifier ?? 0);
+    basePrice + (selectedColor?.priceModifier ?? 0);
 
   const outOfStock =
     (selectedColor?.stock ?? Infinity) === 0 ||

@@ -24,7 +24,16 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
     product.variants.sizes?.[0]
   );
 
-  const effectivePrice = product.price + (selectedColor?.priceModifier ?? 0);
+  const hasActiveOffer = product.offer && product.offer.isActive && new Date(product.offer.endsAt) > new Date();
+  const basePrice = hasActiveOffer ? product.offer.offerPrice : product.price;
+  const originalPrice = hasActiveOffer ? product.price : product.compareAtPrice;
+  const discount = hasActiveOffer 
+    ? product.offer.discount
+    : product.compareAtPrice
+      ? Math.round((1 - product.price / product.compareAtPrice) * 100)
+      : null;
+
+  const effectivePrice = basePrice + (selectedColor?.priceModifier ?? 0);
 
   // Track recently viewed
   useEffect(() => {
@@ -171,14 +180,14 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
             <span className="font-sans text-2xl font-bold text-brand-ink">
               {formatPrice(effectivePrice, product.currency)}
             </span>
-            {product.compareAtPrice && (
+            {originalPrice && (
               <span className="text-base text-brand-slate line-through">
-                {formatPrice(product.compareAtPrice, product.currency)}
+                {formatPrice(originalPrice, product.currency)}
               </span>
             )}
-            {product.compareAtPrice && (
+            {discount && (
               <span className="text-sm font-semibold text-brand-rose">
-                Save {Math.round((1 - product.price / product.compareAtPrice) * 100)}%
+                Save {discount}%
               </span>
             )}
           </div>

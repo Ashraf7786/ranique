@@ -65,10 +65,18 @@ function OrderSummary({ items, subtotal, shipping, discount, finalTotal }: { ite
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-brand-ink line-clamp-1">{item.product?.name || item.product?.title}</p>
-              {item.selectedColor && <p className="text-xs text-gray-400">{item.selectedColor.name}</p>}
+              {item.selectedColor && <p className="text-xs text-gray-400">{item.selectedColor.label || item.selectedColor.name}</p>}
+              {item.selectedSize && <p className="text-xs text-gray-400">{item.selectedSize.label}</p>}
               <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
             </div>
-            <p className="text-sm font-bold text-brand-ink shrink-0">₹{((item.product?.price || item.product?.sellingPrice || 0) * item.quantity).toLocaleString("en-IN")}</p>
+            <p className="text-sm font-bold text-brand-ink shrink-0">
+              ₹{(() => {
+                const hasActiveOffer = item.product?.offer && item.product.offer.isActive && new Date(item.product.offer.endsAt) > new Date();
+                const basePrice = hasActiveOffer ? item.product.offer.offerPrice : (item.product?.price || item.product?.sellingPrice || 0);
+                const price = basePrice + (item.selectedColor?.priceModifier || 0);
+                return (price * item.quantity).toLocaleString("en-IN");
+              })()}
+            </p>
           </div>
         ))}
       </div>

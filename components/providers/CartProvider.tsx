@@ -106,9 +106,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const totalItems = state.items.reduce((sum, i) => sum + i.quantity, 0);
   const totalPrice = state.items.reduce(
-    (sum, i) =>
-      sum +
-      (i.product.price + (i.selectedColor?.priceModifier ?? 0)) * i.quantity,
+    (sum, i) => {
+      const hasActiveOffer = i.product.offer && i.product.offer.isActive && new Date(i.product.offer.endsAt) > new Date();
+      const basePrice = hasActiveOffer ? i.product.offer!.offerPrice : i.product.price;
+      return sum + (basePrice + (i.selectedColor?.priceModifier ?? 0)) * i.quantity;
+    },
     0
   );
 
