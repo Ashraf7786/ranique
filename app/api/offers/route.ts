@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { revalidateTag } from 'next/cache';
 
 export async function GET(request: Request) {
   try {
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
         where: { productId },
         data: { discount, offerPrice, endsAt: new Date(endsAt), isActive }
       });
+      revalidateTag('products');
       return NextResponse.json(offer);
     }
 
@@ -49,6 +51,7 @@ export async function POST(request: Request) {
       }
     });
 
+    revalidateTag('products');
     return NextResponse.json(offer, { status: 201 });
   } catch (error) {
     console.error("Failed to create offer:", error);

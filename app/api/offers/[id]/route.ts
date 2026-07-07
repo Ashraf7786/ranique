@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { revalidateTag } from 'next/cache';
 
 export async function GET(
   request: Request,
@@ -40,6 +41,7 @@ export async function PATCH(
       where: { id },
       data
     });
+    revalidateTag('products');
     return NextResponse.json(offer);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update offer' }, { status: 500 });
@@ -55,6 +57,7 @@ export async function DELETE(
     await prisma.productOffer.delete({
       where: { id }
     });
+    revalidateTag('products');
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete offer' }, { status: 500 });
