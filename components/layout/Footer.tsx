@@ -248,6 +248,9 @@ export function Footer() {
             <p>Store operated under the name of <strong>Rani Sringar Store (Ranique)</strong>.</p>
             <p>GST Trade Name: RANI SHRINGAR & GENERAL STORE</p>
             <p>GSTIN: 10AVTPV6245L1ZX</p>
+            <p className="pt-2 mt-4 border-t border-white/5 text-white/30">
+              Designed & Developed by <a href="https://iamashraf.in" target="_blank" rel="noopener noreferrer" className="hover:text-brand-rose-light transition-colors">Ashraf Siddiqui (iamashraf.in)</a>
+            </p>
           </div>
 
         </div>
