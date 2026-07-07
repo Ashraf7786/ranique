@@ -62,7 +62,7 @@ const HERO_SLIDES = [
     primaryCta: { label: "View Offers", href: "/shop" },
     secondaryCta: { label: "Shop Best Sellers", href: "/shop" },
     bgClass: "bg-[#FFF8F9]",
-    image: "https://images.unsplash.com/photo-1617220556157-1985bd950268?q=80&w=1000&auto=format&fit=crop",
+    image: "/images/banner-accessories.png",
     isSale: true,
     saleLabel: "Monsoon Mega Sale Starts In:",
     saleEndDate: "2026-07-10T00:00:00Z",
@@ -76,7 +76,7 @@ const HERO_SLIDES = [
     primaryCta: { label: "Shop Accessories", href: "/shop?category=accessories" },
     secondaryCta: { label: "Shop Bangles", href: "/shop?category=bangles" },
     bgClass: "bg-[#FDFBF7]",
-    image: "https://images.unsplash.com/photo-1599643478524-fb524b0f0bf6?q=80&w=1000&auto=format&fit=crop",
+    image: "/images/banner-accessories.png",
     isSale: false,
   }
 ];

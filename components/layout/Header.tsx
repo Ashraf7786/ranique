@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/hooks/useCart";
@@ -280,14 +281,10 @@ export function Header() {
                 className="shrink-0 flex items-center group transition-colors"
                 aria-label="Ranique Home"
               >
-                <svg viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[100px] sm:w-[130px] h-auto text-brand-ink group-hover:text-brand-rose transition-colors duration-300">
-                  {/* R Monogram */}
-                  <path d="M14 6h16c7 0 12 4 12 11.5 0 5-3 9-8.5 10.5L43 38h-6.5l-8.5-9.5H19V38h-5V6zm5 4.5V24h10.5c5 0 7.5-2.5 7.5-6.5 0-4.5-3-6.5-8-6.5H19z" fill="currentColor" />
-                  {/* anique text */}
-                  <text x="48" y="32" fontFamily="Georgia, serif" fontSize="26" fontWeight="600" fill="currentColor" letterSpacing="2">anique</text>
-                  {/* Decorative element on hover */}
-                  <circle cx="23" cy="22" r="20" stroke="#C9748A" strokeWidth="1.5" className="opacity-0 group-hover:opacity-50 transition-opacity duration-500" />
-                </svg>
+                <div className="flex items-center gap-1 group-hover:opacity-80 transition-opacity duration-300">
+                  <Image src="/icon.svg" alt="Ranique Logo" width={32} height={32} className="w-8 sm:w-9 h-auto" />
+                  <span className="font-serif text-2xl sm:text-[26px] font-semibold text-brand-ink tracking-wide mt-1">anique</span>
+                </div>
               </Link>
             </div>
 
