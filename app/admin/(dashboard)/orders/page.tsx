@@ -45,6 +45,7 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ p
                 <th className="py-4 px-6 font-medium text-gray-500">Customer</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Date</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Total Amount</th>
+                <th className="py-4 px-6 font-medium text-gray-500">Payment Mode</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Status</th>
               </tr>
             </thead>
@@ -73,13 +74,22 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ p
                       ₹{order.totalAmount.toLocaleString()}
                     </td>
                     <td className="py-4 px-6">
+                      <span className={`px-2 py-1 text-xs font-bold uppercase rounded-sm border ${
+                        order.paymentMethod === 'ONLINE' ? 'border-brand-rose text-brand-rose bg-brand-rose/5' :
+                        order.paymentMethod === 'COD' ? 'border-gray-800 text-gray-800 bg-gray-50' :
+                        'border-green-600 text-green-600 bg-green-50'
+                      }`}>
+                        {order.paymentMethod || 'UNKNOWN'}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
                       <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-gray-500">
+                  <td colSpan={6} className="py-12 text-center text-gray-500">
                     No orders found.
                   </td>
                 </tr>
