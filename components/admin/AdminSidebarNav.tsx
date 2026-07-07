@@ -12,7 +12,8 @@ import {
   ShoppingCart, 
   MessageSquare, 
   Inbox, 
-  Gift 
+  Gift,
+  Ticket
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -21,6 +22,7 @@ const NAV_LINKS = [
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/offers", label: "Offers", icon: Gift },
+  { href: "/admin/coupons", label: "Coupons", icon: Ticket },
   { href: "/admin/categories", label: "Categories", icon: Tags },
   { href: "/admin/brands", label: "Brands", icon: Box },
   { href: "/admin/customers", label: "Customers", icon: Users },

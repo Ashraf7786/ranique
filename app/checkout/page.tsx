@@ -45,7 +45,16 @@ function StepBadge({ label, icon: Icon, active, done }: { label: string; icon: a
 
 // ─── Order Summary Sidebar ─────────────────────────────────────────────────
 
-function OrderSummary({ items, subtotal, shipping, discount, finalTotal }: { items: any[]; subtotal: number; shipping: number; discount: number; finalTotal: number }) {
+function OrderSummary({ 
+  items, subtotal, shipping, discount, finalTotal, 
+  couponCode, setCouponCode, applyCoupon, removeCoupon, 
+  appliedCoupon, validatingCoupon, discountLabel 
+}: { 
+  items: any[]; subtotal: number; shipping: number; discount: number; finalTotal: number;
+  couponCode: string; setCouponCode: (c: string) => void; applyCoupon: () => void; 
+  removeCoupon: () => void; appliedCoupon: any; validatingCoupon: boolean;
+  discountLabel: string;
+}) {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-24">
       <h3 className="font-serif text-lg font-bold text-brand-ink mb-4 flex items-center gap-2">
@@ -86,7 +95,7 @@ function OrderSummary({ items, subtotal, shipping, discount, finalTotal }: { ite
           <span>₹{subtotal.toLocaleString("en-IN")}</span>
         </div>
         <div className="flex justify-between text-sm text-gray-600">
-          <span>Discount (10%)</span>
+          <span>Discount ({discountLabel})</span>
           <span className="text-green-600 font-semibold">-₹{discount.toLocaleString("en-IN")}</span>
         </div>
         <div className="flex justify-between text-sm text-gray-600">
@@ -101,6 +110,36 @@ function OrderSummary({ items, subtotal, shipping, discount, finalTotal }: { ite
           <span>Total</span>
           <span>₹{finalTotal.toLocaleString("en-IN")}</span>
         </div>
+      </div>
+
+      {/* Coupon Input Area */}
+      <div className="mt-4 pt-4 border-t border-gray-100">
+        {appliedCoupon ? (
+          <div className="bg-green-50 p-3 rounded-lg flex items-center justify-between border border-green-100">
+            <div>
+              <p className="text-sm font-semibold text-green-800">{appliedCoupon.couponCode} Applied</p>
+              <p className="text-xs text-green-600">{appliedCoupon.message}</p>
+            </div>
+            <button onClick={removeCoupon} className="text-green-700 hover:text-green-900 text-sm font-medium">Remove</button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <input 
+              type="text" 
+              placeholder="Coupon Code" 
+              value={couponCode}
+              onChange={e => setCouponCode(e.target.value.toUpperCase())}
+              className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-brand-blush"
+            />
+            <button 
+              onClick={applyCoupon}
+              disabled={validatingCoupon || !couponCode}
+              className="px-4 py-2 bg-brand-ink text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+            >
+              {validatingCoupon ? "..." : "Apply"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -120,11 +159,65 @@ export default function CheckoutPage() {
   const [showCODConfirm, setShowCODConfirm] = useState(false);
   const [timeLeft, setTimeLeft] = useState(9 * 60); // 9 minutes in seconds
 
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [isFirstOrder, setIsFirstOrder] = useState(false);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
   // Derived values
   const subtotal = totalPrice;
   const shipping = subtotal > 999 ? 0 : 99;
-  const discount = Math.round(subtotal * 0.10);
+  
+  let discount = 0;
+  let discountLabel = "";
+
+  if (appliedCoupon) {
+    discount = appliedCoupon.discountAmount;
+    discountLabel = `Coupon ${appliedCoupon.couponCode}`;
+  } else if (isFirstOrder) {
+    if (subtotal >= 1199) {
+      discount = Math.round(subtotal * 0.15);
+      discountLabel = "First Order 15%";
+    } else {
+      discount = Math.round(subtotal * 0.10);
+      discountLabel = "First Order 10%";
+    }
+  }
+
   const finalTotal = subtotal + shipping - discount;
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setValidatingCoupon(true);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          code: couponCode, 
+          cartSubtotal: subtotal, 
+          cartItems: items.map(i => ({ 
+            productId: i.product.id, 
+            price: (i.product as any).sellingPrice || i.product.price, 
+            quantity: i.quantity 
+          })) 
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to validate coupon");
+      setAppliedCoupon(data);
+    } catch (e: any) {
+      alert(e.message);
+      setAppliedCoupon(null);
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setCouponCode("");
+    setAppliedCoupon(null);
+  };
 
   const [form, setForm] = useState<ShippingForm>({
     name: "", phone: "", email: "", line1: "", line2: "",
@@ -143,6 +236,7 @@ export default function CheckoutPage() {
           const res = await fetch("/api/orders?latest=true");
           const latestOrder = await res.json();
           if (res.ok && latestOrder && latestOrder.shippingName) {
+            setIsFirstOrder(false);
             setForm({
               name: latestOrder.shippingName,
               phone: latestOrder.shippingPhone || "",
@@ -155,9 +249,12 @@ export default function CheckoutPage() {
               country: latestOrder.shippingCountry || "India",
             });
             return;
+          } else {
+            setIsFirstOrder(true);
           }
         } catch (error) {
           console.error("Failed to fetch latest order address", error);
+          setIsFirstOrder(true);
         }
 
         // If no latest order, use session defaults
@@ -258,6 +355,7 @@ export default function CheckoutPage() {
           shippingAddress: form,
           paymentMethod: method,
           totalAmount: finalTotal,
+          couponCode: appliedCoupon?.couponCode || null,
         }),
       });
 
@@ -309,7 +407,7 @@ ${productLines}
 ━━━━━━━━━━━━━━━━━━
 💳 *Payment Summary*
    Subtotal : ₹${subtotal.toLocaleString("en-IN")}
-   Discount : -₹${discount.toLocaleString("en-IN")} (10% Off)
+   Discount : -₹${discount.toLocaleString("en-IN")} (${discountLabel})
    Shipping : ${shipping === 0 ? "FREE 🎁" : `₹${shipping}`}
    *TOTAL   : ₹${finalTotal.toLocaleString("en-IN")}*
 
@@ -623,7 +721,20 @@ Please confirm this order and share payment details. Thank you! 💕`
 
           {/* ── RIGHT: Summary ───────────────────────────────────────────── */}
           <div className="lg:col-span-1">
-            <OrderSummary items={items} subtotal={subtotal} shipping={shipping} discount={discount} finalTotal={finalTotal} />
+            <OrderSummary 
+              items={items} 
+              subtotal={subtotal} 
+              shipping={shipping} 
+              discount={discount} 
+              finalTotal={finalTotal} 
+              couponCode={couponCode}
+              setCouponCode={setCouponCode}
+              applyCoupon={applyCoupon}
+              removeCoupon={removeCoupon}
+              appliedCoupon={appliedCoupon}
+              validatingCoupon={validatingCoupon}
+              discountLabel={discountLabel}
+            />
           </div>
         </div>
       </div>

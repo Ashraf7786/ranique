@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
     const userId = (session.user as any).id;
     const body = await req.json();
-    const { items, shippingAddress, paymentMethod, totalAmount } = body;
+    const { items, shippingAddress, paymentMethod, totalAmount, couponCode } = body;
 
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -52,8 +52,46 @@ export async function POST(req: Request) {
       (sum, item) => sum + item.price * item.quantity, 0
     );
     const shipping = subtotal > 999 ? 0 : 99;
-    const discount = Math.round(subtotal * 0.10);
-    const finalTotal = subtotal + shipping - discount;
+    
+    const pastOrderCount = await prisma.order.count({ where: { userId } });
+    const isFirstOrder = pastOrderCount === 0;
+
+    let appliedCouponDiscount = 0;
+    let appliedFirstOrderDiscount = 0;
+    let validCouponCode: string | null = null;
+    
+    if (couponCode) {
+      const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.toUpperCase() } });
+      if (coupon && coupon.isActive && (!coupon.endsAt || new Date(coupon.endsAt) > new Date())) {
+        if (coupon.productId) {
+          const item = orderItems.find(i => i.productId === coupon.productId);
+          if (item) {
+             appliedCouponDiscount = Math.round((item.price * item.quantity) * (coupon.discountPercent / 100));
+             validCouponCode = coupon.code;
+          }
+        } else {
+          appliedCouponDiscount = Math.round(subtotal * (coupon.discountPercent / 100));
+          validCouponCode = coupon.code;
+        }
+        
+        // Update coupon usage
+        if (validCouponCode) {
+          await prisma.coupon.update({
+            where: { code: validCouponCode },
+            data: { currentUses: { increment: 1 } }
+          });
+        }
+      }
+    } else if (isFirstOrder) {
+      if (subtotal >= 1199) {
+        appliedFirstOrderDiscount = Math.round(subtotal * 0.15);
+      } else {
+        appliedFirstOrderDiscount = Math.round(subtotal * 0.10);
+      }
+    }
+
+    const totalDiscount = appliedCouponDiscount + appliedFirstOrderDiscount;
+    const finalTotal = subtotal + shipping - totalDiscount;
 
     // Create the order
     const order = await prisma.order.create({
@@ -72,6 +110,9 @@ export async function POST(req: Request) {
         shippingState: state,
         shippingZip: zip,
         shippingCountry: country || 'India',
+        couponCode: validCouponCode,
+        couponDiscount: appliedCouponDiscount,
+        firstOrderDiscount: appliedFirstOrderDiscount,
         items: {
           create: orderItems,
         },
