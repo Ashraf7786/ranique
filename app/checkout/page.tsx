@@ -377,6 +377,93 @@ export default function CheckoutPage() {
       quantity: item.quantity,
     }));
 
+    if (method === "ONLINE") {
+      try {
+        const loadScript = () => {
+          return new Promise((resolve) => {
+            if (document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
+              resolve(true);
+              return;
+            }
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+          });
+        };
+
+        const isLoaded = await loadScript();
+        if (!isLoaded) throw new Error("Razorpay SDK failed to load. Are you online?");
+
+        const orderRes = await fetch("/api/razorpay/create-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: finalTotal }),
+        });
+        const orderData = await orderRes.json();
+        if (!orderRes.ok) throw new Error(orderData.message || "Failed to initiate Razorpay order");
+
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: "Ranique",
+          description: "Premium Ladies' Boutique",
+          order_id: orderData.order_id,
+          handler: async function (response: any) {
+            try {
+              const res = await fetch("/api/orders", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  items: orderItems,
+                  shippingAddress: form,
+                  paymentMethod: method,
+                  totalAmount: finalTotal,
+                  couponCode: appliedCoupon?.couponCode || null,
+                  razorpayOrderId: response.razorpay_order_id,
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  razorpaySignature: response.razorpay_signature,
+                }),
+              });
+              const data = await res.json();
+              if (!res.ok) throw new Error(data.error || "Failed to save order");
+
+              setOrderId(data.orderId);
+              clearCart();
+              setStep("success");
+            } catch (err: any) {
+              console.error(err);
+              alert(err.message || "Payment succeeded but failed to save order. Contact support.");
+              setLoading(false);
+            }
+          },
+          prefill: {
+            name: form.name,
+            email: form.email,
+            contact: form.phone,
+          },
+          theme: {
+            color: "#0f172a", // brand-ink
+          },
+        };
+
+        const paymentObject = new (window as any).Razorpay(options);
+        paymentObject.on("payment.failed", function (response: any) {
+          alert("Payment Failed. Reason: " + response.error.description);
+          setLoading(false);
+        });
+        paymentObject.open();
+      } catch (err: any) {
+        console.error(err);
+        alert(err.message);
+        setLoading(false);
+      }
+      return; // Stop here, Razorpay callback handles the rest
+    }
+
+    // Handle COD & WHATSAPP
     try {
       const res = await fetch("/api/orders", {
         method: "POST",

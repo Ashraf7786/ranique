@@ -286,6 +286,12 @@ model Order {
   deliveredAt   DateTime?
   paymentMethod String?     // COD, ONLINE, WHATSAPP
   
+  // Razorpay Specific Fields
+  razorpayOrderId   String? @unique
+  razorpayPaymentId String? @unique
+  razorpaySignature String?
+  
+  
   // Shipping Address
   shippingName    String?
   shippingPhone   String?

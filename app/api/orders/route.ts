@@ -12,7 +12,10 @@ export async function POST(req: Request) {
 
     const userId = (session.user as any).id;
     const body = await req.json();
-    const { items, shippingAddress, paymentMethod, totalAmount, couponCode } = body;
+    const { 
+      items, shippingAddress, paymentMethod, totalAmount, couponCode,
+      razorpayOrderId, razorpayPaymentId, razorpaySignature
+    } = body;
 
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -23,6 +26,24 @@ export async function POST(req: Request) {
     }
     if (!paymentMethod) {
       return NextResponse.json({ error: 'Payment method is required' }, { status: 400 });
+    }
+
+    if (paymentMethod === 'ONLINE') {
+      if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+        return NextResponse.json({ error: 'Missing Razorpay payment details' }, { status: 400 });
+      }
+      
+      const crypto = require('crypto');
+      const secret = process.env.RAZORPAY_KEY_SECRET;
+      
+      const generatedSignature = crypto
+        .createHmac('sha256', secret)
+        .update(razorpayOrderId + '|' + razorpayPaymentId)
+        .digest('hex');
+        
+      if (generatedSignature !== razorpaySignature) {
+        return NextResponse.json({ error: 'Invalid payment signature' }, { status: 400 });
+      }
     }
 
     const { name, phone, email, line1, line2, city, state, zip, country } = shippingAddress;
@@ -102,7 +123,10 @@ export async function POST(req: Request) {
         totalAmount: finalTotal,
         currency: 'INR',
         paymentMethod,
-        status: paymentMethod === 'ONLINE' ? 'PENDING' : 'CONFIRMED',
+        status: paymentMethod === 'ONLINE' ? 'CONFIRMED' : 'CONFIRMED',
+        razorpayOrderId: razorpayOrderId || null,
+        razorpayPaymentId: razorpayPaymentId || null,
+        razorpaySignature: razorpaySignature || null,
         shippingName: name,
         shippingPhone: phone,
         shippingEmail: email,
