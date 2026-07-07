@@ -61,68 +61,52 @@ function mapBackendProduct(dbProduct: any): Product {
 import { prisma } from "./prisma";
 import { unstable_cache } from "next/cache";
 
-export async function getProducts(categorySlug?: string): Promise<Product[]> {
-  const fetchProducts = unstable_cache(
-    async (slug) => {
-      try {
-        const where: any = {};
-        if (slug && slug !== 'all') {
-          const category = await prisma.category.findUnique({ where: { slug } });
-          if (category) {
-            where.categoryId = category.id;
-          }
-        }
-        
-        const dbProducts = await prisma.product.findMany({
-          where: { ...where, deletedAt: null },
-          include: {
-            images: true,
-            category: true,
-            brand: true,
-            offer: true,
-          },
-          orderBy: { createdAt: 'desc' }
-        });
-        
-        return dbProducts.map(mapBackendProduct);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-        return [];
+export async function getProducts(categorySlug?: string): Promise<any[]> {
+  try {
+    let where: any = {};
+    if (categorySlug && categorySlug !== 'all') {
+      const category = await prisma.category.findUnique({ where: { slug: categorySlug } });
+      if (category) {
+        where.categoryId = category.id;
       }
-    },
-    ['products', categorySlug || 'all'],
-    { revalidate: 60, tags: ['products'] }
-  );
+    }
 
-  return fetchProducts(categorySlug);
+    const dbProducts = await prisma.product.findMany({
+      where: { ...where, deletedAt: null },
+      include: {
+        images: true,
+        category: true,
+        brand: true,
+        offer: true,
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    return dbProducts.map(mapBackendProduct);
+  } catch (error) {
+    console.error("Failed to fetch products:", error);
+    return [];
+  }
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const fetchProduct = unstable_cache(
-    async (s) => {
-      try {
-        const dbProduct = await prisma.product.findFirst({
-          where: { slug: s, deletedAt: null },
-          include: {
-            images: true,
-            category: true,
-            brand: true,
-            offer: true,
-          }
-        });
-        
-        if (!dbProduct) return null;
-        return mapBackendProduct(dbProduct);
-      } catch (error) {
-        console.error(`Failed to fetch product ${s}:`, error);
-        return null;
+  try {
+    const dbProduct = await prisma.product.findFirst({
+      where: { slug, deletedAt: null },
+      include: {
+        images: true,
+        category: true,
+        brand: true,
+        offer: true,
       }
-    },
-    ['product-by-slug', slug],
-    { revalidate: 60, tags: ['products'] }
-  );
-
-  return fetchProduct(slug);
+    });
+    
+    if (!dbProduct) return null;
+    return mapBackendProduct(dbProduct);
+  } catch (error) {
+    console.error(`Failed to fetch product ${slug}:`, error);
+    return null;
+  }
 }
 
 export async function getCategories(): Promise<any[]> {
