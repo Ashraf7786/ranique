@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { Search, Edit2, Trash2, Eye, X, Package } from "lucide-react";
+import { formatDateIST } from "@/lib/utils";
 
 export function OfferDataTable({ initialOffers }: { initialOffers: any[] }) {
   const [offers, setOffers] = useState(initialOffers);
@@ -140,13 +141,7 @@ export function OfferDataTable({ initialOffers }: { initialOffers: any[] }) {
                       ₹{offer.offerPrice?.toLocaleString()}
                     </td>
                     <td className="px-6 py-4">
-                      {new Date(offer.endsAt).toLocaleString("en-IN", {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
+                      {formatDateIST(offer.endsAt)}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${

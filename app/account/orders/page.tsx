@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Package, Heart, Settings, User, ShoppingBag } from "lucide-react";
+import { formatDateIST } from "@/lib/utils";
 import { LogoutButton } from "@/components/account/LogoutButton";
 
 export default async function OrdersPage() {
@@ -105,8 +106,8 @@ export default async function OrdersPage() {
                   <div className="bg-gray-50 p-4 sm:px-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div className="flex flex-wrap gap-x-8 gap-y-2 text-sm">
                       <div>
-                        <p className="text-gray-500 font-medium">Order Placed</p>
-                        <p className="font-semibold text-brand-ink">{new Date(order.createdAt).toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-500">Date</p>
+                        <p className="font-semibold text-brand-ink">{formatDateIST(order.createdAt, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                       </div>
                       <div>
                         <p className="text-gray-500 font-medium">Total</p>

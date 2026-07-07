@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Package, MapPin, Truck, CheckCircle, ShoppingBag } from "lucide-react";
 import InvoiceButton from "./InvoiceButton";
+import { formatDateIST } from "@/lib/utils";
 
 export default async function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -43,7 +44,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-5">
         <div className="min-w-0">
           <h1 className="font-serif text-2xl font-bold text-brand-ink truncate">Purchase Details</h1>
-          <p className="text-gray-500 text-sm mt-1 break-words">Order #{order.id.slice(-8).toUpperCase()} • {new Date(order.createdAt).toLocaleDateString()}</p>
+          <p className="text-gray-500 text-sm mt-1 break-words">Order #{order.id.slice(-8).toUpperCase()} • {formatDateIST(order.createdAt, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
         </div>
         <div className="w-full sm:w-auto flex justify-start sm:justify-end">
           <InvoiceButton status={order.status} orderId={order.id} />
@@ -73,7 +74,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
                   <h4 className={`font-bold ${isCompleted ? "text-brand-ink" : "text-gray-400"}`}>{step.label}</h4>
                   <p className="text-sm text-gray-500">{step.sub}</p>
                   {(isCompleted && step.date) && (
-                    <p className="text-xs text-gray-400 mt-1">{new Date(step.date).toLocaleString()}</p>
+                    <p className="text-xs text-gray-400 mt-1">{formatDateIST(step.date)}</p>
                   )}
                 </div>
               </div>

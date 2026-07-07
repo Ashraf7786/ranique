@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Package, Heart, Settings, User, MapPin, Phone } from "lucide-react";
 import { LogoutButton } from "@/components/account/LogoutButton";
+import { formatDateIST } from "@/lib/utils";
 import { FlashMessage } from "@/components/account/FlashMessage";
 
 export default async function AccountDashboardPage() {
@@ -126,7 +127,7 @@ export default async function AccountDashboardPage() {
                   <div key={order.id} className="bg-white rounded-xl border border-gray-100 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
                     <div>
                       <p className="font-semibold text-brand-ink text-lg">Order #{order.id.slice(-8).toUpperCase()}</p>
-                      <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
+                      <p className="text-sm text-gray-500">{formatDateIST(order.createdAt, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-brand-ink text-lg">₹{order.totalAmount.toLocaleString('en-IN')}</p>

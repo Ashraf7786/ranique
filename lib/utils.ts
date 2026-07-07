@@ -30,3 +30,25 @@ export function slugify(str: string): string {
 export function clampNumber(val: number, min: number, max: number): number {
   return Math.min(Math.max(val, min), max);
 }
+
+export function formatDateIST(
+  date: string | Date | number | null | undefined,
+  options: Intl.DateTimeFormatOptions = { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }
+): string {
+  if (!date) return '';
+  try {
+    return new Date(date).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      ...options
+    });
+  } catch (e) {
+    return String(date);
+  }
+}

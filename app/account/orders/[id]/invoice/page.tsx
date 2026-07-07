@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { formatDateIST } from "@/lib/utils";
 import PrintButton from "./PrintButton";
 
 export default async function InvoicePage({ params }: { params: Promise<{ id: string }> }) {
@@ -59,7 +60,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
                 </div>
                 <div className="flex justify-between sm:justify-end gap-8">
                   <span className="text-gray-500">Invoice Date:</span>
-                  <span className="font-medium text-brand-ink">{new Date(order.deliveredAt || order.updatedAt).toLocaleDateString()}</span>
+                  <span className="font-medium text-brand-ink">{formatDateIST(order.deliveredAt || order.updatedAt, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                 </div>
                 <div className="flex justify-between sm:justify-end gap-8">
                   <span className="text-gray-500">Order No:</span>
