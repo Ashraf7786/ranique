@@ -30,16 +30,20 @@ const INDIAN_STATES = [
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
-function StepBadge({ label, icon: Icon, active, done }: { label: string; icon: any; active: boolean; done: boolean }) {
+function StepBadge({ label, icon: Icon, active, done, onClick }: { label: string; icon: any; active: boolean; done: boolean; onClick?: () => void }) {
   return (
-    <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-      done ? "bg-green-100 text-green-700" :
-      active ? "bg-brand-ink text-white shadow-md" :
-      "bg-gray-100 text-gray-400"
+    <button 
+      type="button"
+      onClick={onClick}
+      disabled={!onClick}
+      className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all ${
+      done ? "bg-green-100 text-green-700 hover:bg-green-200 cursor-pointer" :
+      active ? "bg-brand-ink text-white shadow-md cursor-default" :
+      "bg-gray-100 text-gray-400 cursor-default"
     }`}>
       {done ? <CheckCircle className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
       {label}
-    </div>
+    </button>
   );
 }
 
@@ -158,7 +162,7 @@ function OrderSummary({
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, totalPrice, clearCart, openCart } = useCart();
 
   const [step, setStep] = useState<Step>("address");
   const [loading, setLoading] = useState(false);
@@ -178,21 +182,36 @@ export default function CheckoutPage() {
   const subtotal = totalPrice;
   const shipping = subtotal > 999 ? 0 : 99;
   
-  let discount = 0;
-  let discountLabel = "";
+  let couponDiscount = 0;
+  let firstOrderDiscount = 0;
+  let discountLabels = [];
 
   if (appliedCoupon) {
-    discount = appliedCoupon.discountAmount;
-    discountLabel = `Coupon ${appliedCoupon.couponCode}`;
-  } else if (isFirstOrder) {
+    couponDiscount = appliedCoupon.discountAmount;
+    discountLabels.push(`Coupon ${appliedCoupon.couponCode}`);
+  } 
+  
+  if (isFirstOrder) {
     if (subtotal >= 1199) {
-      discount = Math.round(subtotal * 0.15);
-      discountLabel = "First Order 15%";
+      firstOrderDiscount = Math.round(subtotal * 0.15);
+      discountLabels.push("First Order 15%");
     } else {
-      discount = Math.round(subtotal * 0.10);
-      discountLabel = "First Order 10%";
+      firstOrderDiscount = Math.round(subtotal * 0.10);
+      discountLabels.push("First Order 10%");
     }
   }
+
+  const discount = couponDiscount + firstOrderDiscount;
+  const discountLabel = discountLabels.join(" + ");
+
+  // Clear coupon if cart changes
+  useEffect(() => {
+    if (appliedCoupon) {
+      setAppliedCoupon(null);
+      setCouponCode("");
+      setCouponError("Cart changed. Please re-apply your coupon.");
+    }
+  }, [totalPrice, items]);
 
   const finalTotal = subtotal + shipping - discount;
 
@@ -519,10 +538,23 @@ Please confirm this order and share payment details. Thank you! 💕`
       <div className="bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="font-serif text-2xl font-bold text-brand-ink hover:text-brand-rose transition-colors">Ranique</Link>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <StepBadge label="Address" icon={MapPin} active={step === "address"} done={step === "payment"} />
-            <ChevronRight className="w-4 h-4 text-gray-300" />
-            <StepBadge label="Payment" icon={CreditCard} active={step === "payment"} done={false} />
+          <div className="flex items-center gap-1 sm:gap-2">
+            <StepBadge label="Cart" icon={ShoppingBag} active={false} done={true} onClick={openCart} />
+            <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-300" />
+            <StepBadge 
+              label="Address" 
+              icon={MapPin} 
+              active={step === "address"} 
+              done={step === "payment"} 
+              onClick={step === "payment" ? () => setStep("address") : undefined} 
+            />
+            <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-300" />
+            <StepBadge 
+              label="Payment" 
+              icon={CreditCard} 
+              active={step === "payment"} 
+              done={false} 
+            />
           </div>
         </div>
       </div>

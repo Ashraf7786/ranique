@@ -82,7 +82,9 @@ export async function POST(req: Request) {
           });
         }
       }
-    } else if (isFirstOrder) {
+    }
+    
+    if (isFirstOrder) {
       if (subtotal >= 1199) {
         appliedFirstOrderDiscount = Math.round(subtotal * 0.15);
       } else {
