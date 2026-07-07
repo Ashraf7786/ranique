@@ -62,12 +62,12 @@ export function Footer() {
     "@context": "https://schema.org",
     "@type": "Store",
     "name": "Ranique",
-    "legalName": "Rani Sringar & General Store",
+    "legalName": "RANI SHRINGAR & GENERAL STORE",
     "description": "Curated luxury for the modern woman. Discover premium cosmetics, elegant bangles, accessories, purses, and lifestyle essentials designed to elevate your everyday style.",
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": "Jaipur",
-      "addressRegion": "Rajasthan",
+      "addressLocality": "Aurangabad",
+      "addressRegion": "Bihar",
       "addressCountry": "IN"
     }
   };
@@ -98,9 +98,9 @@ export function Footer() {
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-brand-rose shrink-0" />
                 <p>
-                  <strong className="text-white block mb-1">Head Office</strong>
-                  [Your Registered Address Line 1]<br />
-                  Jaipur, Rajasthan, India
+                  <strong className="text-white block mb-1">Store</strong>
+                  Rani Sringar Store, Obra<br />
+                  Aurangabad, Bihar, India
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -111,8 +111,8 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-brand-rose shrink-0" />
-                <a href="tel:+910000000000" className="hover:text-brand-rose-light transition-colors">
-                  +91 [00000 00000]
+                <a href="tel:+919288467633" className="hover:text-brand-rose-light transition-colors">
+                  +91 92884 67633
                 </a>
               </div>
               <div className="flex items-center gap-3">
@@ -245,7 +245,9 @@ export function Footer() {
           {/* Copyright */}
           <div className="lg:text-right space-y-2 shrink-0">
             <p>© 2026 Ranique. All Rights Reserved.</p>
-            <p>Ranique is a brand owned and operated by Rani Sringar & General Store.</p>
+            <p>Store operated under the name of <strong>Rani Sringar Store (Ranique)</strong>.</p>
+            <p>GST Trade Name: RANI SHRINGAR & GENERAL STORE</p>
+            <p>GSTIN: 10AVTPV6245L1ZX</p>
           </div>
 
         </div>
