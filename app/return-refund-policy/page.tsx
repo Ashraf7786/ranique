@@ -35,7 +35,7 @@ export default function ReturnRefundPolicyPage() {
           <h2 className="text-xl font-bold text-brand-ink mt-8 mb-4">3. Return Process</h2>
           <p>To initiate a return:</p>
           <ol className="list-decimal pl-5 mt-2 space-y-2">
-            <li>Contact us at <strong>support@ranique.in</strong> within 48 hours of receiving your order.</li>
+            <li>Contact us at <strong>ranique.official@gmail.com</strong> within 48 hours of receiving your order.</li>
             <li>Provide your Order ID and attach the unboxing video/photos.</li>
             <li>Once approved, we will arrange a reverse pickup from your location. If reverse pickup is unavailable in your pin code, you may be asked to ship it back to us (we will reimburse the shipping cost up to ₹100).</li>
           </ol>
@@ -53,7 +53,7 @@ export default function ReturnRefundPolicyPage() {
           <hr className="my-10 border-gray-100" />
           
           <p className="text-sm text-gray-500">
-            For further assistance, please contact us at <a href="mailto:support@ranique.in" className="text-brand-rose hover:underline">support@ranique.in</a>.
+            For further assistance, please contact us at <a href="mailto:ranique.official@gmail.com" className="text-brand-rose hover:underline">ranique.official@gmail.com</a>.
           </p>
         </div>
       </div>

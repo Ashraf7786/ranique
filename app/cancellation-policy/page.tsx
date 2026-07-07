@@ -23,7 +23,7 @@ export default function CancellationPolicyPage() {
           <p>To cancel an order before dispatch:</p>
           <ul className="list-disc pl-5 mt-2 space-y-2">
             <li>Log in to your Ranique account, navigate to "My Orders," and click on the "Cancel Order" button next to your recent purchase.</li>
-            <li>Alternatively, email us immediately at <strong>support@ranique.in</strong> or WhatsApp us with your Order ID.</li>
+            <li>Alternatively, email us immediately at <strong>ranique.official@gmail.com</strong> or WhatsApp us with your Order ID.</li>
           </ul>
 
           <h2 className="text-xl font-bold text-brand-ink mt-8 mb-4">2. Cancellations After Dispatch</h2>
@@ -51,7 +51,7 @@ export default function CancellationPolicyPage() {
           <hr className="my-10 border-gray-100" />
           
           <p className="text-sm text-gray-500">
-            For further assistance, please contact us at <a href="mailto:support@ranique.in" className="text-brand-rose hover:underline">support@ranique.in</a>.
+            For further assistance, please contact us at <a href="mailto:ranique.official@gmail.com" className="text-brand-rose hover:underline">ranique.official@gmail.com</a>.
           </p>
         </div>
       </div>

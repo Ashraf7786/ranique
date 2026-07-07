@@ -47,7 +47,7 @@ export default function ShippingPolicyPage() {
           <hr className="my-10 border-gray-100" />
           
           <p className="text-sm text-gray-500">
-            For more information regarding shipping, please reach out to us at <a href="mailto:support@ranique.in" className="text-brand-rose hover:underline">support@ranique.in</a>.
+            For more information regarding shipping, please reach out to us at <a href="mailto:ranique.official@gmail.com" className="text-brand-rose hover:underline">ranique.official@gmail.com</a>.
           </p>
         </div>
       </div>
