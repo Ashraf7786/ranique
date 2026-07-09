@@ -11,6 +11,12 @@ export function ProductDataTable({ initialProducts, isTrashMode = false }: { ini
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Sync state with props on navigation
+  React.useEffect(() => {
+    setProducts(initialProducts);
+    setSelectedIds([]);
+  }, [initialProducts]);
+
   // Edit Modal State
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [isSaving, setIsSaving] = useState(false);
