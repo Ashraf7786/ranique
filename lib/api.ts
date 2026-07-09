@@ -105,7 +105,7 @@ export async function getProducts(categorySlug?: string): Promise<any[]> {
       orderBy: { createdAt: 'desc' }
     });
 
-    return dbProducts.map(mapBackendProduct);
+    return dbProducts.map(p => mapBackendProduct(p));
   } catch (error) {
     console.error("Failed to fetch products:", error);
     return [];
