@@ -74,7 +74,7 @@ export default function NewProductPage() {
         router.push("/admin/products");
       } else {
         const err = await res.json();
-        alert(`Error: ${err.message}`);
+        alert(`Error: ${err.error || err.message || 'An unknown error occurred'}`);
       }
     } catch (err) {
       alert("Failed to create product. Make sure backend is running.");

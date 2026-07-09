@@ -39,7 +39,7 @@ export default function NewBrandPage() {
         router.push("/admin/brands");
       } else {
         const err = await res.json();
-        alert(`Error: ${err.message || 'Failed to create brand'}`);
+        alert(`Error: ${err.error || err.message || 'Failed to create brand'}`);
       }
     } catch (err) {
       alert("Failed to create brand. Make sure backend is running.");

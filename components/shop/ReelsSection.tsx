@@ -2,15 +2,16 @@
 
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { Instagram } from "lucide-react";
 
 const REELS = [
-  { id: 1, videoUrl: "/video/Ranique_reel1.mp4", title: "Summer Glow Up" },
-  { id: 2, videoUrl: "/video/ranique_reel2.mp4", title: "Accessories Haul" },
-  { id: 3, videoUrl: "/video/Ranique_reel1.mp4", title: "Behind the Scenes" },
-  { id: 4, videoUrl: "/video/Ranique_reel2.MOV", title: "New Arrivals" },
+  { id: 1, videoUrl: "/video/Ranique_reel1.mp4", title: "Earning Gift Box", instagramUrl: "https://www.instagram.com/reel/DaU1_9czYPo/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" },
+  { id: 2, videoUrl: "/video/ranique_reel2.mp4", title: "Opening Ranique", instagramUrl: "https://www.instagram.com/reel/DaYQyT2zqEu/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" },
+  { id: 3, videoUrl: "/video/Ranique_reel3.mp4", title: "Bangles", instagramUrl: "https://www.instagram.com/reel/Daj5aKBzXtp/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" },
+  { id: 4, videoUrl: "/video/Ranique_reel4.mp4", title: "Jhumka", instagramUrl: "https://www.instagram.com/reel/DacgIv8zmZi/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" },
 ];
 
-function ReelVideo({ src, isMuted }: { src: string; isMuted: boolean }) {
+function ReelVideo({ src }: { src: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -35,19 +36,6 @@ function ReelVideo({ src, isMuted }: { src: string; isMuted: boolean }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = isMuted;
-      if (!isMuted) {
-        // Attempt to play with sound when unmuted
-        videoRef.current.play().catch(() => {
-          // If browser blocks unmuted play without prior interaction, fallback to muted
-          if (videoRef.current) videoRef.current.muted = true;
-        });
-      }
-    }
-  }, [isMuted]);
-
   return (
     <video
       ref={videoRef}
@@ -64,25 +52,31 @@ function ReelVideo({ src, isMuted }: { src: string; isMuted: boolean }) {
 }
 
 function ReelCard({ reel }: { reel: any }) {
-  const [isMuted, setIsMuted] = useState(true);
-
   return (
-    <div
-      className="relative shrink-0 w-[calc(50%-4px)] md:w-[calc(20%-12.8px)] aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer group/reel shadow-sm hover:shadow-card-hover transition-all bg-brand-mist snap-start"
-      onMouseEnter={() => setIsMuted(false)}
-      onMouseLeave={() => setIsMuted(true)}
-      onClick={() => setIsMuted(!isMuted)} // Toggle sound on mobile tap
+    <a
+      href={reel.instagramUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block relative shrink-0 w-[calc(50%-4px)] md:w-[calc(20%-12.8px)] aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer group/reel shadow-sm hover:shadow-card-hover transition-all bg-brand-mist snap-start"
       onContextMenu={(e) => e.preventDefault()} // Security: Prevent right-click to save
     >
-      <ReelVideo src={reel.videoUrl} isMuted={isMuted} />
+      <ReelVideo src={reel.videoUrl} />
 
       {/* Overlay blocks right-clicks on the video underneath */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-80 group-hover/reel:opacity-100 transition-opacity" />
 
-      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white pointer-events-none">
+      {/* View on Instagram Overlay */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/reel:opacity-100 transition-opacity duration-300 z-10">
+        <div className="bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium transform translate-y-4 group-hover/reel:translate-y-0 transition-all duration-300 shadow-xl">
+          <Instagram className="w-4 h-4" />
+          View on Instagram
+        </div>
+      </div>
+
+      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white pointer-events-none z-10">
         <span className="font-sans font-medium text-sm truncate drop-shadow-md">{reel.title}</span>
       </div>
-    </div>
+    </a>
   );
 }
 
