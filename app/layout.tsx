@@ -11,6 +11,7 @@ import { CartProvider } from "@/components/providers/CartProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GlobalLoader } from "@/components/ui/GlobalLoader";
 import { StorefrontUI } from "./StorefrontUI";
+import { getCategories } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: {
@@ -35,11 +36,13 @@ export const metadata: Metadata = {
   }),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const categories = await getCategories();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -58,7 +61,7 @@ export default function RootLayout({
               Skip to content
             </a>
 
-            <StorefrontUI>
+            <StorefrontUI categories={categories}>
               {children}
             </StorefrontUI>
           </CartProvider>

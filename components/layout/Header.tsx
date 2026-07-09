@@ -151,18 +151,7 @@ function SearchBar({ className }: { className?: string }) {
   );
 }
 
-// ─── Mobile Menu ──────────────────────────────────────────────────────────────
-
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/shop", label: "Shop All" },
-  { href: "/shop?category=cosmetics", label: "Cosmetics" },
-  { href: "/shop?category=accessories", label: "Accessories" },
-  { href: "/shop?category=bangles", label: "Bangles" },
-  { href: "/shop?category=purses", label: "Purses" },
-];
-
-function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function MobileMenu({ isOpen, onClose, categories = [] }: { isOpen: boolean; onClose: () => void; categories?: any[] }) {
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
@@ -171,6 +160,11 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
   if (!isOpen) return null;
 
+  const isNew = (dateString: string) => {
+    const diffTime = Math.abs(new Date().getTime() - new Date(dateString).getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) <= 14;
+  };
+
   return (
     <>
       <div
@@ -178,7 +172,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         onClick={onClose}
         aria-hidden
       />
-      <div className="fixed top-0 left-0 h-full w-72 z-50 bg-white shadow-drawer animate-slide-up">
+      <div className="fixed top-0 left-0 h-full w-72 z-50 bg-white shadow-drawer animate-slide-up overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-brand-border">
           <span className="font-serif text-xl font-semibold text-brand-ink">
             Ranique
@@ -192,14 +186,21 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
           </button>
         </div>
         <nav className="p-5 space-y-1">
-          {NAV_LINKS.map((link) => (
+          <Link href="/" onClick={onClose} className="flex items-center px-3 py-2.5 rounded-xl font-sans text-sm text-brand-ink hover:bg-brand-blush hover:text-brand-rose transition-colors">Home</Link>
+          <Link href="/shop" onClick={onClose} className="flex items-center px-3 py-2.5 rounded-xl font-sans text-sm font-semibold text-brand-rose bg-brand-blush">Shop All</Link>
+          
+          <div className="pt-2 pb-1 px-3 text-xs font-semibold text-brand-slate uppercase tracking-wider">Categories</div>
+          {categories.map((cat: any) => (
             <Link
-              key={link.href}
-              href={link.href}
+              key={cat.id}
+              href={`/shop?category=${cat.slug}`}
               onClick={onClose}
-              className="flex items-center px-3 py-2.5 rounded-xl font-sans text-sm text-brand-ink hover:bg-brand-blush hover:text-brand-rose transition-colors"
+              className="flex items-center justify-between px-3 py-2.5 rounded-xl font-sans text-sm text-brand-ink hover:bg-brand-mist transition-colors"
             >
-              {link.label}
+              <span className="capitalize">{cat.name}</span>
+              {isNew(cat.createdAt) && (
+                <span className="text-[9px] font-bold bg-brand-rose text-white px-1.5 py-0.5 rounded-full uppercase tracking-wider">New</span>
+              )}
             </Link>
           ))}
         </nav>
@@ -208,7 +209,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
   );
 }
 
-export function Header() {
+export function Header({ categories = [] }: { categories?: any[] }) {
   const { totalItems, openCart } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
@@ -288,14 +289,50 @@ export function Header() {
             </div>
 
             {/* Desktop nav */}
-            <nav className="hidden lg:flex items-center gap-1 ml-4">
-              {NAV_LINKS.slice(1).map((link) => (
+            <nav className="hidden lg:flex items-center gap-1 ml-4 relative">
+              <div className="group">
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  className="px-3 py-1.5 rounded-full text-sm font-sans text-brand-slate hover:text-brand-rose hover:bg-brand-blush transition-all duration-150"
+                  href="/shop"
+                  className="px-3 py-1.5 rounded-full text-sm font-sans font-medium text-brand-rose bg-brand-blush hover:opacity-90 transition-all duration-150 inline-flex items-center gap-1"
                 >
-                  {link.label}
+                  Shop All
+                  <svg className="w-3.5 h-3.5 text-brand-rose opacity-70 group-hover:rotate-180 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                </Link>
+                
+                {/* Mega Menu Dropdown */}
+                <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="bg-white border border-brand-border shadow-xl rounded-2xl p-4 min-w-[320px]">
+                    <div className="mb-3 px-3">
+                      <p className="text-xs font-semibold text-brand-slate uppercase tracking-wider">All Categories</p>
+                    </div>
+                    <div className={cn("grid gap-1", categories.length > 5 ? "grid-cols-2 gap-x-4" : "grid-cols-1")}>
+                      {categories.map((cat: any) => {
+                        const isNew = Math.ceil(Math.abs(new Date().getTime() - new Date(cat.createdAt).getTime()) / (1000 * 60 * 60 * 24)) <= 14;
+                        return (
+                          <Link
+                            key={cat.id}
+                            href={`/shop?category=${cat.slug}`}
+                            className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-sans text-brand-ink hover:bg-brand-blush hover:text-brand-rose transition-colors"
+                          >
+                            <span className="capitalize truncate pr-2">{cat.name}</span>
+                            {isNew && (
+                              <span className="text-[9px] font-bold bg-brand-rose text-white px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0">New</span>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {categories.slice(0, 4).map((cat: any) => (
+                <Link
+                  key={cat.id}
+                  href={`/shop?category=${cat.slug}`}
+                  className="px-3 py-1.5 rounded-full text-sm font-sans text-brand-slate hover:text-brand-rose hover:bg-brand-blush transition-all duration-150 capitalize"
+                >
+                  {cat.name}
                 </Link>
               ))}
             </nav>
@@ -413,6 +450,7 @@ export function Header() {
       <MobileMenu
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        categories={categories}
       />
     </>
   );

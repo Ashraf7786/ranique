@@ -7,7 +7,7 @@ import { CartDrawer } from "@/components/cart/CartDrawer";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { MobileSnackbar } from "@/components/ui/MobileSnackbar";
 
-export function StorefrontUI({ children }: { children: React.ReactNode }) {
+export function StorefrontUI({ children, categories }: { children: React.ReactNode, categories?: any[] }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
 
@@ -17,7 +17,7 @@ export function StorefrontUI({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Header />
+      <Header categories={categories} />
       <main id="main-content" className="min-h-screen">
         {children}
       </main>
