@@ -43,7 +43,7 @@ export const ProductCreateSchema = z.object({
     .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and hyphens only'),
   shortDescription: z.string().max(1000).optional().nullable(),
   sku: z.string().min(1, 'SKU is required').max(100),
-  sellingPrice: z.number({ invalid_type_error: 'Selling price must be a number' }).min(0, 'Price cannot be negative'),
+  sellingPrice: z.number().min(0, 'Price cannot be negative'),
   originalPrice: z.number().min(0).optional().nullable(),
   currentStock: z.number().int().min(0, 'Stock cannot be negative'),
   status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
