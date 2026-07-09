@@ -204,6 +204,7 @@ model Product {
   badge            String?  // e.g., BESTSELLER, SALE
   rating           Float    @default(4.5)
   reviewCount      Int      @default(0)
+  boughtLastWeek   Int?
   
   // Status & Visibility
   status           String   @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
@@ -224,6 +225,7 @@ model Product {
   viewedBy         RecentlyViewed[]
   offer            ProductOffer?
   coupons          Coupon[]
+  reviews          Review[]
 
   @@index([categoryId])
   @@index([brandId])
@@ -349,6 +351,21 @@ model Enquiry {
   phone     String?
   message   String
   status    String   @default("PENDING") // PENDING, RESOLVED
-  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id           String   @id @default(uuid())
+  productId    String
+  customerName String
+  rating       Int      @default(5)
+  comment      String?
+  isVerified   Boolean  @default(true)
+  isGenuine    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
 }

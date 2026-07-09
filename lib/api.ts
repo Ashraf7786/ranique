@@ -57,10 +57,14 @@ function mapBackendProduct(dbProduct: any, siblings: any[] = []): Product {
     category: (dbProduct.category?.slug as any) || 'cosmetics',
     price: dbProduct.sellingPrice,
     compareAtPrice: dbProduct.originalPrice || undefined,
+    inStock: dbProduct.currentStock > 0,
+    rating: dbProduct.rating,
+    reviewCount: dbProduct.reviewCount,
+    boughtLastWeek: dbProduct.boughtLastWeek || Math.floor(Math.random() * (45 - 15 + 1) + 15),
+    isNewArrival: dbProduct.isNewArrival,
+    badge: dbProduct.badge,
+    reviews: dbProduct.reviews || [],
     currency: dbProduct.currency || 'INR',
-    rating: dbProduct.rating || 4.5,
-    reviewCount: dbProduct.reviewCount || 0,
-    badge: dbProduct.badge || undefined,
     description: dbProduct.shortDescription || '',
     details: dbProduct.fullDescription ? dbProduct.fullDescription.split('\n') : [],
     shipping: 'Free standard shipping on orders over ₹999. Express delivery available pan-India.',
@@ -101,6 +105,7 @@ export async function getProducts(categorySlug?: string): Promise<any[]> {
         category: true,
         brand: true,
         offer: true,
+        reviews: { orderBy: { createdAt: 'desc' } },
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -121,6 +126,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
         category: true,
         brand: true,
         offer: true,
+        reviews: { orderBy: { createdAt: 'desc' } },
       }
     });
     

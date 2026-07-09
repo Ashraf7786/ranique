@@ -13,6 +13,7 @@ import { PinCodeChecker } from "@/components/pdp/PinCodeChecker";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { formatPrice } from "@/lib/utils";
 import Link from "next/link";
+import { BadgeCheck, Flame } from "lucide-react";
 
 export function PDPClient({ product, related }: { product: any, related: any[] }) {
   if (!product) notFound();
@@ -101,25 +102,28 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
           {product.reviews?.map((review: any) => (
             <div key={review.id} className="border-b border-brand-border pb-4">
               <div className="flex items-start gap-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-brand-rose flex items-center justify-center text-white text-xs font-bold shrink-0">
-                  {review.author.charAt(0)}
+                <div className="w-8 h-8 rounded-full bg-brand-rose flex items-center justify-center text-white text-xs font-bold shrink-0 uppercase">
+                  {review.customerName.charAt(0)}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold text-brand-ink">
-                      {review.author}
+                      {review.customerName}
                     </p>
-                    {review.verified && (
-                      <span className="text-2xs text-green-600 font-medium">✓ Verified</span>
+                    {review.isVerified && (
+                      <span className="flex items-center gap-1 text-[11px] font-medium text-brand-rose">
+                        <BadgeCheck className="w-4 h-4" fill="currentColor" stroke="white" />
+                        Verified
+                      </span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <StarRating rating={review.rating} showCount={false} size="sm" />
-                    <span className="text-2xs text-brand-slate">{review.date}</span>
+                    <span className="text-2xs text-brand-slate">{new Date(review.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-brand-slate pl-11">{review.body}</p>
+              <p className="text-sm text-brand-slate pl-11">{review.comment}</p>
             </div>
           ))}
 
@@ -191,6 +195,16 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
               </span>
             )}
           </div>
+
+          {/* Social Proof */}
+          {product.boughtLastWeek > 0 && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-orange-50 text-orange-600 text-xs font-semibold">
+                <Flame className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
+                {product.boughtLastWeek} bought last week
+              </span>
+            </div>
+          )}
 
           {/* Short description */}
           <p className="text-sm text-brand-slate leading-relaxed">

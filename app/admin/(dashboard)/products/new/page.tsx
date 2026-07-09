@@ -27,6 +27,7 @@ export default function NewProductPage() {
     currentStock: "",
     status: "DRAFT",
     categoryId: "",
+    boughtLastWeek: "",
   });
 
   useEffect(() => {
@@ -65,6 +66,7 @@ export default function NewProductPage() {
         images: images.map((img, index) => ({ url: img, isCover: index === 0 })),
         colors: selectedColor ? JSON.stringify([selectedColor]) : null,
         variantGroupId: variantGroupId || null,
+        boughtLastWeek: formData.boughtLastWeek ? Number(formData.boughtLastWeek) : null,
       };
 
       const { API_URL } = await import("@/lib/config");
@@ -267,6 +269,19 @@ export default function NewProductPage() {
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blush focus:border-brand-rose outline-none"
                 />
                 <p className="text-xs text-gray-500 mt-1">To show a crossed-out 'SALE' price.</p>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bought Last Week (Social Proof)</label>
+                <input 
+                  type="number" 
+                  name="boughtLastWeek"
+                  value={formData.boughtLastWeek}
+                  onChange={handleChange}
+                  min="0"
+                  placeholder="e.g. 23"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blush focus:border-brand-rose outline-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">Leave empty to auto-generate a believable number.</p>
               </div>
             </div>
           </div>
