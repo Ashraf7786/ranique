@@ -36,12 +36,14 @@ export interface ProductImage {
 
 export interface ProductReview {
   id: string;
-  author: string;
-  avatar?: string;
+  productId: string;
+  customerName: string;
   rating: number;
-  date: string;
-  body: string;
-  verified: boolean;
+  comment?: string;
+  isVerified: boolean;
+  isGenuine: boolean;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
 
 export interface ProductOfferType {
@@ -69,8 +71,11 @@ export interface Product {
   details: string[];
   shipping: string;
   material?: string;
-  reviews?: ProductReview[];
+  reviews?: ProductReview[] | any[];
   offer?: ProductOfferType;
+  inStock?: boolean;
+  boughtLastWeek?: number;
+  isNewArrival?: boolean;
 }
 
 // ─── Cart Types ─────────────────────────────────────────────────────────────
