@@ -21,7 +21,11 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ p
       include: {
         user: true,
         items: {
-          include: { product: true }
+          include: { 
+            product: {
+              include: { images: true }
+            }
+          }
         }
       }
     }),
@@ -44,6 +48,7 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ p
                 <th className="py-4 px-6 font-medium text-gray-500">Order ID</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Customer</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Date</th>
+                <th className="py-4 px-6 font-medium text-gray-500">Items</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Total Amount</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Payment Mode</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Status</th>
@@ -70,6 +75,25 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ p
                         day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                       })}
                     </td>
+                    <td className="py-4 px-6 text-sm text-gray-600">
+                      <div className="flex flex-col gap-3">
+                        {order.items.map((item: any) => (
+                          <div key={item.id} className="flex items-center gap-3">
+                            {item.product?.images?.[0]?.url ? (
+                              <img src={item.product.images[0].url} alt={item.product.title} className="w-12 h-12 object-cover rounded-md border border-gray-200" />
+                            ) : (
+                              <div className="w-12 h-12 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 shrink-0">
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                              </div>
+                            )}
+                            <div>
+                              <div className="font-medium text-gray-900 truncate max-w-[180px]">{item.product?.title || 'Unknown Product'}</div>
+                              <div className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity} • ₹{item.price}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
                     <td className="py-4 px-6 text-sm text-gray-900 font-medium">
                       ₹{order.totalAmount.toLocaleString()}
                     </td>
@@ -89,7 +113,7 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ p
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-gray-500">
+                  <td colSpan={7} className="py-12 text-center text-gray-500">
                     No orders found.
                   </td>
                 </tr>

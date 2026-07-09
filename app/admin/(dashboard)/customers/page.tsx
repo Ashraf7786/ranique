@@ -43,17 +43,18 @@ export default function CustomersPage() {
               <tr className="bg-gray-50 border-b border-gray-200">
                 <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Mobile Number</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Joined Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={3} className="px-6 py-8 text-center text-sm text-gray-500">Loading customers...</td>
+                  <td colSpan={4} className="px-6 py-8 text-center text-sm text-gray-500">Loading customers...</td>
                 </tr>
               ) : customers.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-6 py-8 text-center text-sm text-gray-500">No customers found.</td>
+                  <td colSpan={4} className="px-6 py-8 text-center text-sm text-gray-500">No customers found.</td>
                 </tr>
               ) : (
                 customers.map((user) => (
@@ -64,6 +65,7 @@ export default function CustomersPage() {
                       </p>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">{user.email}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{user.mobileNumber || 'N/A'}</td>
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
