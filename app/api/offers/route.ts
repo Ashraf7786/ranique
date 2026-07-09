@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         where: { productId },
         data: { discount, offerPrice, endsAt: new Date(endsAt), isActive }
       });
-      revalidateTag('products', 'max');
+      revalidateTag('products');
       revalidatePath('/', 'layout');
       return NextResponse.json(offer);
     }
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       }
     });
 
-    revalidateTag('products', 'max');
+    revalidateTag('products');
     revalidatePath('/', 'layout');
     return NextResponse.json(offer, { status: 201 });
   } catch (error) {
