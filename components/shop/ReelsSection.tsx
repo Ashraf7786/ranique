@@ -2,7 +2,25 @@
 
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Instagram } from "lucide-react";
+
+const InstagramIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+  </svg>
+);
 
 const REELS = [
   { id: 1, videoUrl: "/video/Ranique_reel1.mp4", title: "Earning Gift Box", instagramUrl: "https://www.instagram.com/reel/DaU1_9czYPo/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" },
@@ -68,7 +86,7 @@ function ReelCard({ reel }: { reel: any }) {
       {/* View on Instagram Overlay */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/reel:opacity-100 transition-opacity duration-300 z-10">
         <div className="bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium transform translate-y-4 group-hover/reel:translate-y-0 transition-all duration-300 shadow-xl">
-          <Instagram className="w-4 h-4" />
+          <InstagramIcon className="w-4 h-4" />
           View on Instagram
         </div>
       </div>
