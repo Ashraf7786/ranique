@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, Edit2, Trash2, Eye, Package, ChevronLeft, ChevronRight, X, AlertTriangle, CheckCircle2, RotateCcw } from "lucide-react";
+import { Search, Edit2, Trash2, Eye, Package, ChevronLeft, ChevronRight, X, AlertTriangle, CheckCircle2, RotateCcw, Zap } from "lucide-react";
 
 export function ProductDataTable({ initialProducts, isTrashMode = false }: { initialProducts: any[], isTrashMode?: boolean }) {
   const [products, setProducts] = useState(initialProducts);
@@ -240,12 +240,15 @@ export function ProductDataTable({ initialProducts, isTrashMode = false }: { ini
                       <div className="flex items-center gap-1">
                         {!isTrashMode && (
                           <>
-                            <Link href={`/product/${product.slug}`} target="_blank" className="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100 transition-colors">
+                            <Link href={`/product/${product.slug}`} target="_blank" className="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100 transition-colors" title="View Product">
                               <Eye className="w-4 h-4" />
                             </Link>
-                            <button onClick={() => setEditingProduct(product)} className="p-1.5 text-gray-400 hover:text-blue-600 rounded hover:bg-blue-50 transition-colors">
-                              <Edit2 className="w-4 h-4" />
+                            <button onClick={() => setEditingProduct(product)} className="p-1.5 text-gray-400 hover:text-yellow-600 rounded hover:bg-yellow-50 transition-colors" title="Quick Edit">
+                              <Zap className="w-4 h-4" />
                             </button>
+                            <Link href={`/admin/products/${product.id}/edit`} className="p-1.5 text-gray-400 hover:text-blue-600 rounded hover:bg-blue-50 transition-colors" title="Full Edit">
+                              <Edit2 className="w-4 h-4" />
+                            </Link>
                           </>
                         )}
                         {isTrashMode && (

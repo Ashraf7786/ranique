@@ -45,9 +45,22 @@ export async function PATCH(
   try {
     const { id } = await params;
     const data = await request.json();
+    const { images, ...productData } = data;
+    
     const product = await prisma.product.update({
       where: { id },
-      data
+      data: {
+        ...productData,
+        images: images ? {
+          deleteMany: {},
+          create: images
+        } : undefined,
+      },
+      include: {
+        images: true,
+        category: true,
+        brand: true,
+      }
     });
     revalidatePath('/', 'layout');
     return NextResponse.json(product);
