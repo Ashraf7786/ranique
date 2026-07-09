@@ -9,6 +9,11 @@ export function ReviewsDataTable({ initialReviews, products }: { initialReviews:
   const [reviews, setReviews] = useState(initialReviews);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
+  const totalPages = Math.ceil(reviews.length / itemsPerPage);
+  const paginatedReviews = reviews.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   
   const [formData, setFormData] = useState({
     productId: "",
@@ -89,6 +94,7 @@ export function ReviewsDataTable({ initialReviews, products }: { initialReviews:
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
               <tr>
+                <th className="px-6 py-4">#</th>
                 <th className="px-6 py-4">CUSTOMER</th>
                 <th className="px-6 py-4">PRODUCT</th>
                 <th className="px-6 py-4">RATING</th>
@@ -98,15 +104,18 @@ export function ReviewsDataTable({ initialReviews, products }: { initialReviews:
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {reviews.length === 0 ? (
+              {paginatedReviews.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                     No reviews yet. Add one to get started!
                   </td>
                 </tr>
               ) : (
-                reviews.map((review: any) => (
+                paginatedReviews.map((review: any, index: number) => (
                   <tr key={review.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-gray-500 text-sm">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
                     <td className="px-6 py-4 font-medium text-gray-900">
                       {review.customerName}
                     </td>
@@ -154,6 +163,33 @@ export function ReviewsDataTable({ initialReviews, products }: { initialReviews:
             </tbody>
           </table>
         </div>
+        
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <span className="text-sm text-gray-500">
+              Showing <span className="font-medium text-gray-900">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-medium text-gray-900">{Math.min(currentPage * itemsPerPage, reviews.length)}</span> of <span className="font-medium text-gray-900">{reviews.length}</span> results
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-white"
+              >
+                Previous
+              </button>
+              <div className="flex items-center px-4">
+                <span className="text-sm font-medium text-gray-700">Page {currentPage} of {totalPages}</span>
+              </div>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-white"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Add Review Modal */}
