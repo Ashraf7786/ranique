@@ -283,18 +283,59 @@ export default function NewProductPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-3">Select Color</label>
                 <div className="flex flex-wrap gap-3">
                   {[
-                    { label: "Gold", hex: "#FFD700" },
-                    { label: "Silver", hex: "#C0C0C0" },
-                    { label: "Rose Gold", hex: "#B76E79" },
+                    // Basic & Neutrals
                     { label: "Black", hex: "#000000" },
                     { label: "White", hex: "#FFFFFF" },
-                    { label: "Red", hex: "#FF0000" },
-                    { label: "Blue", hex: "#0000FF" },
-                    { label: "Green", hex: "#008000" },
-                    { label: "Pink", hex: "#FFC0CB" },
-                    { label: "Purple", hex: "#800080" },
+                    { label: "Grey", hex: "#808080" },
+                    { label: "Silver", hex: "#C0C0C0" },
+                    { label: "Charcoal", hex: "#36454F" },
+                    
+                    // Browns & Tans
+                    { label: "Brown", hex: "#8B4513" },
+                    { label: "Beige", hex: "#F5F5DC" },
+                    { label: "Tan", hex: "#D2B48C" },
+                    { label: "Camel", hex: "#C19A6B" },
                     { label: "Bronze", hex: "#CD7F32" },
+                    
+                    // Reds & Pinks
+                    { label: "Red", hex: "#FF0000" },
+                    { label: "Maroon", hex: "#800000" },
+                    { label: "Burgundy", hex: "#800020" },
+                    { label: "Rose Gold", hex: "#B76E79" },
+                    { label: "Pink", hex: "#FFC0CB" },
+                    { label: "Hot Pink", hex: "#FF69B4" },
+                    { label: "Coral", hex: "#FF7F50" },
+                    { label: "Peach", hex: "#FFE5B4" },
+                    
+                    // Oranges & Yellows
+                    { label: "Orange", hex: "#FFA500" },
+                    { label: "Mustard", hex: "#FFDB58" },
+                    { label: "Yellow", hex: "#FFFF00" },
+                    { label: "Gold", hex: "#FFD700" },
+                    
+                    // Greens
+                    { label: "Green", hex: "#008000" },
+                    { label: "Olive", hex: "#808000" },
+                    { label: "Mint", hex: "#98FF98" },
+                    { label: "Teal", hex: "#008080" },
+                    { label: "Emerald", hex: "#50C878" },
+                    
+                    // Blues
+                    { label: "Blue", hex: "#0000FF" },
+                    { label: "Navy", hex: "#000080" },
+                    { label: "Light Blue", hex: "#ADD8E6" },
+                    { label: "Cyan", hex: "#00FFFF" },
+                    { label: "Indigo", hex: "#4B0082" },
+                    
+                    // Purples
+                    { label: "Purple", hex: "#800080" },
+                    { label: "Lavender", hex: "#E6E6FA" },
+                    { label: "Magenta", hex: "#FF00FF" },
+                    { label: "Plum", hex: "#DDA0DD" },
+                    
+                    // Others
                     { label: "Multi", hex: "linear-gradient(45deg, red, blue, green, yellow)" },
+                    { label: "Clear/Transparent", hex: "rgba(255, 255, 255, 0)" },
                   ].map((c, i) => (
                     <button
                       key={i}
