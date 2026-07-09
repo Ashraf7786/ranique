@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { ProductCreateSchema, validationError } from '@/lib/validation';
 
 export async function GET(request: Request) {
   try {
@@ -45,9 +46,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const data = await request.json();
-    const { images, ...productData } = data;
-    
+    const body = await request.json();
+
+    // Zod validation
+    const parsed = ProductCreateSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+    const { images, ...productData } = parsed.data;
+
     const product = await prisma.product.create({
       data: {
         ...productData,

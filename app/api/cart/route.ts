@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import { CartItemSchema, validationError } from '@/lib/validation';
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -23,7 +24,12 @@ export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { productId, quantity, variantSku } = await req.json();
+  const body = await req.json();
+
+  // Zod validation
+  const parsed = CartItemSchema.safeParse(body);
+  if (!parsed.success) return validationError(parsed.error);
+  const { productId, quantity, variantSku } = parsed.data;
 
   let cart = await prisma.cart.findUnique({ where: { userId: (session.user as any).id } });
   

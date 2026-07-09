@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import { ProductUpdateSchema, validationError } from '@/lib/validation';
 
 export async function GET(
   request: Request,
@@ -43,9 +46,19 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 🔒 Security fix: Admin auth guard was missing on this route
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const { id } = await params;
-    const data = await request.json();
-    const { images, ...productData } = data;
+    const body = await request.json();
+
+    // Zod validation (partial — all fields optional for updates)
+    const parsed = ProductUpdateSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+    const { images, ...productData } = parsed.data;
     
     const product = await prisma.product.update({
       where: { id },
@@ -74,6 +87,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 🔒 Security fix: Admin auth guard was missing on this route
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const { searchParams } = new URL(request.url);
     const isHardDelete = searchParams.get('hard') === 'true';
     const { id } = await params;

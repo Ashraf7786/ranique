@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { CouponValidateSchema, validationError } from '@/lib/validation';
 
 export async function POST(request: Request) {
   try {
-    const { code, cartSubtotal, cartItems } = await request.json();
+    const body = await request.json();
 
-    if (!code) {
-      return NextResponse.json({ error: 'Coupon code is required' }, { status: 400 });
-    }
+    // Zod validation
+    const parsed = CouponValidateSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+    const { code, cartSubtotal, cartItems } = parsed.data;
 
     const coupon = await prisma.coupon.findUnique({
       where: { code: code.toUpperCase() },
@@ -38,7 +40,7 @@ export async function POST(request: Request) {
 
     if (coupon.productId) {
       // Coupon applies only to a specific product
-      const item = cartItems.find((i: any) => i.productId === coupon.productId);
+      const item = (cartItems || []).find((i: any) => i.productId === coupon.productId);
       if (!item) {
         return NextResponse.json({ error: 'This coupon is not valid for the items in your cart' }, { status: 400 });
       }

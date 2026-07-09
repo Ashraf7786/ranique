@@ -1,34 +1,122 @@
-const rateLimitCache = new Map();
+/**
+ * lib/rate-limit.ts
+ *
+ * A lightweight, zero-dependency, in-memory rate limiter.
+ * Uses a Map to track request counts per IP per route.
+ * No Redis or external service required.
+ *
+ * Usage:
+ *   const result = rateLimit(request, { limit: 5, windowMs: 15 * 60 * 1000 });
+ *   if (!result.success) return NextResponse.json({ error: result.error }, { status: 429 });
+ */
 
-export function rateLimit(ip: string, limit: number = 10, windowMs: number = 60000) {
-  const now = Date.now();
-  const record = rateLimitCache.get(ip);
-
-  if (!record) {
-    rateLimitCache.set(ip, { count: 1, resetTime: now + windowMs });
-    return { success: true, remaining: limit - 1 };
-  }
-
-  if (now > record.resetTime) {
-    rateLimitCache.set(ip, { count: 1, resetTime: now + windowMs });
-    return { success: true, remaining: limit - 1 };
-  }
-
-  if (record.count >= limit) {
-    return { success: false, remaining: 0 };
-  }
-
-  record.count += 1;
-  rateLimitCache.set(ip, record);
-  return { success: true, remaining: limit - record.count };
+interface RateLimitOptions {
+  /** Maximum number of requests allowed within the window */
+  limit: number;
+  /** Time window in milliseconds */
+  windowMs: number;
+  /** Optional key prefix to namespace different routes */
+  prefix?: string;
 }
 
-// Memory cleanup every 10 minutes to prevent memory leaks
-setInterval(() => {
-  const now = Date.now();
-  rateLimitCache.forEach((value, key) => {
-    if (now > value.resetTime) {
-      rateLimitCache.delete(key);
+interface RateLimitResult {
+  success: boolean;
+  remaining: number;
+  resetAt: Date;
+  error?: string;
+}
+
+interface RateLimitEntry {
+  count: number;
+  resetAt: number;
+}
+
+// In-memory store: key → { count, resetAt }
+const store = new Map<string, RateLimitEntry>();
+
+/**
+ * Periodically cleans up expired entries to avoid memory leaks.
+ * Runs every 5 minutes.
+ */
+if (typeof setInterval !== 'undefined') {
+  setInterval(() => {
+    const now = Date.now();
+    for (const [key, entry] of store.entries()) {
+      if (entry.resetAt <= now) {
+        store.delete(key);
+      }
     }
-  });
-}, 10 * 60 * 1000);
+  }, 5 * 60 * 1000);
+}
+
+/**
+ * Gets the real client IP from the request headers,
+ * falling back to a generic value if not found.
+ */
+function getClientIp(request: Request): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
+  return 'unknown';
+}
+
+/**
+ * Main rate limiter function.
+ * Call this at the top of any API route handler.
+ */
+export function rateLimit(request: Request, options: RateLimitOptions): RateLimitResult {
+  const { limit, windowMs, prefix = 'rl' } = options;
+  const ip = getClientIp(request);
+  const now = Date.now();
+  const key = `${prefix}:${ip}`;
+
+  const existing = store.get(key);
+
+  // If window has expired or no entry, start fresh
+  if (!existing || existing.resetAt <= now) {
+    const resetAt = now + windowMs;
+    store.set(key, { count: 1, resetAt });
+    return {
+      success: true,
+      remaining: limit - 1,
+      resetAt: new Date(resetAt),
+    };
+  }
+
+  // Increment existing entry
+  existing.count += 1;
+  store.set(key, existing);
+
+  if (existing.count > limit) {
+    const secondsLeft = Math.ceil((existing.resetAt - now) / 1000);
+    return {
+      success: false,
+      remaining: 0,
+      resetAt: new Date(existing.resetAt),
+      error: `Too many requests. Please try again in ${secondsLeft} seconds.`,
+    };
+  }
+
+  return {
+    success: true,
+    remaining: limit - existing.count,
+    resetAt: new Date(existing.resetAt),
+  };
+}
+
+// ─── Preset rate limit configs ──────────────────────────────────────────────
+
+/** For auth endpoints like register, login: 10 per hour */
+export const authRateLimit = (request: Request) =>
+  rateLimit(request, { limit: 10, windowMs: 60 * 60 * 1000, prefix: 'auth' });
+
+/** For OTP/forgot-password: 5 per 15 minutes (strict) */
+export const otpRateLimit = (request: Request) =>
+  rateLimit(request, { limit: 5, windowMs: 15 * 60 * 1000, prefix: 'otp' });
+
+/** For payment endpoints: 10 per minute */
+export const paymentRateLimit = (request: Request) =>
+  rateLimit(request, { limit: 10, windowMs: 60 * 1000, prefix: 'pay' });

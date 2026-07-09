@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendOTP } from '@/lib/mailer';
+import { ForgotPasswordSchema, validationError } from '@/lib/validation';
+import { otpRateLimit } from '@/lib/rate-limit';
 
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -8,11 +10,18 @@ function generateOTP() {
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json();
-
-    if (!email) {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    // Rate limit: 5 requests per 15 minutes per IP (strict)
+    const limit = otpRateLimit(req);
+    if (!limit.success) {
+      return NextResponse.json({ error: limit.error }, { status: 429 });
     }
+
+    const body = await req.json();
+
+    // Zod validation
+    const parsed = ForgotPasswordSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+    const { email } = parsed.data;
 
     const user = await prisma.user.findUnique({ where: { email } });
 

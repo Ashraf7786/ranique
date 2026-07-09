@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import { OrderCreateSchema, validationError } from '@/lib/validation';
 
 export async function POST(req: Request) {
   try {
@@ -12,21 +13,12 @@ export async function POST(req: Request) {
 
     const userId = (session.user as any).id;
     const body = await req.json();
-    const { 
-      items, shippingAddress, paymentMethod, totalAmount, couponCode,
-      razorpayOrderId, razorpayPaymentId, razorpaySignature
-    } = body;
 
-    // Validate required fields
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
-    }
-    if (!shippingAddress) {
-      return NextResponse.json({ error: 'Shipping address is required' }, { status: 400 });
-    }
-    if (!paymentMethod) {
-      return NextResponse.json({ error: 'Payment method is required' }, { status: 400 });
-    }
+    // Zod validation — replaces all manual if(!field) checks
+    const parsed = OrderCreateSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+    const { items, shippingAddress, paymentMethod, couponCode,
+      razorpayOrderId, razorpayPaymentId, razorpaySignature } = parsed.data;
 
     if (paymentMethod === 'ONLINE') {
       if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
@@ -44,11 +36,6 @@ export async function POST(req: Request) {
       if (generatedSignature !== razorpaySignature) {
         return NextResponse.json({ error: 'Invalid payment signature' }, { status: 400 });
       }
-    }
-
-    const { name, phone, email, line1, line2, city, state, zip, country } = shippingAddress;
-    if (!name || !phone || !email || !line1 || !city || !state || !zip) {
-      return NextResponse.json({ error: 'All required shipping address fields must be filled' }, { status: 400 });
     }
 
     // Fetch product data to get current prices
@@ -116,6 +103,8 @@ export async function POST(req: Request) {
     const totalDiscount = appliedCouponDiscount + appliedFirstOrderDiscount;
     const finalTotal = subtotal + shipping - totalDiscount;
 
+    const { name, phone, email, line1, line2, city, state, zip, country } = shippingAddress;
+
     // Create the order
     const order = await prisma.order.create({
       data: {
@@ -123,7 +112,7 @@ export async function POST(req: Request) {
         totalAmount: finalTotal,
         currency: 'INR',
         paymentMethod,
-        status: paymentMethod === 'ONLINE' ? 'CONFIRMED' : 'CONFIRMED',
+        status: 'CONFIRMED',
         razorpayOrderId: razorpayOrderId || null,
         razorpayPaymentId: razorpayPaymentId || null,
         razorpaySignature: razorpaySignature || null,

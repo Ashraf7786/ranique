@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { ResetPasswordSchema, validationError } from '@/lib/validation';
 
 export async function POST(req: Request) {
   try {
-    const { email, otp, newPassword } = await req.json();
+    const body = await req.json();
 
-    if (!email || !otp || !newPassword) {
-      return NextResponse.json({ error: 'Email, OTP, and new password are required' }, { status: 400 });
-    }
+    // Zod validation
+    const parsed = ResetPasswordSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+    const { email, otp, newPassword } = parsed.data;
 
     const otpRecord = await prisma.otpRequest.findFirst({
       where: {

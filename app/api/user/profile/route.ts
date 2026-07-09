@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import { ProfileUpdateSchema, validationError } from '@/lib/validation';
 
 export async function GET() {
   try {
@@ -36,7 +37,11 @@ export async function PUT(req: Request) {
 
     const userId = (session.user as any).id;
     const body = await req.json();
-    const { firstName, lastName, mobileNumber, dob, gender, address } = body;
+
+    // Zod validation
+    const parsed = ProfileUpdateSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+    const { firstName, lastName, mobileNumber, dob, gender, address } = parsed.data;
 
     // Update user base fields
     const updatedUser = await prisma.user.update({

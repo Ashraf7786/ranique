@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { revalidateTag, revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import { OfferCreateSchema, validationError } from '@/lib/validation';
 
 export async function GET(request: Request) {
   try {
@@ -22,8 +25,18 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const { productId, discount, offerPrice, endsAt, isActive } = data;
+    // 🔒 Security fix: Admin auth guard was missing on this route
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const body = await request.json();
+
+    // Zod validation
+    const parsed = OfferCreateSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+    const { productId, discount, offerPrice, endsAt, isActive } = parsed.data;
 
     // Check if an offer already exists for this product
     const existingOffer = await prisma.productOffer.findUnique({
@@ -36,7 +49,7 @@ export async function POST(request: Request) {
         where: { productId },
         data: { discount, offerPrice, endsAt: new Date(endsAt), isActive }
       });
-      revalidateTag('products', 'max');
+      revalidateTag('products');
       revalidatePath('/', 'layout');
       return NextResponse.json(offer);
     }
@@ -48,11 +61,11 @@ export async function POST(request: Request) {
         discount,
         offerPrice,
         endsAt: new Date(endsAt),
-        isActive
+        isActive: isActive ?? true
       }
     });
 
-    revalidateTag('products', 'max');
+    revalidateTag('products');
     revalidatePath('/', 'layout');
     return NextResponse.json(offer, { status: 201 });
   } catch (error) {

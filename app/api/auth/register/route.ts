@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { sendOTP } from '@/lib/mailer';
+import { RegisterSchema, validationError } from '@/lib/validation';
+import { authRateLimit } from '@/lib/rate-limit';
 
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -9,11 +11,18 @@ function generateOTP() {
 
 export async function POST(req: Request) {
   try {
-    const { firstName, lastName, mobileNumber, email, password } = await req.json();
-
-    if (!firstName || !mobileNumber || !email || !password) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    // Rate limit: 10 attempts per hour per IP
+    const limit = authRateLimit(req);
+    if (!limit.success) {
+      return NextResponse.json({ error: limit.error }, { status: 429 });
     }
+
+    const body = await req.json();
+
+    // Zod validation
+    const parsed = RegisterSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+    const { firstName, lastName, mobileNumber, email, password } = parsed.data;
 
     // Check if user already exists
     let user = await prisma.user.findUnique({ where: { email } });
@@ -61,7 +70,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // Do not delete old OTPs here, just create a new one. 
+    // Do not delete old OTPs here, just create a new one.
     // This allows us to count them for the 24-hour limit.
     await prisma.otpRequest.create({
       data: {

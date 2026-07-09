@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { revalidateTag, revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(
   request: Request,
@@ -30,6 +32,12 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 🔒 Security fix: Admin auth guard was missing on this route
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const { id } = await params;
     const data = await request.json();
     
@@ -41,7 +49,7 @@ export async function PATCH(
       where: { id },
       data
     });
-    revalidateTag('products', 'max');
+    revalidateTag('products');
     revalidatePath('/', 'layout');
     return NextResponse.json(offer);
   } catch (error) {
@@ -54,11 +62,17 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 🔒 Security fix: Admin auth guard was missing on this route
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const { id } = await params;
     await prisma.productOffer.delete({
       where: { id }
     });
-    revalidateTag('products', 'max');
+    revalidateTag('products');
     revalidatePath('/', 'layout');
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -2,12 +2,18 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import { WishlistItemSchema, validationError } from '@/lib/validation';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { productId } = await req.json();
+  const body = await req.json();
+
+  // Zod validation
+  const parsed = WishlistItemSchema.safeParse(body);
+  if (!parsed.success) return validationError(parsed.error);
+  const { productId } = parsed.data;
 
   let wishlist = await prisma.wishlist.findUnique({ where: { userId: (session.user as any).id } });
   

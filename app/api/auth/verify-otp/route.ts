@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { VerifyOtpSchema, validationError } from '@/lib/validation';
 
 export async function POST(req: Request) {
   try {
-    const { email, otp } = await req.json();
+    const body = await req.json();
 
-    if (!email || !otp) {
-      return NextResponse.json({ error: 'Email and OTP are required' }, { status: 400 });
-    }
+    // Zod validation
+    const parsed = VerifyOtpSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+    const { email, otp } = parsed.data;
 
     const otpRecord = await prisma.otpRequest.findFirst({
       where: {
