@@ -14,6 +14,7 @@ export interface ColorVariant {
   hex: string;
   stock: number;
   priceModifier?: number; // added to base price if present
+  slug?: string;
 }
 
 export interface SizeVariant {

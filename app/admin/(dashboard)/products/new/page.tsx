@@ -10,7 +10,8 @@ import { API_URL } from "@/lib/config";
 export default function NewProductPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [colors, setColors] = useState<{label: string, hex: string}[]>([]);
+  const [selectedColor, setSelectedColor] = useState<{label: string, hex: string} | null>(null);
+  const [variantGroupId, setVariantGroupId] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
   const [images, setImages] = useState<string[]>([]);
   const [tempUrl, setTempUrl] = useState("");
@@ -60,7 +61,8 @@ export default function NewProductPage() {
         status: formData.status,
         categoryId: formData.categoryId ? formData.categoryId : null,
         images: images.map((img, index) => ({ url: img, isCover: index === 0 })),
-        colors: colors.length > 0 ? JSON.stringify(colors) : null,
+        colors: selectedColor ? JSON.stringify([selectedColor]) : null,
+        variantGroupId: variantGroupId || null,
       };
 
       const { API_URL } = await import("@/lib/config");
@@ -273,40 +275,61 @@ export default function NewProductPage() {
               <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
               </svg>
-              Variants (Colors)
+              Product Color & Grouping
             </h2>
             
-            <div className="space-y-4">
-              {colors.map((c, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full border border-gray-300 shadow-sm" style={{ backgroundColor: c.hex }} />
-                  <input 
-                    type="text" 
-                    value={c.label} 
-                    onChange={e => { const newC = [...colors]; newC[i].label = e.target.value; setColors(newC); }} 
-                    placeholder="Color Name (e.g. Rosewood)" 
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  />
-                  <input 
-                    type="text" 
-                    value={c.hex} 
-                    onChange={e => { const newC = [...colors]; newC[i].hex = e.target.value; setColors(newC); }} 
-                    placeholder="#HexCode" 
-                    className="w-32 px-3 py-2 border border-gray-300 rounded-lg text-sm uppercase"
-                  />
-                  <button type="button" onClick={() => setColors(colors.filter((_, idx) => idx !== i))} className="text-red-500 hover:bg-red-50 p-2 rounded">
-                    X
-                  </button>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">Select Color</label>
+                <div className="flex flex-wrap gap-3">
+                  {[
+                    { label: "Gold", hex: "#FFD700" },
+                    { label: "Silver", hex: "#C0C0C0" },
+                    { label: "Rose Gold", hex: "#B76E79" },
+                    { label: "Black", hex: "#000000" },
+                    { label: "White", hex: "#FFFFFF" },
+                    { label: "Red", hex: "#FF0000" },
+                    { label: "Blue", hex: "#0000FF" },
+                    { label: "Green", hex: "#008000" },
+                    { label: "Pink", hex: "#FFC0CB" },
+                    { label: "Purple", hex: "#800080" },
+                    { label: "Bronze", hex: "#CD7F32" },
+                    { label: "Multi", hex: "linear-gradient(45deg, red, blue, green, yellow)" },
+                  ].map((c, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      title={c.label}
+                      onClick={() => setSelectedColor(c)}
+                      className={`relative w-10 h-10 rounded-full border shadow-sm transition-transform hover:scale-110 ${
+                        selectedColor?.label === c.label ? "ring-2 ring-brand-rose ring-offset-2 border-brand-rose" : "border-gray-200"
+                      }`}
+                      style={{ background: c.hex }}
+                    >
+                      {selectedColor?.label === c.label && (
+                        <span className="absolute inset-0 flex items-center justify-center">
+                          <svg className={`w-5 h-5 ${c.hex === '#FFFFFF' ? 'text-black' : 'text-white'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </span>
+                      )}
+                    </button>
+                  ))}
                 </div>
-              ))}
-              
-              <button 
-                type="button" 
-                onClick={() => setColors([...colors, { label: "", hex: "#000000" }])}
-                className="text-sm font-medium text-brand-rose hover:text-brand-rose-dark"
-              >
-                + Add Color Variant
-              </button>
+                {selectedColor && <p className="text-sm font-medium text-brand-ink mt-2">Selected: {selectedColor.label}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Variant Group ID (Optional)</label>
+                <input 
+                  type="text" 
+                  value={variantGroupId}
+                  onChange={e => setVariantGroupId(e.target.value)}
+                  placeholder="e.g. stones-bangle-01"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blush focus:border-brand-rose outline-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">If you want to link different colored products together on the storefront, give them the exact same Variant Group ID.</p>
+              </div>
             </div>
           </div>
         </div>

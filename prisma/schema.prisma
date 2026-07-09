@@ -200,6 +200,7 @@ model Product {
   
   // Variants & UI
   colors           String?  // Stored as JSON string
+  variantGroupId   String?
   badge            String?  // e.g., BESTSELLER, SALE
   rating           Float    @default(4.5)
   reviewCount      Int      @default(0)
@@ -227,6 +228,7 @@ model Product {
   @@index([categoryId])
   @@index([brandId])
   @@index([status])
+  @@index([variantGroupId])
 }
 
 model ProductImage {

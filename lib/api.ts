@@ -3,12 +3,35 @@ import { Product } from "./types";
 // Removed API_URL to avoid Client Component prisma imports
 
 // Adapter to transform backend DB model to frontend Product type
-function mapBackendProduct(dbProduct: any): Product {
-  let colors = [];
+function mapBackendProduct(dbProduct: any, siblings: any[] = []): Product {
+  let colors: any[] = [];
   try {
-    if (dbProduct.colors) colors = JSON.parse(dbProduct.colors);
+    if (dbProduct.colors) {
+      colors = JSON.parse(dbProduct.colors);
+      if (colors.length > 0) {
+        colors[0].slug = dbProduct.slug;
+      }
+    }
   } catch (e) {
     console.error("Failed to parse colors for product", dbProduct.slug);
+  }
+
+  // Aggregate colors from siblings if they exist
+  if (siblings.length > 0) {
+    colors = []; // Rebuild to include all sibling colors
+    for (const sib of siblings) {
+      if (sib.colors) {
+        try {
+          const sibColors = JSON.parse(sib.colors);
+          if (sibColors.length > 0) {
+            const c = sibColors[0];
+            c.slug = sib.slug;
+            c.stock = sib.currentStock > 0 ? 10 : 0;
+            colors.push(c);
+          }
+        } catch (e) {}
+      }
+    }
   }
 
   // Inject Bangle Sizes
@@ -102,7 +125,24 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     });
     
     if (!dbProduct) return null;
-    return mapBackendProduct(dbProduct);
+
+    let siblings: any[] = [];
+    if (dbProduct.variantGroupId) {
+      siblings = await prisma.product.findMany({
+        where: {
+          variantGroupId: dbProduct.variantGroupId,
+          deletedAt: null,
+          status: 'PUBLISHED' // only show published siblings
+        },
+        select: {
+          slug: true,
+          colors: true,
+          currentStock: true,
+        },
+      });
+    }
+
+    return mapBackendProduct(dbProduct, siblings);
   } catch (error) {
     console.error(`Failed to fetch product ${slug}:`, error);
     return null;

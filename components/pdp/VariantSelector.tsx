@@ -3,6 +3,7 @@
 import React from "react";
 import { ColorVariant, SizeVariant, ProductVariant } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface VariantSelectorProps {
   variants: ProductVariant;
@@ -19,6 +20,22 @@ export function VariantSelector({
   onColorChange,
   onSizeChange,
 }: VariantSelectorProps) {
+  const router = useRouter();
+
+  const handleColorClick = (color: ColorVariant) => {
+    if (color.stock === 0) return;
+    
+    // If the color variant points to a different product URL (sibling variant), navigate to it
+    if (color.slug) {
+      // Check if we are already on that product page by comparing with selectedColor's slug
+      if (selectedColor?.slug !== color.slug) {
+        router.push(`/product/${color.slug}`);
+      }
+    } else {
+      onColorChange(color);
+    }
+  };
+
   return (
     <div className="space-y-5">
       {/* ── Colors ── */}
@@ -47,7 +64,7 @@ export function VariantSelector({
                   key={uniqueIdentifier as React.Key}
                   id={`color-${uniqueIdentifier}`}
                   type="button"
-                  onClick={() => !outOfStock && onColorChange(color)}
+                  onClick={() => handleColorClick(color)}
                   disabled={outOfStock}
                   aria-label={`${color.label}${outOfStock ? " — out of stock" : ""}`}
                   aria-pressed={!!isSelected}
