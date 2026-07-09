@@ -19,7 +19,9 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ p
       skip,
       take: pageSize,
       include: {
-        user: true,
+        user: {
+          include: { addresses: true }
+        },
         items: {
           include: { 
             product: {
@@ -47,6 +49,7 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ p
               <tr className="border-b border-gray-200 bg-gray-50 text-sm">
                 <th className="py-4 px-6 font-medium text-gray-500">Order ID</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Customer</th>
+                <th className="py-4 px-6 font-medium text-gray-500 min-w-[200px]">Delivery Address</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Date</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Items</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Total Amount</th>
@@ -66,9 +69,31 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ p
                     </td>
                     <td className="py-4 px-6 text-sm text-gray-600">
                       <div className="font-medium text-gray-900">
-                        {order.user?.firstName} {order.user?.lastName}
+                        {order.shippingName || (order.user ? `${order.user.firstName} ${order.user.lastName}` : 'Unknown')}
                       </div>
-                      <div className="text-xs text-gray-500">{order.user?.email}</div>
+                      <div className="text-xs text-gray-500">{order.shippingEmail || order.user?.email}</div>
+                      <div className="text-xs text-gray-500">{order.shippingPhone || order.user?.mobileNumber || ''}</div>
+                    </td>
+                    <td className="py-4 px-6 text-sm text-gray-600">
+                      <div className="text-xs text-gray-700 whitespace-pre-wrap">
+                        {order.shippingLine1 ? (
+                          <>
+                            {order.shippingLine1}
+                            {order.shippingLine2 ? `, ${order.shippingLine2}` : ''}
+                            <br />
+                            {order.shippingCity}, {order.shippingState} {order.shippingZip}
+                          </>
+                        ) : order.user?.addresses?.[0] ? (
+                          <>
+                            {order.user.addresses[0].line1}
+                            {order.user.addresses[0].line2 ? `, ${order.user.addresses[0].line2}` : ''}
+                            <br />
+                            {order.user.addresses[0].city}, {order.user.addresses[0].state} {order.user.addresses[0].zip}
+                          </>
+                        ) : (
+                          'Address not provided'
+                        )}
+                      </div>
                     </td>
                     <td className="py-4 px-6 text-sm text-gray-600">
                       {new Date(order.createdAt).toLocaleDateString('en-IN', {
@@ -113,7 +138,7 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ p
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-500">
+                  <td colSpan={8} className="py-12 text-center text-gray-500">
                     No orders found.
                   </td>
                 </tr>
