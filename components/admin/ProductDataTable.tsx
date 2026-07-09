@@ -199,7 +199,7 @@ export function ProductDataTable({ initialProducts, isTrashMode = false }: { ini
                         onChange={() => toggleSelect(product.id)}
                       />
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 max-w-[200px] sm:max-w-[250px] md:max-w-sm">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 shrink-0 rounded bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden">
                           {product.images?.[0] ? (
