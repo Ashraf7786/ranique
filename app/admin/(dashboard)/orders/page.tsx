@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { OrderStatusSelect } from "@/components/admin/OrderStatusSelect";
-import { OrderStatusSelect } from "@/components/admin/OrderStatusSelect";
 import { OrderDetailsModal } from "@/components/admin/OrderDetailsModal";
 import { OrderFilters } from "@/components/admin/OrderFilters";
 import Link from "next/link";
