@@ -42,7 +42,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
+    const role = (session?.user as any)?.role;
+    if (!session || !session.user || !['ADMIN', 'STAFF'].includes(role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -56,15 +57,13 @@ export async function POST(request: Request) {
     const product = await prisma.product.create({
       data: {
         ...productData,
-        images: images ? {
-          create: images
-        } : undefined,
+        // If staff is adding, attach their userId as staffId
+        staffId: role === 'STAFF' ? (session.user as any).id : undefined,
+        // Staff-added products go PUBLISHED directly
+        status: role === 'STAFF' ? 'PUBLISHED' : (productData.status || 'DRAFT'),
+        images: images ? { create: images } : undefined,
       },
-      include: {
-        images: true,
-        category: true,
-        brand: true,
-      }
+      include: { images: true, category: true, brand: true },
     });
     revalidatePath('/', 'layout');
     return NextResponse.json(product, { status: 201 });

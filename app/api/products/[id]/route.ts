@@ -46,18 +46,58 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 🔒 Security fix: Admin auth guard was missing on this route
     const session = await getServerSession(authOptions);
-    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
+    const role = (session?.user as any)?.role;
+    if (!session || !session.user || !['ADMIN', 'STAFF'].includes(role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { id } = await params;
     const body = await request.json();
 
-    // Zod validation (partial — all fields optional for updates)
+    // ─── STAFF: Create an Edit Request (requires Admin approval) ────────────
+    if (role === 'STAFF') {
+      const staffId = (session.user as any).id;
+
+      // Security: STAFF can only edit products they listed
+      const product = await prisma.product.findUnique({ where: { id } });
+      if (!product || product.staffId !== staffId) {
+        return NextResponse.json(
+          { error: 'You can only edit products you have listed.' },
+          { status: 403 }
+        );
+      }
+
+      // Check if a PENDING request already exists for this product by this staff
+      const existingRequest = await prisma.productEditRequest.findFirst({
+        where: { productId: id, staffId, status: 'PENDING' },
+      });
+      if (existingRequest) {
+        return NextResponse.json(
+          { error: 'You already have a pending edit request for this product. Wait for Admin approval.' },
+          { status: 400 }
+        );
+      }
+
+      const editRequest = await prisma.productEditRequest.create({
+        data: {
+          productId: id,
+          staffId,
+          requestedData: body,
+          status: 'PENDING',
+        },
+      });
+
+      return NextResponse.json(
+        { message: 'Edit request submitted for Admin approval.', request: editRequest },
+        { status: 202 }
+      );
+    }
+
+    // ─── ADMIN: Update product directly ─────────────────────────────────────
     const parsed = ProductUpdateSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
+
     const { images, ...productData } = parsed.data;
     
     const product = await prisma.product.update({

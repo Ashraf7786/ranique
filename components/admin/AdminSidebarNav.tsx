@@ -15,7 +15,9 @@ import {
   Gift,
   Ticket,
   CreditCard,
-  Star
+  Star,
+  UserCog,
+  ClipboardList
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -29,6 +31,8 @@ const NAV_LINKS = [
   { href: "/admin/categories", label: "Categories", icon: Tags },
   { href: "/admin/brands", label: "Brands", icon: Box },
   { href: "/admin/customers", label: "Customers", icon: Users },
+  { href: "/admin/staff", label: "Staff", icon: UserCog },
+  { href: "/admin/product-requests", label: "Edit Requests", icon: ClipboardList },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
   { href: "/admin/enquiries", label: "Enquiries", icon: Inbox },

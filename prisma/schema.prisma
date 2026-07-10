@@ -16,7 +16,7 @@ model User {
   password  String
   firstName String?
   lastName  String?
-  role      String   @default("CUSTOMER") // ADMIN, MANAGER, CUSTOMER
+  role      String   @default("CUSTOMER") // ADMIN, STAFF, CUSTOMER
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -34,6 +34,22 @@ model User {
   cart            Cart?
   recentlyViewed  RecentlyViewed[]
   addresses       Address[]
+  staffProfile    StaffProfile?
+  listedProducts  Product[]      @relation("StaffProducts")
+  editRequests    ProductEditRequest[]
+}
+
+model StaffProfile {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  staffCode  String   @unique  // e.g. STAFF-001
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([staffCode])
 }
 
 model Address {
@@ -210,7 +226,10 @@ model Product {
   status           String   @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
   isFeatured       Boolean  @default(false)
   isNewArrival     Boolean  @default(true)
-  
+
+  // Staff Tracking
+  staffId          String?  // The User.id of the staff who listed this product
+
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   deletedAt        DateTime?
@@ -218,6 +237,7 @@ model Product {
   // Relationships
   brand            Brand?         @relation(fields: [brandId], references: [id])
   category         Category?      @relation(fields: [categoryId], references: [id])
+  listedByStaff    User?          @relation("StaffProducts", fields: [staffId], references: [id])
   images           ProductImage[]
   orderItems       OrderItem[]
   wishlistedBy     WishlistItem[]
@@ -226,11 +246,31 @@ model Product {
   offer            ProductOffer?
   coupons          Coupon[]
   reviews          Review[]
+  editRequests     ProductEditRequest[]
 
   @@index([categoryId])
   @@index([brandId])
   @@index([status])
   @@index([variantGroupId])
+  @@index([staffId])
+}
+
+model ProductEditRequest {
+  id            String   @id @default(uuid())
+  productId     String
+  staffId       String
+  requestedData Json     // Full snapshot of the requested changes
+  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  adminNote     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  staff         User     @relation(fields: [staffId], references: [id])
+
+  @@index([productId])
+  @@index([staffId])
+  @@index([status])
 }
 
 model ProductImage {
