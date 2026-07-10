@@ -6,9 +6,10 @@ import { TestimonialUpdateSchema, validationError, forbiddenError } from "@/lib/
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user || (session.user as any).role !== "ADMIN") {
       return forbiddenError();
@@ -23,7 +24,7 @@ export async function PATCH(
 
     const testimonial = await prisma.testimonial.update({
       where: {
-        id: params.id,
+        id,
       },
       data: parsed.data,
     });
@@ -37,9 +38,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user || (session.user as any).role !== "ADMIN") {
       return forbiddenError();
@@ -47,7 +49,7 @@ export async function DELETE(
 
     const testimonial = await prisma.testimonial.delete({
       where: {
-        id: params.id,
+        id,
       },
     });
 
