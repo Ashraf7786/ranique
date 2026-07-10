@@ -64,6 +64,15 @@ export function TestimonialsDataTable() {
     }
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  const totalPages = Math.ceil(testimonials.length / pageSize);
+  const paginatedTestimonials = testimonials.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -82,6 +91,7 @@ export function TestimonialsDataTable() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50 text-sm">
+                <th className="py-4 px-6 font-medium text-gray-500 w-16">S.No.</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Name / City</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Rating</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Content</th>
@@ -92,13 +102,16 @@ export function TestimonialsDataTable() {
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center">
+                  <td colSpan={6} className="py-12 text-center">
                     <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
                   </td>
                 </tr>
-              ) : testimonials.length > 0 ? (
-                testimonials.map((t) => (
+              ) : paginatedTestimonials.length > 0 ? (
+                paginatedTestimonials.map((t, idx) => (
                   <tr key={t.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="py-4 px-6 text-sm text-gray-500 font-medium">
+                      {(currentPage - 1) * pageSize + idx + 1}
+                    </td>
                     <td className="py-4 px-6">
                       <p className="text-sm font-medium text-gray-900">{t.name}</p>
                       {t.city && <p className="text-xs text-gray-500">{t.city}</p>}
@@ -142,7 +155,7 @@ export function TestimonialsDataTable() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-gray-500">
+                  <td colSpan={6} className="py-12 text-center text-gray-500">
                     No testimonials yet.
                   </td>
                 </tr>
@@ -150,6 +163,36 @@ export function TestimonialsDataTable() {
             </tbody>
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{(currentPage - 1) * pageSize + 1}</span> to{" "}
+                  <span className="font-medium">{Math.min(currentPage * pageSize, testimonials.length)}</span> of{" "}
+                  <span className="font-medium">{testimonials.length}</span> results
+                </p>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {showAddModal && (

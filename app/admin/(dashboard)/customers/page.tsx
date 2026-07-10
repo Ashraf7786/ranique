@@ -41,6 +41,7 @@ export default async function CustomersAdminPage(props: { searchParams: Promise<
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider w-16">S.No.</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Mobile Number</th>
@@ -51,13 +52,16 @@ export default async function CustomersAdminPage(props: { searchParams: Promise<
             <tbody className="divide-y divide-gray-200">
               {customers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-500">No customers found.</td>
+                  <td colSpan={6} className="px-6 py-8 text-center text-sm text-gray-500">No customers found.</td>
                 </tr>
               ) : (
-                customers.map((user) => {
+                customers.map((user, idx) => {
                   const defaultAddress = user.addresses?.find((a: any) => a.isDefault) || user.addresses?.[0];
                   return (
                     <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-6 py-4 text-sm text-gray-500 font-medium">
+                        {(page - 1) * pageSize + idx + 1}
+                      </td>
                       <td className="px-6 py-4">
                         <p className="font-medium text-brand-ink">
                           {user.firstName} {user.lastName}
