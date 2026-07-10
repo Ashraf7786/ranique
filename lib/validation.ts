@@ -66,7 +66,7 @@ export const ProductCreateSchema = z.object({
 
 export const ProductUpdateSchema = ProductCreateSchema.partial();
 
-// ─── REVIEWS ─────────────────────────────────────────────────────────────────
+// ─── REVIEWS & TESTIMONIALS ──────────────────────────────────────────────────
 
 export const ReviewCreateSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
@@ -76,6 +76,17 @@ export const ReviewCreateSchema = z.object({
   isVerified: z.boolean().optional().default(true),
   isGenuine: z.boolean().optional().default(false),
 });
+
+export const TestimonialCreateSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100),
+  content: z.string().min(1, 'Content is required').max(1000),
+  rating: z.number().int().min(1).max(5),
+  city: z.string().optional().nullable(),
+  product: z.string().optional().nullable(),
+  status: z.enum(['DRAFT', 'PUBLISHED']).default('DRAFT'),
+});
+
+export const TestimonialUpdateSchema = TestimonialCreateSchema.partial();
 
 // ─── ORDERS ──────────────────────────────────────────────────────────────────
 

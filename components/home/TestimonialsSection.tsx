@@ -165,12 +165,37 @@ function TestimonialCard({ testimonial }: { testimonial: (typeof TESTIMONIALS)[0
   );
 }
 
-export function TestimonialsSection() {
+export function TestimonialsSection({ dynamicTestimonials = [] }: { dynamicTestimonials?: any[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
+  // Map dynamic testimonials to match the expected format
+  const mappedDynamic = dynamicTestimonials.map((t, idx) => {
+    // Generate random but deterministic colors based on ID length or index
+    const bgs = [
+      "from-[#C9748A] to-[#A85970]",
+      "from-[#C9A96E] to-[#B8882A]",
+      "from-[#8B9DB8] to-[#6B7DA8]",
+      "from-[#A85970] to-[#8B4560]"
+    ];
+    return {
+      id: t.id,
+      name: t.name,
+      location: t.city || "India",
+      rating: t.rating,
+      avatar: t.name.substring(0, 2).toUpperCase(),
+      avatarBg: bgs[idx % bgs.length],
+      product: t.product || "Ranique Customer",
+      review: t.content,
+      verified: true,
+    };
+  });
+
+  // Use dynamic if we have any, otherwise fallback to hardcoded
+  const activeTestimonials = mappedDynamic.length > 0 ? mappedDynamic : TESTIMONIALS;
+
   // Duplicate for seamless infinite scroll
-  const items = [...TESTIMONIALS, ...TESTIMONIALS];
+  const items = [...activeTestimonials, ...activeTestimonials];
 
   useEffect(() => {
     if (isHovered) return;

@@ -193,9 +193,14 @@ function TrustBar() {
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [allProducts, categories] = await Promise.all([
+  const [allProducts, categories, testimonials] = await Promise.all([
     getProducts(),
-    getCategories()
+    getCategories(),
+    prisma.testimonial.findMany({
+      where: { status: 'PUBLISHED' },
+      orderBy: { createdAt: 'desc' },
+      take: 20
+    })
   ]);
 
   return (
@@ -223,7 +228,7 @@ export default async function HomePage() {
 
       <WhatsAppOrderBanner />
       <ReelsSection />
-      <TestimonialsSection />
+      <TestimonialsSection dynamicTestimonials={testimonials} />
     </>
   );
 }
