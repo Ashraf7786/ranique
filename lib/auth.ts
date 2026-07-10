@@ -84,23 +84,22 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        // Fresh login — set from the authorize() return value
+        // Fresh login — always fetch latest role from DB
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { id: true, role: true },
+        });
         token.id = user.id;
-        token.role = (user as any).role;
-      } else if (token.id) {
-        // Subsequent requests — re-fetch role from DB to ensure it's always fresh
-        // This handles cases where role changed (e.g. CUSTOMER → STAFF) without re-login
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
-            select: { role: true },
-          });
-          if (dbUser) token.role = dbUser.role;
-        } catch {
-          // DB unavailable — keep the existing token role
-        }
+        token.role = dbUser?.role ?? (user as any).role ?? 'CUSTOMER';
+      } else if (!token.role && token.id) {
+        // Stale token missing role — fix it once
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true },
+        });
+        if (dbUser) token.role = dbUser.role;
       }
       return token;
     },

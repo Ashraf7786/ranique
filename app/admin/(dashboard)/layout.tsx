@@ -8,7 +8,8 @@ import { redirect } from "next/navigation";
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // Middleware already handles unauthenticated requests,
+  // but add a server-side fallback for extra safety
   if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
     redirect("/admin/login");
   }

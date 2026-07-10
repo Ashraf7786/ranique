@@ -31,8 +31,8 @@ export function AdminLoginForm() {
         setError("Invalid email or password");
         setLoading(false);
       } else {
-        router.push(callbackUrl);
-        router.refresh();
+        // Hard navigation forces full session refresh — avoids stale JWT flicker
+        window.location.href = "/admin";
       }
     } catch (err) {
       setError("An unexpected error occurred");
