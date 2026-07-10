@@ -37,7 +37,10 @@ export async function RecentlyViewedSection() {
         name: r.product.title,
         price: r.product.sellingPrice,
         compareAtPrice: r.product.originalPrice,
-        images: r.product.images,
+        images: r.product.images.map((img: any) => ({
+          src: img.url,
+          alt: img.altText || r.product.title,
+        })),
         variants: {
           colors: parsedColors.length > 0 ? parsedColors : undefined,
         },
