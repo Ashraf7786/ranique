@@ -59,8 +59,8 @@ export async function POST(request: Request) {
         ...productData,
         // If staff is adding, attach their userId as staffId
         staffId: role === 'STAFF' ? (session.user as any).id : undefined,
-        // Staff-added products go PUBLISHED directly
-        status: role === 'STAFF' ? 'PUBLISHED' : (productData.status || 'DRAFT'),
+        // Staff-added products go PENDING_APPROVAL directly
+        status: role === 'STAFF' ? 'PENDING_APPROVAL' : (productData.status || 'DRAFT'),
         images: images ? { create: images } : undefined,
       },
       include: { images: true, category: true, brand: true },
