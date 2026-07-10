@@ -44,7 +44,8 @@ export function AddToCartBar({
         <button
           onClick={() => setQty((q) => Math.max(1, q - 1))}
           aria-label="Decrease quantity"
-          className="px-3 h-full text-brand-slate hover:text-brand-rose hover:bg-brand-blush transition-colors text-lg leading-none"
+          className="px-3 h-full text-brand-slate active:text-brand-rose active:bg-brand-blush transition-colors text-lg leading-none cursor-pointer"
+          style={{ touchAction: "manipulation" }}
         >
           −
         </button>
@@ -58,7 +59,8 @@ export function AddToCartBar({
         <button
           onClick={() => setQty((q) => q + 1)}
           aria-label="Increase quantity"
-          className="px-3 h-full text-brand-slate hover:text-brand-rose hover:bg-brand-blush transition-colors text-lg leading-none"
+          className="px-3 h-full text-brand-slate active:text-brand-rose active:bg-brand-blush transition-colors text-lg leading-none cursor-pointer"
+          style={{ touchAction: "manipulation" }}
         >
           +
         </button>
@@ -74,15 +76,16 @@ export function AddToCartBar({
             ? "Out of stock"
             : `Add ${qty} ${product.name} to bag — ${formatPrice(effectivePrice * qty, product.currency)}`
         }
+        style={{ touchAction: "manipulation" }}
         className={cn(
-          "flex-1 h-12 rounded-full font-sans font-semibold text-sm",
+          "flex-1 h-12 rounded-full font-sans font-semibold text-sm cursor-pointer",
           "transition-all duration-200 active:scale-[0.98]",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-rose focus-visible:ring-offset-2",
           outOfStock
             ? "bg-brand-mist text-brand-slate cursor-not-allowed"
             : added
             ? "bg-green-500 text-white"
-            : "bg-brand-rose text-white hover:bg-brand-rose-dark shadow-sm hover:shadow-md"
+            : "bg-brand-rose text-white active:bg-brand-rose-dark shadow-sm"
         )}
       >
         {outOfStock

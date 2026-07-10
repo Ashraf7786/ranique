@@ -181,7 +181,8 @@ export function CartDrawer() {
                         <button
                           onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
                           aria-label="Decrease quantity"
-                          className="px-2.5 h-full text-brand-slate hover:text-brand-rose hover:bg-brand-blush transition-colors text-sm"
+                          className="px-2.5 h-full text-brand-slate active:text-brand-rose active:bg-brand-blush transition-colors text-sm cursor-pointer"
+                          style={{ touchAction: "manipulation" }}
                         >
                           −
                         </button>
@@ -191,7 +192,8 @@ export function CartDrawer() {
                         <button
                           onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
                           aria-label="Increase quantity"
-                          className="px-2.5 h-full text-brand-slate hover:text-brand-rose hover:bg-brand-blush transition-colors text-sm"
+                          className="px-2.5 h-full text-brand-slate active:text-brand-rose active:bg-brand-blush transition-colors text-sm cursor-pointer"
+                          style={{ touchAction: "manipulation" }}
                         >
                           +
                         </button>
@@ -235,7 +237,8 @@ export function CartDrawer() {
               id="cart-checkout-btn"
               onClick={handleCheckout}
               disabled={isCheckingOut}
-              className="w-full h-12 flex justify-center items-center rounded-full bg-brand-rose text-white font-sans font-semibold text-sm hover:bg-brand-rose-dark active:scale-[0.98] transition-all shadow-sm disabled:opacity-70 disabled:cursor-wait"
+              style={{ touchAction: "manipulation" }}
+              className="w-full h-12 flex justify-center items-center rounded-full bg-brand-rose text-white font-sans font-semibold text-sm hover:bg-brand-rose-dark active:scale-[0.98] transition-all shadow-sm disabled:opacity-70 disabled:cursor-wait cursor-pointer"
             >
               {isCheckingOut ? (
                 <span className="animate-pulse">Processing Secure Checkout...</span>

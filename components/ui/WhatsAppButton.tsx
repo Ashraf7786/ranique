@@ -39,7 +39,7 @@ export function WhatsAppButton() {
 
   return (
     <div
-      className={`fixed bottom-6 right-5 z-50 flex flex-col items-end gap-2 transition-all duration-500 ${
+      className={`hidden md:flex fixed bottom-6 right-5 z-50 flex-col items-end gap-2 transition-all duration-500 ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
       }`}
     >

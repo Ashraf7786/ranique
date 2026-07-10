@@ -5,7 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
-import { MobileSnackbar } from "@/components/ui/MobileSnackbar";
+import { MobileBottomNav } from "@/components/ui/MobileBottomNav";
 
 export function StorefrontUI({ children, categories }: { children: React.ReactNode, categories?: any[] }) {
   const pathname = usePathname();
@@ -18,13 +18,13 @@ export function StorefrontUI({ children, categories }: { children: React.ReactNo
   return (
     <>
       <Header categories={categories} />
-      <main id="main-content" className="min-h-screen">
+      <main id="main-content" className="min-h-screen pb-16 md:pb-0">
         {children}
       </main>
       <Footer />
       <CartDrawer />
       <WhatsAppButton />
-      <MobileSnackbar />
+      <MobileBottomNav />
     </>
   );
 }
