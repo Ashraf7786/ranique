@@ -5,6 +5,14 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
+  // ─── Always allow the admin and staff login pages through ─────────────────
+  if (
+    pathname === "/admin/login" || pathname.startsWith("/admin/login/") ||
+    pathname === "/staff/login" || pathname.startsWith("/staff/login/")
+  ) {
+    return NextResponse.next();
+  }
+
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET || "ranique_super_secret_fallback_key_2026_do_not_use_in_prod",
@@ -14,7 +22,7 @@ export async function middleware(req: NextRequest) {
 
   // ─── Block STAFF from accessing /admin at all ────────────────────────────
   // (Admin protection itself is handled by the server-side layout guard)
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+  if (pathname.startsWith("/admin")) {
     if (token && role === "STAFF") {
       return NextResponse.redirect(new URL("/staff", req.url));
     }
@@ -23,13 +31,13 @@ export async function middleware(req: NextRequest) {
   // ─── /staff/* — STAFF only ───────────────────────────────────────────────
   if (pathname.startsWith("/staff")) {
     if (!token) {
-      return NextResponse.redirect(new URL("/login", req.url));
+      return NextResponse.redirect(new URL("/staff/login", req.url));
     }
     if (role === "ADMIN") {
       return NextResponse.redirect(new URL("/admin", req.url));
     }
     if (role !== "STAFF") {
-      return NextResponse.redirect(new URL("/login", req.url));
+      return NextResponse.redirect(new URL("/staff/login", req.url));
     }
   }
 

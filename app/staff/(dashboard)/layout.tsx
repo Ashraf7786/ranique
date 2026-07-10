@@ -8,7 +8,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   const session = await getServerSession(authOptions);
 
   if (!session?.user || (session.user as any).role !== "STAFF") {
-    redirect("/login");
+    redirect("/staff/login");
   }
 
   const initial = session.user.name?.charAt(0).toUpperCase() || "S";
