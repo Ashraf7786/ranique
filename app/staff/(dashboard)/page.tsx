@@ -42,24 +42,24 @@ export default async function StaffDashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {stats.map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-            <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center mb-3`}>
-              <Icon className={`w-5 h-5 ${color}`} />
+          <div key={label} className="bg-white rounded-xl border border-gray-200 p-4 md:p-5 shadow-sm">
+            <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg ${bg} flex items-center justify-center mb-2 md:mb-3`}>
+              <Icon className={`w-4 h-4 md:w-5 md:h-5 ${color}`} />
             </div>
-            <p className="text-2xl font-bold text-gray-900">{value}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+            <p className="text-xl md:text-2xl font-bold text-gray-900">{value}</p>
+            <p className="text-[10px] md:text-xs text-gray-500 mt-0.5">{label}</p>
           </div>
         ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <Link href="/staff/products/add"
-          className="bg-brand-ink text-white rounded-xl p-6 flex items-center gap-4 hover:bg-brand-ink/90 transition-colors group">
-          <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-colors">
-            <Plus className="w-6 h-6" />
+          className="bg-brand-ink text-white rounded-xl p-5 md:p-6 flex items-center gap-4 hover:bg-brand-ink/90 transition-colors group">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-colors flex-shrink-0">
+            <Plus className="w-5 h-5 md:w-6 md:h-6" />
           </div>
           <div>
             <p className="font-semibold text-base">Add New Product</p>
@@ -67,13 +67,13 @@ export default async function StaffDashboardPage() {
           </div>
         </Link>
         <Link href="/staff/products"
-          className="bg-white border border-gray-200 rounded-xl p-6 flex items-center gap-4 hover:bg-gray-50 transition-colors group">
-          <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-            <Package className="w-6 h-6 text-gray-600" />
+          className="bg-white border border-gray-200 rounded-xl p-5 md:p-6 flex items-center gap-4 hover:bg-gray-50 transition-colors group">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors flex-shrink-0">
+            <Package className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
           </div>
           <div>
             <p className="font-semibold text-base text-gray-900">My Products</p>
-            <p className="text-sm text-gray-500">View and manage your listings</p>
+            <p className="text-[11px] md:text-sm text-gray-500">View and manage your listings</p>
           </div>
         </Link>
       </div>

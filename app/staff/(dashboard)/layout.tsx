@@ -20,8 +20,8 @@ export default async function StaffLayout({ children }: { children: React.ReactN
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <aside className="w-60 bg-white border-r border-gray-200 flex flex-col fixed h-full z-10">
+      {/* Sidebar (Desktop) */}
+      <aside className="hidden md:flex w-60 bg-white border-r border-gray-200 flex-col fixed h-full z-10">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
           <div>
             <p className="font-serif text-lg font-bold text-brand-ink">Ranique</p>
@@ -62,13 +62,38 @@ export default async function StaffLayout({ children }: { children: React.ReactN
         </div>
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 ml-60 min-h-screen flex flex-col">
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center px-8 sticky top-0 z-10">
-          <p className="text-sm text-gray-500">Welcome back, <span className="font-semibold text-gray-900">{session.user.name}</span></p>
+      {/* Main Content */}
+      <main className="flex-1 md:ml-60 pb-16 md:pb-0 min-h-screen flex flex-col">
+        <header className="h-14 md:h-16 bg-white border-b border-gray-200 flex items-center justify-between md:justify-start px-4 md:px-8 sticky top-0 z-10">
+          <p className="text-sm text-gray-500 hidden md:block">Welcome back, <span className="font-semibold text-gray-900">{session.user.name}</span></p>
+          
+          {/* Mobile Header Elements */}
+          <div className="md:hidden flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-brand-gold text-white flex items-center justify-center font-bold text-xs">
+              {initial}
+            </div>
+            <p className="font-serif text-base font-bold text-brand-ink">Staff Portal</p>
+          </div>
+          <Link
+            href="/api/auth/signout"
+            className="md:hidden flex items-center text-gray-500 hover:text-red-600 transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+          </Link>
         </header>
-        <div className="flex-1 p-8">{children}</div>
+        
+        <div className="flex-1 p-4 md:p-8">{children}</div>
       </main>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-200 flex items-center justify-around z-50">
+        {NAV.map(({ href, label, icon: Icon }) => (
+           <Link key={href} href={href} className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-brand-ink transition-colors">
+              <Icon className="w-5 h-5 mb-1" />
+              <span className="text-[10px] font-medium">{label}</span>
+           </Link>
+        ))}
+      </nav>
     </div>
   );
 }

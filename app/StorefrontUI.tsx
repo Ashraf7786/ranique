@@ -9,9 +9,9 @@ import { MobileSnackbar } from "@/components/ui/MobileSnackbar";
 
 export function StorefrontUI({ children, categories }: { children: React.ReactNode, categories?: any[] }) {
   const pathname = usePathname();
-  const isAdmin = pathname?.startsWith("/admin");
+  const isPortal = pathname?.startsWith("/admin") || pathname?.startsWith("/staff");
 
-  if (isAdmin) {
+  if (isPortal) {
     return <main className="min-h-screen">{children}</main>;
   }
 
