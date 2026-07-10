@@ -27,8 +27,22 @@ export default function LoginPage() {
       setError(res.error);
       setLoading(false);
     } else {
-      router.push("/account");
-      router.refresh();
+      // Fetch session to check role before routing
+      try {
+        const sessionRes = await fetch("/api/auth/session");
+        const session = await sessionRes.json();
+        
+        const role = session?.user?.role;
+        if (role === "STAFF") {
+          window.location.href = "/staff";
+        } else if (role === "ADMIN") {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/account";
+        }
+      } catch (err) {
+        window.location.href = "/account";
+      }
     }
   };
 
