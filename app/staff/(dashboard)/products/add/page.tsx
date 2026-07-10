@@ -21,11 +21,15 @@ export default function StaffAddProductPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/categories").then(r => r.json()),
-      fetch("/api/brands").then(r => r.json()),
+      fetch("/api/categories").then(r => r.ok ? r.json() : []),
+      fetch("/api/brands").then(r => r.ok ? r.json() : []),
     ]).then(([cats, brnds]) => {
-      setCategories(cats);
-      setBrands(brnds);
+      setCategories(Array.isArray(cats) ? cats : []);
+      setBrands(Array.isArray(brnds) ? brnds : []);
+    }).catch(err => {
+      console.error(err);
+      setCategories([]);
+      setBrands([]);
     });
   }, []);
 
@@ -168,21 +172,27 @@ export default function StaffAddProductPage() {
         {/* Images */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
           <h2 className="text-base font-semibold text-gray-900">Images</h2>
-          <CldUploadWidget
-            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-            options={{ multiple: true, maxFiles: 6 }}
-            onSuccess={(result: any) => {
-              const url = result.info?.secure_url;
-              if (url) setImages(prev => [...prev, url]);
-            }}
-          >
-            {({ open }) => (
-              <button type="button" onClick={() => open()}
-                className="border-2 border-dashed border-gray-300 rounded-lg px-6 py-4 text-sm text-gray-500 hover:border-brand-gold hover:text-brand-gold transition-colors w-full">
-                + Upload Images
-              </button>
-            )}
-          </CldUploadWidget>
+          {!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
+            <div className="mb-4 text-sm text-red-600 bg-red-50 p-3 rounded-lg text-left">
+              <strong>Cloudinary Error:</strong> You must add <code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME</code> to your environment variables for uploads to work!
+            </div>
+          ) : (
+            <CldUploadWidget
+              signatureEndpoint="/api/upload"
+              options={{ multiple: true, maxFiles: 6 }}
+              onSuccess={(result: any) => {
+                const url = result.info?.secure_url;
+                if (url) setImages(prev => [...prev, url]);
+              }}
+            >
+              {({ open }) => (
+                <button type="button" onClick={() => open()}
+                  className="border-2 border-dashed border-gray-300 rounded-lg px-6 py-4 text-sm text-gray-500 hover:border-brand-gold hover:text-brand-gold transition-colors w-full">
+                  + Upload Images
+                </button>
+              )}
+            </CldUploadWidget>
+          )}
           {images.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {images.map((url, i) => (
