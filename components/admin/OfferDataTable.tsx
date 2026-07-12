@@ -102,11 +102,11 @@ export function OfferDataTable({ initialOffers }: { initialOffers: any[] }) {
             <thead className="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold">
               <tr>
                 <th className="px-6 py-4">Product</th>
-                <th className="px-6 py-4">Original Price</th>
-                <th className="px-6 py-4">Offer Price</th>
-                <th className="px-6 py-4">Ends At</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+                <th className="px-6 py-4 whitespace-nowrap">Original Price</th>
+                <th className="px-6 py-4 whitespace-nowrap">Offer Price</th>
+                <th className="px-6 py-4 whitespace-nowrap">Ends At</th>
+                <th className="px-6 py-4 whitespace-nowrap">Status</th>
+                <th className="px-6 py-4 whitespace-nowrap text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -134,23 +134,23 @@ export function OfferDataTable({ initialOffers }: { initialOffers: any[] }) {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 line-through text-gray-400">
+                    <td className="px-6 py-4 whitespace-nowrap line-through text-gray-400">
                       ₹{offer.product.sellingPrice?.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 font-bold text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap font-bold text-gray-900">
                       ₹{offer.offerPrice?.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {formatDateIST(offer.endsAt)}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                         offer.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
                       }`}>
                         {offer.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Link href={`/product/${offer.product.slug}`} target="_blank" className="p-1.5 text-gray-400 hover:text-brand-ink transition-colors">
                           <Eye className="w-4 h-4" />
