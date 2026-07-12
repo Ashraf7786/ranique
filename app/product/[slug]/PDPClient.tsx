@@ -86,17 +86,23 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
       content: (
         <div className="space-y-4">
           {/* Aggregate */}
-          <div className="flex items-center gap-4 p-4 bg-brand-mist rounded-2xl">
-            <div className="text-center">
-              <p className="font-serif text-4xl font-semibold text-brand-ink">
-                {product.rating}
-              </p>
-              <StarRating rating={product.rating} showCount={false} size="md" />
-              <p className="text-2xs text-brand-slate mt-1">
-                {product.reviewCount} reviews
-              </p>
+          {product.reviewCount > 0 ? (
+            <div className="flex items-center gap-4 p-4 bg-brand-mist rounded-2xl">
+              <div className="text-center">
+                <p className="font-serif text-4xl font-semibold text-brand-ink">
+                  {product.rating}
+                </p>
+                <StarRating rating={product.rating} showCount={false} size="md" />
+                <p className="text-2xs text-brand-slate mt-1">
+                  {product.reviewCount} reviews
+                </p>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="p-4 bg-brand-mist rounded-2xl text-center">
+              <p className="text-sm font-medium text-brand-slate">No reviews yet. Be the first to review!</p>
+            </div>
+          )}
 
           {/* Review list */}
           {product.reviews?.map((review: any) => (
@@ -173,11 +179,13 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
           </h1>
 
           {/* Rating */}
-          <StarRating
-            rating={product.rating}
-            reviewCount={product.reviewCount}
-            size="md"
-          />
+          {product.reviewCount > 0 && (
+            <StarRating
+              rating={product.rating}
+              reviewCount={product.reviewCount}
+              size="md"
+            />
+          )}
 
           {/* Price */}
           <div className="flex items-baseline gap-3">

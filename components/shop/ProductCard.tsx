@@ -176,11 +176,13 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </Link>
 
         {/* Stars */}
-        <StarRating
-          rating={product.rating}
-          reviewCount={product.reviewCount}
-          size="sm"
-        />
+        {product.reviewCount > 0 && (
+          <StarRating
+            rating={product.rating}
+            reviewCount={product.reviewCount}
+            size="sm"
+          />
+        )}
 
         {/* Price row */}
         <div className="flex items-center gap-2 mb-3">
