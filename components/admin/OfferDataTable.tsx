@@ -98,15 +98,15 @@ export function OfferDataTable({ initialOffers }: { initialOffers: any[] }) {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600">
+          <table className="w-full text-left text-sm text-gray-600 table-fixed">
             <thead className="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold">
               <tr>
-                <th className="px-6 py-4">Product</th>
-                <th className="px-6 py-4 whitespace-nowrap">Original Price</th>
-                <th className="px-6 py-4 whitespace-nowrap">Offer Price</th>
-                <th className="px-6 py-4 whitespace-nowrap">Ends At</th>
-                <th className="px-6 py-4 whitespace-nowrap">Status</th>
-                <th className="px-6 py-4 whitespace-nowrap text-right">Actions</th>
+                <th className="px-6 py-4 w-[35%]">Product</th>
+                <th className="px-6 py-4 whitespace-nowrap w-[13%]">Original Price</th>
+                <th className="px-6 py-4 whitespace-nowrap w-[13%]">Offer Price</th>
+                <th className="px-6 py-4 whitespace-nowrap w-[17%]">Ends At</th>
+                <th className="px-6 py-4 whitespace-nowrap w-[10%]">Status</th>
+                <th className="px-6 py-4 whitespace-nowrap text-right w-[12%]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
