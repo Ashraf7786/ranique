@@ -81,7 +81,7 @@ export default function StaffAddProductPage() {
         router.push("/staff/products");
       } else {
         const err = await res.json();
-        alert(`Error: ${err.error || err.message || 'An unknown error occurred'}`);
+        alert(`Error: ${err.error || err.message || 'An unknown error occurred'}\n${err.details ? JSON.stringify(err.details, null, 2) : ''}`);
       }
     } catch (err) {
       alert("Failed to create product. Make sure backend is running.");
