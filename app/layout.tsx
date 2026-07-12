@@ -36,6 +36,8 @@ export const metadata: Metadata = {
   }),
 };
 
+import { GoogleAnalytics } from '@next/third-parties/google';
+
 export default async function RootLayout({
   children,
 }: {
@@ -67,6 +69,9 @@ export default async function RootLayout({
           </CartProvider>
         </AuthProvider>
       </body>
+      {process.env.NEXT_PUBLIC_GA_ID && (
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+      )}
     </html>
   );
 }
