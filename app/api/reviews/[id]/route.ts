@@ -12,8 +12,30 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     }
 
     const { id } = await params;
+    
+    // Get review first to know which product to update
+    const existingReview = await prisma.review.findUnique({ where: { id } });
+    if (!existingReview) {
+      return NextResponse.json({ error: 'Review not found' }, { status: 404 });
+    }
+
     await prisma.review.delete({
       where: { id }
+    });
+
+    // Update Product reviewCount and rating
+    const agg = await prisma.review.aggregate({
+      where: { productId: existingReview.productId },
+      _avg: { rating: true },
+      _count: { id: true },
+    });
+    
+    await prisma.product.update({
+      where: { id: existingReview.productId },
+      data: {
+        reviewCount: agg._count.id,
+        rating: agg._avg.rating ? Number(agg._avg.rating.toFixed(1)) : 0,
+      }
     });
     
     revalidatePath('/', 'layout');

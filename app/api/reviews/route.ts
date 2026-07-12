@@ -50,6 +50,21 @@ export async function POST(request: Request) {
       },
     });
 
+    // Update Product reviewCount and rating
+    const agg = await prisma.review.aggregate({
+      where: { productId: parsed.data.productId },
+      _avg: { rating: true },
+      _count: { id: true },
+    });
+    
+    await prisma.product.update({
+      where: { id: parsed.data.productId },
+      data: {
+        reviewCount: agg._count.id,
+        rating: agg._avg.rating ? Number(agg._avg.rating.toFixed(1)) : 0,
+      }
+    });
+
     revalidatePath('/', 'layout');
 
     return NextResponse.json(review, { status: 201 });
