@@ -1,12 +1,13 @@
 import React, { Suspense } from "react";
-import { getProducts, getCategories } from "@/lib/api";
+import { getProducts, getCategories, getBrands } from "@/lib/api";
 import { SkeletonGrid } from "@/components/ui/SkeletonCard";
 import ShopClient from "./ShopClient";
 
 export default async function ShopPage() {
-  const [products, categories] = await Promise.all([
+  const [products, categories, brands] = await Promise.all([
     getProducts(),
-    getCategories()
+    getCategories(),
+    getBrands(),
   ]);
 
   return (
@@ -15,7 +16,7 @@ export default async function ShopPage() {
         <SkeletonGrid count={8} />
       </div>
     }>
-      <ShopClient initialProducts={products} categories={categories} />
+      <ShopClient initialProducts={products} categories={categories} brands={brands} />
     </Suspense>
   );
 }

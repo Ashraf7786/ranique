@@ -249,3 +249,49 @@ img {
 .prose-premium ul { padding-left: 1.25rem; margin-top: 0.5rem; }
 .prose-premium li { margin-bottom: 0.25rem; }
 .prose-premium .font-semibold { font-weight: 600; }
+
+/* ─── iOS Safe Area helpers ─────────────────────────────────────── */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.safe-bottom-min {
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+}
+
+/* ─── Extra line-clamp ───────────────────────────────────────────── */
+.line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+
+/* ─── Slide-up from bottom (for mobile bottom-sheet) ────────────── */
+@keyframes slide-up-from-bottom {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.animate-sheet-up {
+  animation: slide-up-from-bottom 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Filter sidebar scrollbar ──────────────────────────────────── */
+.filter-scroll::-webkit-scrollbar { width: 3px; }
+.filter-scroll::-webkit-scrollbar-track { background: transparent; }
+.filter-scroll::-webkit-scrollbar-thumb { background: #EEC5CF; border-radius: 999px; }
+
+/* ─── Price range slider track ───────────────────────────────────── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #C9748A;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: grab;
+}
+input[type="range"]:active::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+

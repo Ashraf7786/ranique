@@ -109,6 +109,14 @@ export interface WishlistState {
 
 // ─── Filter Types ────────────────────────────────────────────────────────────
 
+export type SortBy =
+  | "relevance"
+  | "price-asc"
+  | "price-desc"
+  | "newest"
+  | "rating"
+  | "popular";
+
 export interface PriceRange {
   min: number;
   max: number;
@@ -121,6 +129,9 @@ export interface ActiveFilters {
   materials: string[];
   brands: string[];
   minRating: number | null;
+  inStock: boolean;
+  onSale: boolean;
+  sortBy: SortBy;
 }
 
 // ─── UI Types ────────────────────────────────────────────────────────────────
