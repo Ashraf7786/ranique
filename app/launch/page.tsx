@@ -125,16 +125,31 @@ export default function LaunchPage() {
         }`}
       >
         {/* Left Curtain */}
-        <div className="curtain-left w-1/2 h-full relative bg-gradient-to-r from-[#111] to-[#1a1a1a] border-r border-[#333] shadow-[20px_0_50px_rgba(0,0,0,0.8)] z-50 overflow-hidden flex items-center justify-end">
-          {/* Subtle curtain folds */}
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')] opacity-20 mix-blend-overlay" />
-          <div className="absolute top-0 right-0 bottom-0 w-24 bg-gradient-to-l from-black/60 to-transparent" />
+        <div className="curtain-left w-1/2 h-full relative bg-brand-ink shadow-[20px_0_50px_rgba(0,0,0,0.8)] z-50 overflow-hidden flex items-center justify-end">
+          {/* Base Color & Texture */}
+          <div className="absolute inset-0 bg-brand-rose opacity-80 mix-blend-screen" />
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/woven.png')] opacity-30 mix-blend-overlay" />
+          {/* Folds */}
+          <div 
+            className="absolute inset-0 opacity-80 mix-blend-multiply" 
+            style={{ backgroundImage: 'repeating-linear-gradient(to right, rgba(0,0,0,0.6) 0%, transparent 6%, rgba(0,0,0,0.6) 12%)' }} 
+          />
+          {/* Edge shadow */}
+          <div className="absolute top-0 right-0 bottom-0 w-24 bg-gradient-to-l from-black/80 to-transparent" />
         </div>
 
         {/* Right Curtain */}
-        <div className="curtain-right w-1/2 h-full relative bg-gradient-to-l from-[#111] to-[#1a1a1a] border-l border-[#333] shadow-[-20px_0_50px_rgba(0,0,0,0.8)] z-50 overflow-hidden flex items-center justify-start">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')] opacity-20 mix-blend-overlay" />
-          <div className="absolute top-0 left-0 bottom-0 w-24 bg-gradient-to-r from-black/60 to-transparent" />
+        <div className="curtain-right w-1/2 h-full relative bg-brand-ink shadow-[-20px_0_50px_rgba(0,0,0,0.8)] z-50 overflow-hidden flex items-center justify-start">
+          {/* Base Color & Texture */}
+          <div className="absolute inset-0 bg-brand-rose opacity-80 mix-blend-screen" />
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/woven.png')] opacity-30 mix-blend-overlay" />
+          {/* Folds */}
+          <div 
+            className="absolute inset-0 opacity-80 mix-blend-multiply" 
+            style={{ backgroundImage: 'repeating-linear-gradient(to left, rgba(0,0,0,0.6) 0%, transparent 6%, rgba(0,0,0,0.6) 12%)' }} 
+          />
+          {/* Edge shadow */}
+          <div className="absolute top-0 left-0 bottom-0 w-24 bg-gradient-to-r from-black/80 to-transparent" />
         </div>
 
         {/* Center Lock / Badge (Visible only when closed) */}
