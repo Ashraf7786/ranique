@@ -168,7 +168,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<ShippingForm>>({});
   const [orderId, setOrderId] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<"WHATSAPP" | "ONLINE" | "COD" | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"WHATSAPP" | "COD" | null>(null);
   const [showCODConfirm, setShowCODConfirm] = useState(false);
   const [timeLeft, setTimeLeft] = useState(9 * 60); // 9 minutes in seconds
 
@@ -359,7 +359,7 @@ export default function CheckoutPage() {
 
   // ── Place order ──────────────────────────────────────────────────────────
 
-  const placeOrder = async (method: "WHATSAPP" | "ONLINE" | "COD", skipConfirm = false) => {
+  const placeOrder = async (method: "WHATSAPP" | "COD", skipConfirm = false) => {
     if (method === "COD" && !skipConfirm) {
       setShowCODConfirm(true);
       return;
@@ -376,92 +376,6 @@ export default function CheckoutPage() {
       productId: item.product.id,
       quantity: item.quantity,
     }));
-
-    if (method === "ONLINE") {
-      try {
-        const loadScript = () => {
-          return new Promise((resolve) => {
-            if (document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
-              resolve(true);
-              return;
-            }
-            const script = document.createElement("script");
-            script.src = "https://checkout.razorpay.com/v1/checkout.js";
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.body.appendChild(script);
-          });
-        };
-
-        const isLoaded = await loadScript();
-        if (!isLoaded) throw new Error("Razorpay SDK failed to load. Are you online?");
-
-        const orderRes = await fetch("/api/razorpay/create-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount: finalTotal }),
-        });
-        const orderData = await orderRes.json();
-        if (!orderRes.ok) throw new Error(orderData.message || "Failed to initiate Razorpay order");
-
-        const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
-          amount: orderData.amount,
-          currency: orderData.currency,
-          name: "Ranique",
-          description: "Premium Ladies' Boutique",
-          order_id: orderData.order_id,
-          handler: async function (response: any) {
-            try {
-              const res = await fetch("/api/orders", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  items: orderItems,
-                  shippingAddress: form,
-                  paymentMethod: method,
-                  totalAmount: finalTotal,
-                  couponCode: appliedCoupon?.couponCode || null,
-                  razorpayOrderId: response.razorpay_order_id,
-                  razorpayPaymentId: response.razorpay_payment_id,
-                  razorpaySignature: response.razorpay_signature,
-                }),
-              });
-              const data = await res.json();
-              if (!res.ok) throw new Error(data.error || "Failed to save order");
-
-              setOrderId(data.orderId);
-              clearCart();
-              setStep("success");
-            } catch (err: any) {
-              console.error(err);
-              alert(err.message || "Payment succeeded but failed to save order. Contact support.");
-              setLoading(false);
-            }
-          },
-          prefill: {
-            name: form.name,
-            email: form.email,
-            contact: form.phone,
-          },
-          theme: {
-            color: "#0f172a", // brand-ink
-          },
-        };
-
-        const paymentObject = new (window as any).Razorpay(options);
-        paymentObject.on("payment.failed", function (response: any) {
-          alert("Payment Failed. Reason: " + response.error.description);
-          setLoading(false);
-        });
-        paymentObject.open();
-      } catch (err: any) {
-        console.error(err);
-        alert(err.message);
-        setLoading(false);
-      }
-      return; // Stop here, Razorpay callback handles the rest
-    }
 
     // Handle COD & WHATSAPP
     try {
@@ -821,33 +735,43 @@ Please confirm this order and share payment details. Thank you! 💕`
                       </button>
                     </div>
 
-                    {/* Online payment */}
-                    <div className="border-2 border-brand-rose/20 rounded-2xl p-6 bg-white relative overflow-hidden transition-all hover:border-brand-rose/50">
+                    {/* Online Payment — Coming Soon */}
+                    <div className="relative border-2 border-dashed border-gray-200 rounded-2xl p-6 bg-gray-50/60 overflow-hidden">
+                      {/* Coming Soon ribbon */}
+                      <div className="absolute top-3 right-3">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold tracking-wide">
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Coming Soon
+                        </span>
+                      </div>
+
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-brand-rose/10 flex items-center justify-center shrink-0">
-                          <CreditCard className="w-7 h-7 text-brand-rose" />
+                        <div className="w-12 h-12 rounded-xl bg-gray-200 flex items-center justify-center shrink-0">
+                          <CreditCard className="w-7 h-7 text-gray-400" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-gray-900 text-lg">Online Payment</h4>
-                          <p className="text-gray-500 text-sm mt-1">Pay securely via UPI, Credit/Debit Card, or Net Banking.</p>
+                          <h4 className="font-bold text-gray-400 text-lg">Online Payment</h4>
+                          <p className="text-gray-400 text-sm mt-1">Pay via UPI, Credit/Debit Card, or Net Banking — launching soon!</p>
                           <div className="flex gap-2 mt-3">
                             {["UPI", "Visa", "Mastercard", "RuPay"].map(m => (
-                              <span key={m} className="px-2 py-1 bg-gray-50 border border-gray-200 text-gray-600 text-xs font-medium rounded-md">{m}</span>
+                              <span key={m} className="px-2 py-1 bg-white border border-gray-200 text-gray-300 text-xs font-medium rounded-md">{m}</span>
                             ))}
                           </div>
                         </div>
                       </div>
-                      <button 
-                        onClick={() => placeOrder("ONLINE")}
-                        disabled={loading}
-                        className="mt-5 w-full py-3.5 bg-brand-rose text-white font-bold rounded-xl hover:bg-brand-rose-light transition-all shadow-sm flex items-center justify-center gap-2 text-base disabled:opacity-60"
+
+                      {/* Disabled Coming Soon button */}
+                      <button
+                        type="button"
+                        disabled
+                        className="mt-5 w-full py-3.5 bg-gray-200 text-gray-400 font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-2 text-base select-none"
                       >
-                        {loading && paymentMethod === "ONLINE" ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                          <CreditCard className="w-5 h-5" />
-                        )}
-                        Pay Now via Razorpay
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Coming Soon
                       </button>
                     </div>
                   </div>
