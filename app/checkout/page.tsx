@@ -7,7 +7,8 @@ import { useSession } from "next-auth/react";
 import { useCart } from "@/hooks/useCart";
 import {
   ChevronRight, Package, MapPin, CreditCard,
-  CheckCircle, ShoppingBag, Phone, Loader2
+  CheckCircle, ShoppingBag, Phone, Loader2,
+  Check, Truck, Receipt
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -168,6 +169,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<ShippingForm>>({});
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [placedOrderData, setPlacedOrderData] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState<"WHATSAPP" | "COD" | null>(null);
   const [showCODConfirm, setShowCODConfirm] = useState(false);
   const [timeLeft, setTimeLeft] = useState(9 * 60); // 9 minutes in seconds
@@ -396,6 +398,15 @@ export default function CheckoutPage() {
 
       const placedOrderId = data.orderId;
       setOrderId(placedOrderId);
+      setPlacedOrderData({
+        items: [...items],
+        subtotal,
+        discount,
+        shipping,
+        finalTotal,
+        discountLabel,
+        address: { ...form }
+      });
       clearCart();
       setStep("success");
 
@@ -483,48 +494,162 @@ Please confirm this order and share payment details. Thank you! 💕`
 
   if (step === "success") {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center px-4 bg-gradient-to-br from-brand-sand via-white to-brand-blush">
-        <div className="text-center space-y-6 max-w-md animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <div className="relative w-28 h-28 mx-auto">
-            <div className="w-28 h-28 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle className="w-16 h-16 text-green-500" strokeWidth={1.5} />
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        {/* Header (Simplified for Success) */}
+        <div className="bg-white border-b border-gray-100 shadow-sm shrink-0">
+          <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <Link href="/" className="font-serif text-2xl font-bold text-brand-ink hover:text-brand-rose transition-colors">Ranique</Link>
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5" /> Secure Checkout Complete
+              </span>
             </div>
-            <div className="absolute inset-0 border-4 border-green-200 rounded-full animate-ping opacity-40" style={{ animationDuration: "2s" }} />
           </div>
+        </div>
 
-          <div>
-            <h1 className="font-serif text-4xl font-bold text-brand-ink mb-2">🎉 Order Placed!</h1>
-            <p className="text-gray-600 text-lg">Your order has been placed successfully!</p>
-          </div>
+        <div className="flex-1 flex items-start justify-center px-4 py-8 md:py-12">
+          <div className="w-full max-w-5xl bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden flex flex-col md:flex-row animate-in fade-in slide-in-from-bottom-8 duration-700">
+            
+            {/* Left Column: Success Message */}
+            <div className="flex-1 p-8 md:p-12 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-gray-100 bg-gradient-to-b from-white to-brand-mist/20 relative">
+              {/* Confetti effect using absolute dots */}
+              <div className="absolute top-10 left-10 w-2 h-2 rounded-full bg-brand-rose animate-bounce" style={{ animationDelay: '0.1s' }} />
+              <div className="absolute top-20 right-20 w-3 h-3 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '0.4s' }} />
+              <div className="absolute bottom-20 left-20 w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0.2s' }} />
 
-          {orderId && (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-              <p className="text-sm text-gray-500">Your Order ID</p>
-              <p className="text-2xl font-mono font-bold text-brand-rose tracking-widest mt-1">
-                #{orderId.slice(-10).toUpperCase()}
+              <div className="relative w-28 h-28 mx-auto mb-8">
+                <div className="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-40" style={{ animationDuration: "2s" }} />
+                <div className="relative w-28 h-28 bg-green-100 rounded-full flex items-center justify-center mx-auto z-10 shadow-inner">
+                  <CheckCircle className="w-16 h-16 text-green-500" strokeWidth={2} />
+                </div>
+              </div>
+
+              <h1 className="font-serif text-3xl md:text-4xl font-bold text-brand-ink mb-3">Order Placed!</h1>
+              <p className="text-gray-500 text-base mb-8 max-w-sm">
+                Thank you for shopping with Ranique. Your premium order has been successfully placed.
               </p>
+
+              {orderId && (
+                <div className="w-full max-w-sm bg-gray-50 rounded-2xl border border-gray-100 p-5 mb-8">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Your Order ID</p>
+                  <p className="text-2xl font-mono font-bold text-brand-rose tracking-widest">
+                    #{orderId.slice(-10).toUpperCase()}
+                  </p>
+                </div>
+              )}
+
+              <div className="bg-brand-rose/5 border border-brand-rose/10 rounded-2xl p-4 mb-8 text-left flex gap-4 w-full max-w-sm">
+                <div className="w-10 h-10 bg-brand-rose/10 rounded-full flex items-center justify-center shrink-0">
+                  {paymentMethod === "WHATSAPP" ? <Phone className="w-5 h-5 text-brand-rose" /> : <Truck className="w-5 h-5 text-brand-rose" />}
+                </div>
+                <div>
+                  <h4 className="font-semibold text-brand-ink text-sm">Next Steps</h4>
+                  <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                    {paymentMethod === "WHATSAPP"
+                      ? "Please confirm your order via WhatsApp. Our team will assist you with the manual payment process."
+                      : "We'll send you a confirmation email with your order details and a tracking link once shipped."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
+                <Link href="/account/orders" className="flex-1 py-3.5 bg-brand-ink text-white text-sm font-semibold rounded-xl hover:bg-gray-900 transition-colors shadow-sm">
+                  View Order
+                </Link>
+                <Link href="/shop" className="flex-1 py-3.5 bg-white text-brand-ink text-sm font-semibold rounded-xl border border-gray-200 hover:border-brand-rose hover:text-brand-rose transition-colors">
+                  Continue Shopping
+                </Link>
+              </div>
             </div>
-          )}
 
-          <p className="text-gray-500 text-sm">
-            {paymentMethod === "WHATSAPP"
-              ? "We've opened WhatsApp for you to confirm your order payment. Our team will get back to you soon! 💕"
-              : "Your order is confirmed and will be shipped shortly. You'll receive an email confirmation."}
-          </p>
+            {/* Right Column: Order Summary */}
+            {placedOrderData && (
+              <div className="flex-1 bg-gray-50 p-8 md:p-12 flex flex-col max-h-[85vh] overflow-y-auto custom-scrollbar">
+                <div className="flex items-center gap-2 mb-6">
+                  <Receipt className="w-5 h-5 text-brand-rose" />
+                  <h3 className="font-serif text-xl font-bold text-brand-ink">Order Summary</h3>
+                </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-            <Link
-              href="/account/orders"
-              className="px-6 py-3 bg-brand-ink text-white font-medium rounded-full hover:bg-gray-900 transition-colors shadow-sm"
-            >
-              View My Orders
-            </Link>
-            <Link
-              href="/shop"
-              className="px-6 py-3 bg-white text-brand-ink font-medium rounded-full border border-gray-200 hover:border-brand-rose hover:text-brand-rose transition-colors"
-            >
-              Continue Shopping
-            </Link>
+                {/* Items */}
+                <div className="space-y-4 mb-8 flex-1">
+                  {placedOrderData.items.map((item: any, index: number) => {
+                    const hasActiveOffer = item.product?.offer?.isActive && new Date(item.product.offer.endsAt) > new Date();
+                    const basePrice = hasActiveOffer ? item.product.offer.offerPrice : (item.product?.price || item.product?.sellingPrice || 0);
+                    const price = basePrice + (item.selectedColor?.priceModifier || 0);
+
+                    return (
+                      <div key={index} className="flex gap-4 items-start">
+                        <div className="w-16 h-16 rounded-xl bg-white border border-gray-200 overflow-hidden shrink-0 shadow-sm">
+                          {item.product?.images?.[0] ? (
+                            <img src={item.product.images[0].src || item.product.images[0].url} alt="Product" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                              <ShoppingBag className="w-6 h-6 text-gray-300" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-brand-ink line-clamp-1">{item.product.name || item.product.title}</p>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {item.selectedColor && <span className="text-xs text-gray-500">Color: {item.selectedColor.label || item.selectedColor.name}</span>}
+                            {item.selectedSize && <span className="text-xs text-gray-500">Size: {item.selectedSize.label}</span>}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">Qty: {item.quantity}</p>
+                        </div>
+                        <p className="text-sm font-bold text-brand-ink">
+                          ₹{(price * item.quantity).toLocaleString("en-IN")}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Totals */}
+                <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm mb-6">
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>Subtotal</span>
+                      <span>₹{placedOrderData.subtotal.toLocaleString("en-IN")}</span>
+                    </div>
+                    {placedOrderData.discount > 0 && (
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span>Discount ({placedOrderData.discountLabel})</span>
+                        <span className="font-semibold">-₹{placedOrderData.discount.toLocaleString("en-IN")}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>Shipping</span>
+                      {placedOrderData.shipping === 0 ? (
+                        <span className="text-brand-rose font-semibold flex items-center gap-1">
+                          <Package className="w-3.5 h-3.5" /> FREE
+                        </span>
+                      ) : (
+                        <span>₹{placedOrderData.shipping.toLocaleString("en-IN")}</span>
+                      )}
+                    </div>
+                    <div className="border-t border-gray-100 pt-3 mt-3 flex justify-between items-center">
+                      <span className="font-bold text-gray-900 text-base">Total Paid</span>
+                      <span className="font-serif text-xl font-bold text-brand-ink">
+                        ₹{placedOrderData.finalTotal.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Shipping Details */}
+                <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                  <h4 className="text-sm font-bold text-brand-ink mb-2 flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-brand-rose" /> Shipping Details
+                  </h4>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <p className="font-medium text-gray-900">{placedOrderData.address.name}</p>
+                    <p>{placedOrderData.address.line1}{placedOrderData.address.line2 ? `, ${placedOrderData.address.line2}` : ""}</p>
+                    <p>{placedOrderData.address.city}, {placedOrderData.address.state} {placedOrderData.address.zip}</p>
+                    <p className="pt-2 text-xs">{placedOrderData.address.phone} | {placedOrderData.address.email}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
