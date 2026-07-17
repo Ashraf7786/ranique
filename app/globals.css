@@ -295,3 +295,54 @@ input[type="range"]:active::-webkit-slider-thumb {
   cursor: grabbing;
 }
 
+/* Google Translate Widget Styling */
+#google_translate_element select {
+  background-color: #fcf9f9; /* brand-mist */
+  color: #1a1a1a; /* brand-ink */
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  padding: 4px 24px 4px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C85A6E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  transition: all 0.2s;
+}
+
+#google_translate_element select:hover {
+  background-color: #faecee; /* brand-blush */
+  border-color: #C85A6E; /* brand-rose */
+}
+
+/* Hide default Google Translate junk */
+.goog-te-banner-frame.skiptranslate, 
+.goog-te-gadget-icon {
+  display: none !important;
+}
+
+body {
+  top: 0px !important; 
+}
+
+/* Hide the powered by google text */
+.goog-te-gadget {
+  color: transparent !important;
+  font-size: 0px !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  margin: 0 !important;
+}
+
+/* Hide the tooltip that appears on hover over translated text */
+#goog-gt-tt, .goog-te-balloon-frame { 
+  display: none !important; 
+}
+.goog-text-highlight { 
+  background: none !important; 
+  box-shadow: none !important; 
+}

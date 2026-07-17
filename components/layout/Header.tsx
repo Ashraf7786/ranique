@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/hooks/useCart";
 import { cn } from "@/lib/utils";
+import { GoogleTranslate } from "./GoogleTranslate";
 
 // ─── Icons (inline SVG) ───────────────────────────────────────────────────────
 
@@ -186,6 +187,9 @@ function MobileMenu({ isOpen, onClose, categories = [] }: { isOpen: boolean; onC
           </button>
         </div>
         <nav className="p-5 space-y-1">
+          <div className="mb-4">
+            <GoogleTranslate />
+          </div>
           <Link href="/" onClick={onClose} className="flex items-center px-3 py-2.5 rounded-xl font-sans text-sm text-brand-ink hover:bg-brand-blush hover:text-brand-rose transition-colors">Home</Link>
           <Link href="/shop" onClick={onClose} className="flex items-center px-3 py-2.5 rounded-xl font-sans text-sm font-semibold text-brand-rose bg-brand-blush">Shop All</Link>
           
@@ -344,6 +348,11 @@ export function Header({ categories = [] }: { categories?: any[] }) {
 
             {/* Right icons */}
             <div className="flex items-center gap-0">
+              {/* Google Translate */}
+              <div className="hidden sm:block mr-2">
+                <GoogleTranslate />
+              </div>
+
               {/* Wishlist */}
               <Link
                 href={session ? "/account/wishlist" : "/wishlist"}
