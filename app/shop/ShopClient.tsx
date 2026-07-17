@@ -8,7 +8,7 @@ import { ProductGrid } from "@/components/shop/ProductGrid";
 import { SortDropdown } from "@/components/shop/SortDropdown";
 import { ActiveFilterChips } from "@/components/shop/ActiveFilterChips";
 import { useSearchParams } from "next/navigation";
-import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
+import { LayoutGrid, List } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Defaults ────────────────────────────────────────────────────────────────
@@ -76,8 +76,10 @@ export default function ShopClient({
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const handleFilterChange = useCallback((next: Partial<ActiveFilters>) => {
+    // FilterBar's Apply button passes the full draft; Partial is fine too
     setFilters((prev) => ({ ...prev, ...next }));
   }, []);
+
 
   const handleClearAll = useCallback(() => {
     setFilters((prev) => ({
