@@ -244,6 +244,15 @@ export function Header({ categories = [] }: { categories?: any[] }) {
 
   return (
     <>
+      <div className="bg-brand-ink text-white text-xs sm:text-sm font-semibold py-2.5 px-4 text-center tracking-wide shadow-sm flex items-center justify-center gap-2">
+        <span className="text-brand-rose text-base leading-none">✨</span>
+        <span>
+          <span className="opacity-90">First 100 Customers: Use coupon </span>
+          <span className="font-bold text-brand-rose tracking-wider">RANIQUE100</span>
+          <span className="opacity-90"> for up to 25% OFF + FREE Shipping on orders above ₹499!</span>
+        </span>
+        <span className="text-brand-rose text-base leading-none">✨</span>
+      </div>
       <header
         className={cn(
           "sticky top-0 z-30 transition-all duration-300",
