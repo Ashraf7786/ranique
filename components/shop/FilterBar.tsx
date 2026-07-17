@@ -195,38 +195,42 @@ function FilterPanelContent({
   brands,
   onClearAll,
   activeCount,
+  hideHeader = false,
 }: {
   filters: ActiveFilters;
   onChange: (next: Partial<ActiveFilters>) => void;
   brands: any[];
   onClearAll: () => void;
   activeCount: number;
+  hideHeader?: boolean;
 }) {
   const brandNames = brands.map((b: any) => b.name).filter(Boolean);
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-2 pb-3 border-b border-brand-border shrink-0">
-        <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-4 h-4 text-brand-rose" />
-          <span className="font-serif font-semibold text-brand-ink text-base">Filters</span>
+      {/* Header — hidden when parent already provides one (e.g. mobile sheet) */}
+      {!hideHeader && (
+        <div className="flex items-center justify-between mb-2 pb-3 border-b border-brand-border shrink-0">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="w-4 h-4 text-brand-rose" />
+            <span className="font-serif font-semibold text-brand-ink text-base">Filters</span>
+            {activeCount > 0 && (
+              <span className="min-w-[20px] h-5 px-1.5 bg-brand-rose text-white text-2xs font-bold rounded-full flex items-center justify-center">
+                {activeCount}
+              </span>
+            )}
+          </div>
           {activeCount > 0 && (
-            <span className="min-w-[20px] h-5 px-1.5 bg-brand-rose text-white text-2xs font-bold rounded-full flex items-center justify-center">
-              {activeCount}
-            </span>
+            <button
+              type="button"
+              onClick={onClearAll}
+              className="font-sans text-xs font-medium text-brand-slate hover:text-brand-rose transition-colors"
+            >
+              Clear all
+            </button>
           )}
         </div>
-        {activeCount > 0 && (
-          <button
-            type="button"
-            onClick={onClearAll}
-            className="font-sans text-xs font-medium text-brand-slate hover:text-brand-rose transition-colors"
-          >
-            Clear all
-          </button>
-        )}
-      </div>
+      )}
 
       {/* Scrollable sections */}
       <div className="flex-1 overflow-y-auto scrollbar-thin overscroll-contain">
@@ -546,28 +550,34 @@ export function MobileFilterSheet({
         />
       )}
 
-      {/* Sheet */}
+      {/* Sheet
+           ─ Uses flex-col so the footer is ALWAYS pinned to the bottom.
+           ─ height: 90vh (with dvh fallback) — dvh is not supported on all Android WebViews.
+           ─ Safe-area applied via inline style for reliable iOS/Android support.
+      */}
       <div
         className={cn(
           "lg:hidden fixed bottom-0 left-0 right-0 z-50",
           "bg-white rounded-t-3xl shadow-drawer",
+          "flex flex-col",
           "transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
-          "h-[90dvh]",
-          // iOS safe area
-          "pb-[env(safe-area-inset-bottom,0px)]",
           open ? "translate-y-0" : "translate-y-full"
         )}
+        style={{
+          // dvh fallback: use 90vh on browsers that don't support dvh
+          height: "min(90dvh, 90vh)",
+        }}
         role="dialog"
         aria-modal="true"
         aria-label="Product filters"
       >
-        {/* Drag handle */}
+        {/* Drag handle — fixed height ~20px */}
         <div className="flex justify-center pt-3 pb-1 shrink-0">
           <div className="w-10 h-1 bg-brand-border rounded-full" />
         </div>
 
-        {/* Close button */}
-        <div className="flex items-center justify-between px-5 pt-2 pb-3 border-b border-brand-border shrink-0">
+        {/* Sheet header — fixed, single instance (no duplicate from FilterPanelContent) */}
+        <div className="flex items-center justify-between px-5 pt-1 pb-3 border-b border-brand-border shrink-0">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="w-4 h-4 text-brand-rose" />
             <span className="font-serif font-semibold text-brand-ink text-base">Filters</span>
@@ -577,41 +587,55 @@ export function MobileFilterSheet({
               </span>
             )}
           </div>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            aria-label="Close filters"
-            className="p-2 rounded-full hover:bg-brand-mist transition-colors"
-          >
-            <X className="w-5 h-5 text-brand-slate" />
-          </button>
+          <div className="flex items-center gap-2">
+            {activeCount > 0 && (
+              <button
+                type="button"
+                onClick={onClearAll}
+                className="font-sans text-xs font-medium text-brand-slate hover:text-brand-rose transition-colors px-2 py-1"
+              >
+                Clear all
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close filters"
+              className="p-2 rounded-full hover:bg-brand-mist transition-colors"
+            >
+              <X className="w-5 h-5 text-brand-slate" />
+            </button>
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-4 h-[calc(90dvh-160px)]">
-          {/* Sections */}
+        {/* Scrollable content — flex-1 fills remaining space between header and footer */}
+        <div
+          className="flex-1 overflow-y-auto overscroll-contain px-5"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
+          {/* hideHeader=true prevents the duplicate "Filters" title inside FilterPanelContent */}
           <FilterPanelContent
             filters={filters}
             onChange={onChange}
             brands={brands}
             onClearAll={onClearAll}
             activeCount={activeCount}
+            hideHeader
           />
         </div>
 
-        {/* Sticky footer */}
+        {/* Sticky footer — always visible above navigation bar */}
         <div
-          className={cn(
-            "shrink-0 px-5 py-3 border-t border-brand-border bg-white",
-            "pb-[max(12px,env(safe-area-inset-bottom,12px))]"
-          )}
+          className="shrink-0 px-5 pt-3 pb-3 border-t border-brand-border bg-white"
+          style={{
+            // Use CSS env() inline for maximum iOS/Android compatibility
+            paddingBottom: "max(12px, env(safe-area-inset-bottom, 12px))",
+          }}
         >
           <div className="flex gap-3">
             <button
               type="button"
-              onClick={() => {
-                onClearAll();
-              }}
+              onClick={onClearAll}
               className={cn(
                 "flex-1 h-11 rounded-full border border-brand-border font-sans text-sm font-medium",
                 "text-brand-slate hover:border-brand-rose hover:text-brand-rose transition-colors"
@@ -622,7 +646,7 @@ export function MobileFilterSheet({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="flex-2 flex-grow-[2] h-11 rounded-full bg-brand-rose text-white font-sans text-sm font-semibold hover:bg-brand-rose-dark transition-colors"
+              className="flex-[2] h-11 rounded-full bg-brand-rose text-white font-sans text-sm font-semibold hover:bg-brand-rose-dark transition-colors active:scale-[0.98]"
             >
               View Results
             </button>
