@@ -35,7 +35,7 @@ const NAV_LINKS = [
   { href: "/admin/product-requests", label: "Edit Requests", icon: ClipboardList },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
-  { href: "/admin/enquiries", label: "Enquiries", icon: Inbox },
+  { href: "/admin/enquiries", label: "Bugs & Queries", icon: Inbox },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
