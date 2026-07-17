@@ -244,31 +244,24 @@ export function Header({ categories = [] }: { categories?: any[] }) {
 
   return (
     <>
-      <div className="bg-brand-ink text-white text-xs sm:text-sm font-semibold py-2.5 px-4 text-center tracking-wide shadow-sm flex items-center justify-center gap-2">
-        <span className="text-brand-rose text-base leading-none">✨</span>
-        <span>
-          <span className="opacity-90">First 100 Customers: Use coupon </span>
-          <span className="font-bold text-brand-rose tracking-wider">RANIQUE100</span>
-          <span className="opacity-90"> for up to 25% OFF + FREE Shipping on orders above ₹499!</span>
-        </span>
-        <span className="text-brand-rose text-base leading-none">✨</span>
-      </div>
       <header
         className={cn(
-          "sticky top-0 z-30 transition-all duration-300",
-          scrolled
-            ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-brand-border/60"
-            : "bg-white border-b border-brand-border"
-        )}
-      >
-        {/* Announcement Bar */}
-        <div className="bg-brand-rose text-white py-2 flex items-center w-full overflow-hidden h-8 sm:h-9">
-          {React.createElement(
-            'marquee' as any,
-            { scrollamount: "20", scrolldelay: "200", className: "w-full text-xs sm:text-sm font-medium font-sans flex items-center" },
-            <>Website is under development. You can check our Instagram and order through <a href="https://instagram.com/ranique.official" target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-mist transition-colors">@ranique.official</a></>
-          )}
-        </div>
+           "sticky top-0 z-30 transition-all duration-300",
+           scrolled
+             ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-brand-border/60"
+             : "bg-white border-b border-brand-border"
+         )}
+       >
+         {/* Announcement Bar */}
+         <div className="bg-brand-ink text-brand-rose py-2 flex items-center w-full overflow-hidden h-9 sm:h-10 border-b border-brand-rose/20">
+           {React.createElement(
+             'marquee' as any,
+             { scrollamount: "15", className: "w-full text-xs sm:text-sm font-semibold tracking-wide flex items-center" },
+             <>
+               ✨ First 100 Customers: Use coupon <span className="font-bold underline decoration-white/30 underline-offset-2 text-white">RANIQUE100</span> for up to 25% OFF + FREE Shipping on orders above ₹499! ✨
+             </>
+           )}
+         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row */}
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
