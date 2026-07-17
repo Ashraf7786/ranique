@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
-import { Mail, MessageSquare, Bug, Phone, MapPin, UploadCloud, X, CheckCircle, Loader2 } from "lucide-react";
+import { Mail, MessageSquare, Bug, Phone, MapPin, Upload, X, CheckCircle, Loader2 } from "lucide-react";
 
 type FormType = "QUERY" | "BUG_REPORT";
 
@@ -215,7 +215,11 @@ export default function ContactUsPage() {
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Attach Screenshot (Optional)</label>
                     
-                    {!imageUrl ? (
+                    {!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
+                      <div className="w-full py-6 px-4 border border-red-100 bg-red-50 text-red-600 rounded-xl text-sm text-center">
+                        Image upload is currently unavailable due to missing Cloudinary configuration on the server. You can still submit the bug description!
+                      </div>
+                    ) : !imageUrl ? (
                       <CldUploadWidget
                         uploadPreset="ranique_products" // reusing existing preset
                         onSuccess={(result: any) => {
@@ -233,7 +237,7 @@ export default function ContactUsPage() {
                             onClick={() => open()}
                             className="w-full py-8 border-2 border-dashed border-gray-200 bg-gray-50 rounded-xl flex flex-col items-center justify-center text-gray-500 hover:border-brand-rose hover:bg-brand-rose/5 transition-colors group"
                           >
-                            <UploadCloud className="w-8 h-8 mb-2 group-hover:text-brand-rose transition-colors" />
+                            <Upload className="w-8 h-8 mb-2 group-hover:text-brand-rose transition-colors" />
                             <span className="text-sm font-medium">Click to upload a screenshot</span>
                             <span className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</span>
                           </button>
