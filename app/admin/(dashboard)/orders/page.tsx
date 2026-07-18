@@ -97,47 +97,42 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ [
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50 text-sm">
                 <th className="py-4 px-6 font-medium text-gray-500">Order ID</th>
-                <th className="py-4 px-6 font-medium text-gray-500">Customer</th>
-                <th className="py-4 px-6 font-medium text-gray-500 min-w-[200px]">Delivery Address</th>
+                <th className="py-4 px-6 font-medium text-gray-500">Customer Details</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Date</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Items</th>
-                <th className="py-4 px-6 font-medium text-gray-500">Total Amount</th>
-                <th className="py-4 px-6 font-medium text-gray-500">Payment Mode</th>
-                <th className="py-4 px-6 font-medium text-gray-500">Status</th>
-                <th className="py-4 px-6 font-medium text-gray-500 text-right">Actions</th>
+                <th className="py-4 px-4 font-medium text-gray-500">Total Amount</th>
+                <th className="py-4 px-4 font-medium text-gray-500">Payment Mode</th>
+                <th className="py-4 px-4 font-medium text-gray-500">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {orders.length > 0 ? (
                 orders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="py-4 px-6 text-sm text-gray-900 font-medium">
+                    <td className="py-4 px-4 text-sm text-gray-900 font-medium whitespace-nowrap">
                       #{order.id.slice(0, 8).toUpperCase()}
                       <div className="text-xs text-gray-500 mt-1">
                         {order.items.length} item(s)
                       </div>
                     </td>
-                    <td className="py-4 px-6 text-sm text-gray-600">
+                    <td className="py-4 px-4 text-sm text-gray-600">
                       <div className="font-medium text-gray-900">
                         {order.shippingName || (order.user ? `${order.user.firstName} ${order.user.lastName}` : 'Unknown')}
                       </div>
-                      <div className="text-xs text-gray-500">{order.shippingEmail || order.user?.email}</div>
-                      <div className="text-xs text-gray-500">{order.shippingPhone || order.user?.mobileNumber || ''}</div>
-                    </td>
-                    <td className="py-4 px-6 text-sm text-gray-600">
-                      <div className="text-xs text-gray-700 whitespace-pre-wrap">
+                      <div className="text-xs text-gray-500 mb-1">{order.shippingEmail || order.user?.email}</div>
+                      <div className="text-xs text-gray-700 whitespace-pre-wrap max-w-xs">
                         {order.shippingLine1 ? (
                           <>
                             {order.shippingLine1}
                             {order.shippingLine2 ? `, ${order.shippingLine2}` : ''}
-                            <br />
+                            {', '}
                             {order.shippingCity}, {order.shippingState} {order.shippingZip}
                           </>
                         ) : order.user?.addresses?.[0] ? (
                           <>
                             {order.user.addresses[0].line1}
                             {order.user.addresses[0].line2 ? `, ${order.user.addresses[0].line2}` : ''}
-                            <br />
+                            {', '}
                             {order.user.addresses[0].city}, {order.user.addresses[0].state} {order.user.addresses[0].zip}
                           </>
                         ) : (
@@ -145,21 +140,21 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ [
                         )}
                       </div>
                     </td>
-                    <td className="py-4 px-6 text-sm text-gray-600">
+                    <td className="py-4 px-4 text-sm text-gray-600 whitespace-nowrap">
                       {new Date(order.createdAt).toLocaleDateString('en-IN', {
                         day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                       })}
                     </td>
-                    <td className="py-4 px-6 text-sm text-gray-600">
+                    <td className="py-4 px-4 text-sm text-gray-600">
                       <div className="flex flex-col items-start gap-2">
                         <span className="font-medium text-gray-900">{order.items.length} Item(s)</span>
                         <OrderDetailsModal order={order} />
                       </div>
                     </td>
-                    <td className="py-4 px-6 text-sm text-gray-900 font-medium">
+                    <td className="py-4 px-4 text-sm text-gray-900 font-medium whitespace-nowrap">
                       ₹{order.totalAmount.toLocaleString()}
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-4">
                       <span className={`px-2 py-1 text-xs font-bold uppercase rounded-sm border ${
                         order.paymentMethod === 'ONLINE' ? 'border-brand-rose text-brand-rose bg-brand-rose/5' :
                         order.paymentMethod === 'COD' ? 'border-gray-800 text-gray-800 bg-gray-50' :
@@ -168,17 +163,17 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ [
                         {order.paymentMethod || 'UNKNOWN'}
                       </span>
                     </td>
-                    <td className="py-4 px-6">
-                      <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <DeleteOrderButton orderId={order.id} />
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2">
+                        <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
+                        <DeleteOrderButton orderId={order.id} />
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-gray-500">
+                  <td colSpan={7} className="py-12 text-center text-gray-500">
                     No orders found.
                   </td>
                 </tr>
