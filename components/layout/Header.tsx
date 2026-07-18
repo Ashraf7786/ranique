@@ -260,7 +260,7 @@ export function Header({ categories = [] }: { categories?: any[] }) {
          <div className="bg-brand-ink text-brand-rose py-2 flex items-center w-full overflow-hidden h-9 sm:h-10 border-b border-brand-rose/20">
            {React.createElement(
              'marquee' as any,
-             { scrollamount: "15", className: "w-full text-xs sm:text-sm font-semibold tracking-wide flex items-center" },
+             { scrollamount: "6", className: "w-full text-xs sm:text-sm font-semibold tracking-wide flex items-center" },
              <>
                ✨ First 100 Customers: Use coupon <span className="font-bold underline decoration-white/30 underline-offset-2 text-white">RANIQUE100</span> for up to 25% OFF + FREE Shipping on orders above ₹499! ✨
              </>
