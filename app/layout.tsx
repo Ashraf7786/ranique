@@ -11,7 +11,7 @@ import { CartProvider } from "@/components/providers/CartProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GlobalLoader } from "@/components/ui/GlobalLoader";
 import { StorefrontUI } from "./StorefrontUI";
-import { getCategories } from "@/lib/api";
+import { getCategories, getAnnouncement } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: {
@@ -44,6 +44,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const categories = await getCategories();
+  const announcement = await getAnnouncement();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -58,12 +59,12 @@ export default async function RootLayout({
             {/* Skip to content */}
             <a
               href="#main-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-brand-rose focus:text-white focus:rounded-full focus:text-sm"
+              className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:p-4 focus:bg-white focus:text-brand-ink"
             >
               Skip to content
             </a>
 
-            <StorefrontUI categories={categories}>
+            <StorefrontUI categories={categories} announcement={announcement}>
               {children}
             </StorefrontUI>
           </CartProvider>

@@ -194,3 +194,24 @@ export async function getBrands(): Promise<any[]> {
 
   return fetchBrands();
 }
+
+export async function getAnnouncement(): Promise<any> {
+  const fetchAnnouncement = unstable_cache(
+    async () => {
+      try {
+        const announcement = await prisma.announcement.findFirst({
+          where: { isActive: true },
+          orderBy: { createdAt: 'desc' }
+        });
+        return announcement ? JSON.parse(JSON.stringify(announcement)) : null;
+      } catch (error) {
+        console.error("Failed to fetch announcement:", error);
+        return null;
+      }
+    },
+    ['announcement'],
+    { revalidate: 10, tags: ['announcement'] }
+  );
+
+  return fetchAnnouncement();
+}

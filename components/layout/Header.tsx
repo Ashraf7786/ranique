@@ -213,7 +213,7 @@ function MobileMenu({ isOpen, onClose, categories = [] }: { isOpen: boolean; onC
   );
 }
 
-export function Header({ categories = [] }: { categories?: any[] }) {
+export function Header({ categories = [], announcement }: { categories?: any[], announcement?: any }) {
   const { totalItems, openCart } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
@@ -257,15 +257,15 @@ export function Header({ categories = [] }: { categories?: any[] }) {
          )}
        >
          {/* Announcement Bar */}
-         <div className="bg-brand-ink text-brand-rose py-2 flex items-center w-full overflow-hidden h-9 sm:h-10 border-b border-brand-rose/20">
-           {React.createElement(
-             'marquee' as any,
-             { scrollamount: "6", className: "w-full text-xs sm:text-sm font-semibold tracking-wide flex items-center" },
-             <>
-               ✨ First 100 Customers: Use coupon <span className="font-bold underline decoration-white/30 underline-offset-2 text-white">RANIQUE100</span> for up to 25% OFF + FREE Shipping on orders above ₹499! ✨
-             </>
-           )}
-         </div>
+         {announcement && announcement.isActive && (
+           <div className="bg-brand-ink text-brand-rose py-2 flex items-center w-full overflow-hidden h-9 sm:h-10 border-b border-brand-rose/20">
+             {React.createElement(
+               'marquee' as any,
+               { scrollamount: "6", className: "w-full text-xs sm:text-sm font-semibold tracking-wide flex items-center" },
+               <span dangerouslySetInnerHTML={{ __html: announcement.text }} />
+             )}
+           </div>
+         )}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row */}
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">

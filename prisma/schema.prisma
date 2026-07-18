@@ -414,3 +414,13 @@ model Review {
 
   @@index([productId])
 }
+
+// ─── SETTINGS ──────────────────────────────────────────────────────────────
+
+model Announcement {
+  id        String   @id @default(uuid())
+  text      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
