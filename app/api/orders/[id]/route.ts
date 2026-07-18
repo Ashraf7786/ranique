@@ -36,3 +36,23 @@ export async function PATCH(request: Request, props: { params: Promise<{ id: str
     return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    await prisma.order.delete({
+      where: { id: params.id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("Error deleting order:", error);
+    return NextResponse.json({ error: 'Failed to delete order' }, { status: 500 });
+  }
+}
+

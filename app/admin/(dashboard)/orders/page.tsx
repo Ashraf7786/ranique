@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { OrderStatusSelect } from "@/components/admin/OrderStatusSelect";
 import { OrderDetailsModal } from "@/components/admin/OrderDetailsModal";
 import { OrderFilters } from "@/components/admin/OrderFilters";
+import { DeleteOrderButton } from "@/components/admin/DeleteOrderButton";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -103,6 +104,7 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ [
                 <th className="py-4 px-6 font-medium text-gray-500">Total Amount</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Payment Mode</th>
                 <th className="py-4 px-6 font-medium text-gray-500">Status</th>
+                <th className="py-4 px-6 font-medium text-gray-500 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -169,11 +171,14 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ [
                     <td className="py-4 px-6">
                       <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
                     </td>
+                    <td className="py-4 px-6 text-right">
+                      <DeleteOrderButton orderId={order.id} />
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-gray-500">
+                  <td colSpan={9} className="py-12 text-center text-gray-500">
                     No orders found.
                   </td>
                 </tr>
