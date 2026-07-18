@@ -257,15 +257,15 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
          )}
        >
          {/* Announcement Bar */}
-         {announcement && announcement.isActive && (
-           <div className="bg-brand-ink text-brand-rose py-2 flex items-center w-full overflow-hidden h-9 sm:h-10 border-b border-brand-rose/20">
-             {React.createElement(
-               'marquee' as any,
-               { scrollamount: "6", className: "w-full text-xs sm:text-sm font-semibold tracking-wide flex items-center" },
-               <span dangerouslySetInnerHTML={{ __html: announcement.text }} />
-             )}
-           </div>
-         )}
+        {announcement && announcement.isActive && (
+          <div className="bg-gradient-to-r from-brand-rose via-[#d88499] to-brand-rose text-white py-2 flex items-center w-full overflow-hidden h-9 sm:h-10 border-b border-[#bd657b] shadow-sm">
+            {React.createElement(
+              'marquee' as any,
+              { scrollamount: "6", className: "w-full text-xs sm:text-sm font-medium tracking-wide flex items-center" },
+              <span dangerouslySetInnerHTML={{ __html: announcement.text }} />
+            )}
+          </div>
+        )}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row */}
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">

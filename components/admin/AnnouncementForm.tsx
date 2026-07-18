@@ -102,10 +102,10 @@ export function AnnouncementForm({ initialData }: { initialData: any }) {
         <label className="block text-xs font-semibold text-brand-slate uppercase tracking-wider mb-3">
           Live Preview
         </label>
-        <div className="bg-brand-ink text-brand-rose py-2 flex items-center w-full overflow-hidden h-10 border-b border-brand-rose/20 rounded-lg">
+        <div className="bg-gradient-to-r from-brand-rose via-[#d88499] to-brand-rose text-white py-2 flex items-center w-full overflow-hidden h-10 border-b border-[#bd657b] shadow-sm rounded-lg">
           {React.createElement('marquee', {
             scrollamount: "6",
-            className: "w-full text-sm font-semibold tracking-wide flex items-center"
+            className: "w-full text-sm font-medium tracking-wide flex items-center"
           }, <span dangerouslySetInnerHTML={{ __html: text || "Your announcement will appear here" }} />)}
         </div>
       </div>
