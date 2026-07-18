@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Save, Bold, Italic, Underline, Sparkles } from "lucide-react";
-import toast from "react-hot-toast";
 
 export function AnnouncementForm({ initialData }: { initialData: any }) {
   const router = useRouter();
@@ -13,7 +12,7 @@ export function AnnouncementForm({ initialData }: { initialData: any }) {
 
   const insertTag = (startTag: string, endTag: string = "") => {
     // Simple helper to append formatting
-    setText((prev) => `${prev} ${startTag}Your Text${endTag} `);
+    setText((prev: string) => `${prev} ${startTag}Your Text${endTag} `);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,10 +28,10 @@ export function AnnouncementForm({ initialData }: { initialData: any }) {
 
       if (!res.ok) throw new Error("Failed to save announcement");
 
-      toast.success("Announcement updated successfully!");
+      alert("Announcement updated successfully!");
       router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+      alert(error.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -104,9 +103,10 @@ export function AnnouncementForm({ initialData }: { initialData: any }) {
           Live Preview
         </label>
         <div className="bg-brand-ink text-brand-rose py-2 flex items-center w-full overflow-hidden h-10 border-b border-brand-rose/20 rounded-lg">
-          <marquee scrollamount="6" className="w-full text-sm font-semibold tracking-wide flex items-center">
-            <span dangerouslySetInnerHTML={{ __html: text || "Your announcement will appear here" }} />
-          </marquee>
+          {React.createElement('marquee', {
+            scrollamount: "6",
+            className: "w-full text-sm font-semibold tracking-wide flex items-center"
+          }, <span dangerouslySetInnerHTML={{ __html: text || "Your announcement will appear here" }} />)}
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import { AnnouncementForm } from "@/components/admin/AnnouncementForm";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { Megaphone } from "lucide-react";
 
 export default async function AnnouncementPage() {
