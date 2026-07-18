@@ -20,9 +20,18 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       data.code = data.code.toUpperCase();
     }
 
+    if (data.productIds !== undefined) {
+      const productIds = data.productIds;
+      delete data.productIds;
+      data.products = {
+        set: productIds.map((id: string) => ({ id }))
+      };
+    }
+
     const coupon = await prisma.coupon.update({
       where: { id },
-      data
+      data,
+      include: { products: true }
     });
 
     return NextResponse.json(coupon);

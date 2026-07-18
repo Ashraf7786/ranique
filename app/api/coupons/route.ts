@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     }
 
     const coupons = await prisma.coupon.findMany({
-      include: { product: true },
+      include: { products: true },
       orderBy: { createdAt: 'desc' }
     });
     
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     }
 
     const data = await request.json();
-    const { code, discountPercent, productId, minOrderValue, maxUses, endsAt, isActive } = data;
+    const { code, discountPercent, productIds, minOrderValue, maxUses, endsAt, isActive } = data;
 
     const existing = await prisma.coupon.findUnique({ where: { code } });
     if (existing) {
@@ -40,12 +40,15 @@ export async function POST(request: Request) {
       data: {
         code: code.toUpperCase(),
         discountPercent: Number(discountPercent),
-        productId: productId || null,
         minOrderValue: Number(minOrderValue) || 0,
         maxUses: maxUses ? Number(maxUses) : null,
         endsAt: endsAt ? new Date(endsAt) : null,
-        isActive: isActive !== undefined ? isActive : true
-      }
+        isActive: isActive !== undefined ? isActive : true,
+        products: productIds && productIds.length > 0 ? {
+          connect: productIds.map((id: string) => ({ id }))
+        } : undefined
+      },
+      include: { products: true }
     });
 
     return NextResponse.json(coupon);

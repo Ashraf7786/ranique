@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
     const coupon = await prisma.coupon.findUnique({
       where: { code: code.toUpperCase() },
-      include: { product: true }
+      include: { products: true }
     });
 
     if (!coupon) {
@@ -38,14 +38,16 @@ export async function POST(request: Request) {
 
     let discountAmount = 0;
 
-    if (coupon.productId) {
-      // Coupon applies only to a specific product
-      const item = (cartItems || []).find((i: any) => i.productId === coupon.productId);
-      if (!item) {
+    if (coupon.products && coupon.products.length > 0) {
+      // Coupon applies only to specific products
+      const validItems = (cartItems || []).filter((i: any) => 
+        coupon.products.some((p: any) => p.id === i.productId)
+      );
+      if (validItems.length === 0) {
         return NextResponse.json({ error: 'This coupon is not valid for the items in your cart' }, { status: 400 });
       }
-      // Calculate discount on that specific item
-      const itemTotal = item.price * item.quantity;
+      // Calculate discount on those specific items
+      const itemTotal = validItems.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0);
       discountAmount = Math.round(itemTotal * (coupon.discountPercent / 100));
     } else {
       // Applies to whole cart

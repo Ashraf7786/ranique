@@ -304,7 +304,6 @@ model Coupon {
   id              String    @id @default(uuid())
   code            String    @unique
   discountPercent Float
-  productId       String?   // Optional: if set, applies only to this product
   minOrderValue   Float     @default(0)
   maxUses         Int?      // Optional: maximum number of times it can be used globally
   currentUses     Int       @default(0)
@@ -313,7 +312,7 @@ model Coupon {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  product         Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  products        Product[]
 }
 
 // ─── ORDERS & TRANSACTIONS ───────────────────────────────────────────────────

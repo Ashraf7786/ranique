@@ -15,7 +15,8 @@ export function CouponDataTable({ initialCoupons, products }: { initialCoupons: 
   const [form, setForm] = useState({
     code: "",
     discountPercent: 10,
-    productId: "",
+    productId: "", // Keeping this for backwards compatibility if needed during state transition, but we'll use productIds
+    productIds: [] as string[],
     minOrderValue: 0,
     maxUses: "",
     endsAt: "",
@@ -32,7 +33,8 @@ export function CouponDataTable({ initialCoupons, products }: { initialCoupons: 
       setForm({
         code: coupon.code,
         discountPercent: coupon.discountPercent,
-        productId: coupon.productId || "",
+        productId: "",
+        productIds: coupon.products ? coupon.products.map((p: any) => p.id) : [],
         minOrderValue: coupon.minOrderValue,
         maxUses: coupon.maxUses || "",
         endsAt: coupon.endsAt ? new Date(coupon.endsAt).toISOString().slice(0, 16) : "",
@@ -41,7 +43,7 @@ export function CouponDataTable({ initialCoupons, products }: { initialCoupons: 
     } else {
       setEditingCoupon(null);
       setForm({
-        code: "", discountPercent: 10, productId: "", minOrderValue: 0, maxUses: "", endsAt: "", isActive: true
+        code: "", discountPercent: 10, productId: "", productIds: [], minOrderValue: 0, maxUses: "", endsAt: "", isActive: true
       });
     }
     setIsModalOpen(true);
@@ -64,7 +66,6 @@ export function CouponDataTable({ initialCoupons, products }: { initialCoupons: 
     try {
       const payload = {
         ...form,
-        productId: form.productId || null,
         maxUses: form.maxUses ? Number(form.maxUses) : null,
         endsAt: form.endsAt || null
       };
@@ -140,8 +141,10 @@ export function CouponDataTable({ initialCoupons, products }: { initialCoupons: 
                     <td className="px-6 py-4 font-bold text-gray-900">{coupon.code}</td>
                     <td className="px-6 py-4 font-bold text-brand-rose">{coupon.discountPercent}%</td>
                     <td className="px-6 py-4">
-                      {coupon.productId ? (
-                        <span className="text-xs truncate max-w-[150px] inline-block">{coupon.product?.title || 'Specific Product'}</span>
+                      {coupon.products && coupon.products.length > 0 ? (
+                        <span className="text-xs truncate max-w-[150px] inline-block" title={coupon.products.map((p:any)=>p.title).join(', ')}>
+                          {coupon.products.length} Product(s)
+                        </span>
                       ) : (
                         <span className="text-xs text-gray-400">Entire Order</span>
                       )}
@@ -196,11 +199,39 @@ export function CouponDataTable({ initialCoupons, products }: { initialCoupons: 
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1">Applies to Product (Optional)</label>
-                <select value={form.productId} onChange={e => setForm({...form, productId: e.target.value})} className="w-full px-3 py-2 border rounded-lg">
-                  <option value="">Entire Order</option>
-                  {products.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
-                </select>
+                <label className="block text-xs font-semibold mb-1">Applies to Products (Optional)</label>
+                <div className="border rounded-lg max-h-48 overflow-y-auto p-2 bg-gray-50 border-gray-200">
+                  <label className="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer text-sm">
+                    <input 
+                      type="checkbox" 
+                      checked={form.productIds.length === 0}
+                      onChange={() => setForm({...form, productIds: []})}
+                      className="rounded border-gray-300 text-brand-rose focus:ring-brand-rose"
+                    />
+                    <span className="font-medium text-gray-900">Entire Order (All Products)</span>
+                  </label>
+                  <div className="my-1 border-t border-gray-200"></div>
+                  {products.map(p => (
+                    <label key={p.id} className="flex items-center gap-2 p-2 hover:bg-white rounded cursor-pointer text-sm">
+                      <input 
+                        type="checkbox"
+                        checked={form.productIds.includes(p.id)}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setForm(prev => ({
+                            ...prev,
+                            productIds: checked 
+                              ? [...prev.productIds, p.id]
+                              : prev.productIds.filter(id => id !== p.id)
+                          }))
+                        }}
+                        className="rounded border-gray-300 text-brand-rose focus:ring-brand-rose"
+                      />
+                      <span className="truncate text-gray-700">{p.title}</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-[10px] text-gray-500 mt-1">If no products are selected, the coupon applies to the entire cart.</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>

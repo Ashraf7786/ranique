@@ -13,7 +13,7 @@ export const revalidate = 0;
 
 export default async function CouponsPage() {
   const coupons = await prisma.coupon.findMany({
-    include: { product: true },
+    include: { products: true },
     orderBy: { createdAt: "desc" },
   });
 

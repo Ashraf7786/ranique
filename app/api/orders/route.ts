@@ -69,12 +69,16 @@ export async function POST(req: Request) {
     let validCouponCode: string | null = null;
     
     if (couponCode) {
-      const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.toUpperCase() } });
+      const coupon = await prisma.coupon.findUnique({ 
+        where: { code: couponCode.toUpperCase() },
+        include: { products: true }
+      });
       if (coupon && coupon.isActive && (!coupon.endsAt || new Date(coupon.endsAt) > new Date())) {
-        if (coupon.productId) {
-          const item = orderItems.find(i => i.productId === coupon.productId);
-          if (item) {
-             appliedCouponDiscount = Math.round((item.price * item.quantity) * (coupon.discountPercent / 100));
+        if (coupon.products && coupon.products.length > 0) {
+          const validItems = orderItems.filter(i => coupon.products.some((p: any) => p.id === i.productId));
+          if (validItems.length > 0) {
+             const itemTotal = validItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+             appliedCouponDiscount = Math.round(itemTotal * (coupon.discountPercent / 100));
              validCouponCode = coupon.code;
           }
         } else {
