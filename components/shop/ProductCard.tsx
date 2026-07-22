@@ -45,7 +45,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, priority = false }: ProductCardProps) {
-  const { addItem, openCart } = useCart();
+  const { addItem } = useCart();
   const { isWishlisted, toggle: toggleWishlist } = useWishlist();
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [wishlistAnim, setWishlistAnim] = useState(false);
@@ -61,15 +61,13 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
       const imgSrc = product.images[0]?.src || "/placeholder.jpg";
       
       // Start fly animation
-      flyToCart(button, imgSrc, () => {
-        openCart();
-      });
+      flyToCart(button, imgSrc);
 
       addItem(product, 1, firstColor);
       setAddedFeedback(true);
       setTimeout(() => setAddedFeedback(false), 1800);
     },
-    [addItem, product, firstColor, openCart]
+    [addItem, product, firstColor]
   );
 
   const handleWishlist = useCallback(

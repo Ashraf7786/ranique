@@ -16,7 +16,7 @@ export function AddToCartBar({
   selectedColor,
   selectedSize,
 }: AddToCartBarProps) {
-  const { addItem, openCart } = useCart();
+  const { addItem } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
@@ -39,9 +39,7 @@ export function AddToCartBar({
     const mainImage = document.querySelector(".pdp-main-image") as HTMLImageElement;
     const imgSrc = mainImage?.src || product.images[0]?.src || "/placeholder.jpg";
     
-    flyToCart(mainImage || button, imgSrc, () => {
-      openCart();
-    });
+    flyToCart(mainImage || button, imgSrc);
 
     addItem(product, qty, selectedColor, selectedSize);
     setAdded(true);
