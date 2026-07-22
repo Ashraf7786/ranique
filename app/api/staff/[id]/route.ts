@@ -20,7 +20,7 @@ export async function DELETE(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (staff.id === session.user.id) {
+    if (staff.id === (session.user as any).id) {
       return NextResponse.json({ error: "You cannot delete your own account" }, { status: 400 });
     }
 
