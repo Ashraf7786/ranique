@@ -11,6 +11,7 @@ import { StarRating } from "@/components/ui/StarRating";
 import { formatPrice, cn } from "@/lib/utils";
 import { ShoppingBag, Zap } from "lucide-react";
 import { OfferCountdown } from "./OfferCountdown";
+import { flyToCart } from "@/lib/utils";
 
 // ─── Heart Icon ───────────────────────────────────────────────────────────────
 
@@ -44,7 +45,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, priority = false }: ProductCardProps) {
-  const { addItem } = useCart();
+  const { addItem, openCart } = useCart();
   const { isWishlisted, toggle: toggleWishlist } = useWishlist();
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [wishlistAnim, setWishlistAnim] = useState(false);
@@ -53,13 +54,22 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
   const firstColor = product.variants?.colors?.[0];
 
   const handleAddToCart = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault(); // don't navigate to PDP
+      
+      const button = e.currentTarget;
+      const imgSrc = product.images[0]?.src || "/placeholder.jpg";
+      
+      // Start fly animation
+      flyToCart(button, imgSrc, () => {
+        openCart();
+      });
+
       addItem(product, 1, firstColor);
       setAddedFeedback(true);
       setTimeout(() => setAddedFeedback(false), 1800);
     },
-    [addItem, product, firstColor]
+    [addItem, product, firstColor, openCart]
   );
 
   const handleWishlist = useCallback(

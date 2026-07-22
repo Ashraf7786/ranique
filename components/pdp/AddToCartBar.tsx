@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Product, ColorVariant, SizeVariant } from "@/lib/types";
 import { useCart } from "@/hooks/useCart";
-import { formatPrice, cn } from "@/lib/utils";
+import { formatPrice, cn, flyToCart } from "@/lib/utils";
 
 interface AddToCartBarProps {
   product: Product;
@@ -16,7 +16,7 @@ export function AddToCartBar({
   selectedColor,
   selectedSize,
 }: AddToCartBarProps) {
-  const { addItem } = useCart();
+  const { addItem, openCart } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
@@ -30,8 +30,19 @@ export function AddToCartBar({
     (selectedColor?.stock ?? Infinity) === 0 ||
     (selectedSize?.stock ?? Infinity) === 0;
 
-  function handleAdd() {
+  function handleAdd(e: React.MouseEvent<HTMLButtonElement>) {
     if (outOfStock) return;
+    
+    const button = e.currentTarget;
+    // For PDP, we can use the main product image or try to find it on the page
+    // The main image in PDP usually has an ID or is easy to find, but we can fall back to the button
+    const mainImage = document.querySelector(".pdp-main-image") as HTMLImageElement;
+    const imgSrc = mainImage?.src || product.images[0]?.src || "/placeholder.jpg";
+    
+    flyToCart(mainImage || button, imgSrc, () => {
+      openCart();
+    });
+
     addItem(product, qty, selectedColor, selectedSize);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);

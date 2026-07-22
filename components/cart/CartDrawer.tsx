@@ -100,16 +100,22 @@ export function CartDrawer() {
         {/* Items */}
         <div className="flex-1 overflow-y-auto scrollbar-thin px-5 py-4 space-y-4">
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center gap-4 py-12">
-              <span className="text-6xl">👜</span>
+            <div className="flex flex-col items-center justify-center h-full text-center gap-5 py-12 px-6">
+              <div className="w-24 h-24 bg-brand-mist/60 rounded-full flex items-center justify-center mb-2">
+                <svg className="w-10 h-10 text-brand-slate" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+              </div>
               <div>
-                <p className="font-serif text-lg text-brand-ink mb-1">Your bag is empty</p>
-                <p className="text-sm text-brand-slate">Add something beautiful to get started.</p>
+                <p className="font-serif text-2xl font-medium text-brand-ink mb-2">Your bag is empty</p>
+                <p className="text-sm text-brand-slate max-w-[220px] mx-auto leading-relaxed">
+                  Add something beautiful to get started.
+                </p>
               </div>
               <Link
                 href="/shop"
                 onClick={closeCart}
-                className="mt-2 h-10 px-6 rounded-full bg-brand-rose text-white text-sm font-medium hover:bg-brand-rose-dark transition-colors"
+                className="mt-4 inline-flex items-center justify-center h-12 px-8 rounded-full bg-brand-rose text-white text-sm font-semibold tracking-wide hover:bg-brand-rose-dark hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 active:translate-y-0"
               >
                 Browse Products
               </Link>
