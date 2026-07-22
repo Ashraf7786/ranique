@@ -2,23 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  Package, 
-  Tags, 
-  Box, 
-  Settings, 
-  Users, 
-  ShoppingCart, 
-  MessageSquare, 
-  Inbox, 
+import {
+  LayoutDashboard,
+  Package,
+  Tags,
+  Box,
+  Settings,
+  Users,
+  ShoppingCart,
+  MessageSquare,
+  Inbox,
   Gift,
   Ticket,
   CreditCard,
   Star,
   UserCog,
   ClipboardList,
-  Megaphone
+  Megaphone,
+  X,
+  ArrowLeft,
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -41,37 +43,73 @@ const NAV_LINKS = [
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
-export function AdminSidebarNav() {
+interface AdminSidebarNavProps {
+  onClose?: () => void;
+}
+
+export function AdminSidebarNav({ onClose }: AdminSidebarNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-      {NAV_LINKS.map((link) => {
-        const Icon = link.icon;
-        // Exact match for /admin, prefix match for others (e.g., /admin/orders/123)
-        const isActive = link.href === "/admin" 
-          ? pathname === "/admin" 
-          : pathname?.startsWith(link.href);
-
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={twMerge(
-              "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 active:scale-[0.96]",
-              isActive 
-                ? "bg-[#FDF2F4] text-brand-rose border border-brand-rose/20 shadow-sm"
-                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-            )}
+    <>
+      {/* Sidebar header — brand + close button */}
+      <div className="flex items-center justify-between h-14 lg:h-16 px-5 border-b border-gray-200 shrink-0">
+        <span className="font-serif text-lg lg:text-xl font-bold text-brand-ink">Ranique Admin</span>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+            aria-label="Close menu"
           >
-            <Icon className={twMerge(
-              "w-5 h-5 transition-colors",
-              isActive ? "text-brand-rose" : "text-gray-400 group-hover:text-gray-500"
-            )} />
-            {link.label}
-          </Link>
-        );
-      })}
-    </nav>
+            <X className="w-5 h-5" />
+          </button>
+        )}
+      </div>
+
+      {/* Nav links */}
+      <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-0.5">
+        {NAV_LINKS.map((link) => {
+          const Icon = link.icon;
+          const isActive =
+            link.href === "/admin"
+              ? pathname === "/admin"
+              : pathname?.startsWith(link.href);
+
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={onClose}
+              className={twMerge(
+                "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 active:scale-[0.97]",
+                isActive
+                  ? "bg-[#FDF2F4] text-brand-rose border border-brand-rose/20 shadow-sm"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              )}
+            >
+              <Icon
+                className={twMerge(
+                  "w-5 h-5 shrink-0 transition-colors",
+                  isActive ? "text-brand-rose" : "text-gray-400"
+                )}
+              />
+              <span className="truncate">{link.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Back to store */}
+      <div className="p-4 border-t border-gray-200 shrink-0">
+        <Link
+          href="/"
+          onClick={onClose}
+          className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Store
+        </Link>
+      </div>
+    </>
   );
 }

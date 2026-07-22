@@ -185,8 +185,8 @@ export function ProductDataTable({ initialProducts, isTrashMode = false }: { ini
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
+        {/* Table — desktop */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold">
               <tr>
@@ -318,6 +318,83 @@ export function ProductDataTable({ initialProducts, isTrashMode = false }: { ini
             >
               <ChevronRight className="w-4 h-4" />
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Product Cards */}
+      <div className="md:hidden bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mt-0">
+        {/* Mobile toolbar */}
+        <div className="p-3 border-b border-gray-200 flex flex-col gap-3">
+          {selectedIds.length > 0 ? (
+            <div className="flex items-center gap-3 bg-red-50 text-red-600 px-4 py-2 rounded-lg border border-red-100">
+              <span className="text-sm font-medium flex-1">{selectedIds.length} selected</span>
+              <button onClick={() => setProductsToDeleteBulk(selectedIds)} className="text-sm font-bold flex items-center gap-1">
+                <Trash2 className="w-4 h-4" /> Delete
+              </button>
+            </div>
+          ) : (
+            <div className="relative">
+              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search by name or SKU..."
+                value={searchTerm}
+                onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blush"
+              />
+            </div>
+          )}
+          <select
+            value={statusFilter}
+            onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
+            className="border border-gray-200 rounded-lg text-sm py-2 px-3 focus:outline-none w-full"
+          >
+            <option>All Status</option>
+            <option>Published</option>
+            <option>Draft</option>
+          </select>
+        </div>
+        <div className="divide-y divide-gray-100">
+          {currentItems.length === 0 ? (
+            <div className="px-4 py-10 text-center text-sm text-gray-500">No products found.</div>
+          ) : currentItems.map((product: any) => (
+            <div key={product.id} className={`p-4 flex items-start gap-3 ${selectedIds.includes(product.id) ? 'bg-brand-blush/20' : ''}`}>
+              <input type="checkbox" className="mt-1 rounded border-gray-300 text-brand-rose focus:ring-brand-rose w-4 h-4 cursor-pointer shrink-0"
+                checked={selectedIds.includes(product.id)} onChange={() => toggleSelect(product.id)} />
+              <div className="w-12 h-12 shrink-0 rounded bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center">
+                {product.images?.[0] ? <img src={product.images[0].url} alt="" className="w-full h-full object-cover" /> : <Package className="w-5 h-5 text-gray-400" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900 truncate">{product.title}</p>
+                <p className="text-xs text-gray-500">{product.category?.name || 'Uncategorized'} &middot; {product.sku}</p>
+                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                  <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${product.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : product.status === 'DRAFT' ? 'bg-gray-100 text-gray-700' : product.status === 'PENDING_APPROVAL' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>{product.status.replace("_", " ")}</span>
+                  <span className={`text-xs ${product.currentStock < product.minStockAlert ? 'text-red-600 font-semibold' : 'text-gray-500'}`}>{product.currentStock} in stock</span>
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-sm font-bold text-gray-900">&#x20B9;{product.sellingPrice?.toLocaleString('en-IN')}</span>
+                  <div className="flex items-center gap-1">
+                    {!isTrashMode && (<>
+                      {product.status === 'PENDING_APPROVAL' && (<button onClick={() => handleApprove(product.id)} className="p-1.5 text-green-600 rounded hover:bg-green-50"><Check className="w-4 h-4" /></button>)}
+                      <Link href={`/product/${product.slug}`} target="_blank" className="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100"><Eye className="w-4 h-4" /></Link>
+                      <button onClick={() => setEditingProduct(product)} className="p-1.5 text-gray-400 hover:text-yellow-600 rounded hover:bg-yellow-50"><Zap className="w-4 h-4" /></button>
+                      <Link href={`/admin/products/${product.id}/edit`} className="p-1.5 text-gray-400 hover:text-blue-600 rounded hover:bg-blue-50"><Edit2 className="w-4 h-4" /></Link>
+                    </>)}
+                    {isTrashMode && (<button onClick={() => handleRestore(product.id)} className="p-1.5 text-green-500 rounded hover:bg-green-50"><RotateCcw className="w-4 h-4" /></button>)}
+                    <button onClick={() => setProductToDelete(product.id)} className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-red-50"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="p-3 border-t border-gray-200 flex items-center justify-between text-sm text-gray-500">
+          <span className="text-xs">{filteredProducts.length} products</span>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-1.5 border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50"><ChevronLeft className="w-4 h-4" /></button>
+            <span className="px-2 py-1 font-medium text-gray-700">{currentPage}/{totalPages || 1}</span>
+            <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages || totalPages === 0} className="p-1.5 border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50"><ChevronRight className="w-4 h-4" /></button>
           </div>
         </div>
       </div>

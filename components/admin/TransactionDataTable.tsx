@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Loader2, ArrowUpDown, DollarSign, Activity, CheckCircle, ExternalLink } from "lucide-react";
+import { Search, Loader2, DollarSign, Activity, CheckCircle, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 export function TransactionDataTable() {
@@ -49,56 +49,70 @@ export function TransactionDataTable() {
     });
   };
 
+  const statusClass = (status: string) =>
+    status === 'CONFIRMED' || status === 'SHIPPED' || status === 'DELIVERED'
+      ? 'bg-green-100 text-green-700'
+      : status === 'PENDING'
+      ? 'bg-amber-100 text-amber-700'
+      : 'bg-red-100 text-red-700';
+
+  const methodClass = (method: string) =>
+    method === 'ONLINE'
+      ? 'border-brand-rose text-brand-rose bg-brand-rose/5'
+      : method === 'COD'
+      ? 'border-gray-800 text-gray-800 bg-gray-50'
+      : 'border-green-600 text-green-600 bg-green-50';
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-          <div className="p-3 bg-green-100 text-green-600 rounded-xl">
-            <DollarSign className="w-6 h-6" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-6">
+        <div className="bg-white p-4 lg:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+          <div className="p-3 bg-green-100 text-green-600 rounded-xl shrink-0">
+            <DollarSign className="w-5 h-5 lg:w-6 lg:h-6" />
           </div>
           <div>
-            <p className="text-sm text-gray-500 font-medium">Total Revenue</p>
-            <h3 className="text-2xl font-bold text-gray-900">₹{metrics.totalRevenue.toLocaleString('en-IN')}</h3>
+            <p className="text-xs lg:text-sm text-gray-500 font-medium">Total Revenue</p>
+            <h3 className="text-lg lg:text-2xl font-bold text-gray-900">&#x20B9;{metrics.totalRevenue.toLocaleString('en-IN')}</h3>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-          <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
-            <CheckCircle className="w-6 h-6" />
+        <div className="bg-white p-4 lg:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+          <div className="p-3 bg-blue-100 text-blue-600 rounded-xl shrink-0">
+            <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6" />
           </div>
           <div>
-            <p className="text-sm text-gray-500 font-medium">Successful Payments</p>
-            <h3 className="text-2xl font-bold text-gray-900">{metrics.successfulCount}</h3>
+            <p className="text-xs lg:text-sm text-gray-500 font-medium">Successful Payments</p>
+            <h3 className="text-lg lg:text-2xl font-bold text-gray-900">{metrics.successfulCount}</h3>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-          <div className="p-3 bg-amber-100 text-amber-600 rounded-xl">
-            <Activity className="w-6 h-6" />
+        <div className="bg-white p-4 lg:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+          <div className="p-3 bg-amber-100 text-amber-600 rounded-xl shrink-0">
+            <Activity className="w-5 h-5 lg:w-6 lg:h-6" />
           </div>
           <div>
-            <p className="text-sm text-gray-500 font-medium">Pending/Processing</p>
-            <h3 className="text-2xl font-bold text-gray-900">{metrics.pendingCount}</h3>
+            <p className="text-xs lg:text-sm text-gray-500 font-medium">Pending/Processing</p>
+            <h3 className="text-lg lg:text-2xl font-bold text-gray-900">{metrics.pendingCount}</h3>
           </div>
         </div>
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-        <form onSubmit={handleSearch} className="relative flex-1 max-w-md">
+      <div className="flex flex-col gap-3 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+        <form onSubmit={handleSearch} className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search by ID, Name, or Razorpay ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border-transparent focus:bg-white focus:border-brand-rose focus:ring-2 focus:ring-brand-rose/20 rounded-xl text-sm transition-all outline-none"
+            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-brand-rose focus:ring-2 focus:ring-brand-rose/20 rounded-xl text-sm transition-all outline-none"
           />
         </form>
         <div className="flex gap-2">
           <select
             value={methodFilter}
             onChange={(e) => setMethodFilter(e.target.value)}
-            className="px-4 py-2 bg-gray-50 border-transparent focus:bg-white focus:border-brand-rose rounded-xl text-sm font-medium outline-none cursor-pointer"
+            className="flex-1 px-3 py-2 bg-gray-50 border-transparent focus:bg-white focus:border-brand-rose rounded-xl text-sm font-medium outline-none cursor-pointer"
           >
             <option value="ALL">All Methods</option>
             <option value="ONLINE">Online (Razorpay)</option>
@@ -108,7 +122,7 @@ export function TransactionDataTable() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 bg-gray-50 border-transparent focus:bg-white focus:border-brand-rose rounded-xl text-sm font-medium outline-none cursor-pointer"
+            className="flex-1 px-3 py-2 bg-gray-50 border-transparent focus:bg-white focus:border-brand-rose rounded-xl text-sm font-medium outline-none cursor-pointer"
           >
             <option value="ALL">All Statuses</option>
             <option value="CONFIRMED">Confirmed</option>
@@ -118,8 +132,8 @@ export function TransactionDataTable() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+      {/* Desktop Table */}
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -141,9 +155,7 @@ export function TransactionDataTable() {
                 </tr>
               ) : transactions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                    No transactions found.
-                  </td>
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">No transactions found.</td>
                 </tr>
               ) : (
                 transactions.map((t) => (
@@ -153,24 +165,16 @@ export function TransactionDataTable() {
                       <div className="text-xs text-gray-500">{t.user?.email || "Guest"}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-bold text-gray-900">₹{t.totalAmount.toLocaleString('en-IN')}</div>
+                      <div className="font-bold text-gray-900">&#x20B9;{t.totalAmount.toLocaleString('en-IN')}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${
-                        t.status === 'CONFIRMED' || t.status === 'SHIPPED' || t.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
-                        t.status === 'PENDING' ? 'bg-amber-100 text-amber-700' :
-                        'bg-red-100 text-red-700'
-                      }`}>
+                      <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${statusClass(t.status)}`}>
                         {t.status}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-sm border ${
-                          t.paymentMethod === 'ONLINE' ? 'border-brand-rose text-brand-rose bg-brand-rose/5' :
-                          t.paymentMethod === 'COD' ? 'border-gray-800 text-gray-800 bg-gray-50' :
-                          'border-green-600 text-green-600 bg-green-50'
-                        }`}>
+                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-sm border ${methodClass(t.paymentMethod)}`}>
                           {t.paymentMethod}
                         </span>
                         {t.razorpayPaymentId && (
@@ -194,6 +198,43 @@ export function TransactionDataTable() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          <div className="bg-white rounded-2xl p-8 flex justify-center border border-gray-100">
+            <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+          </div>
+        ) : transactions.length === 0 ? (
+          <div className="bg-white rounded-2xl p-8 text-center text-sm text-gray-500 border border-gray-100">
+            No transactions found.
+          </div>
+        ) : transactions.map((t) => (
+          <div key={t.id} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm space-y-3">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="font-semibold text-gray-900 text-sm">{t.shippingName}</p>
+                <p className="text-xs text-gray-500 truncate max-w-[180px]">{t.user?.email || "Guest"}</p>
+              </div>
+              <span className={`shrink-0 px-2.5 py-1 text-xs font-bold rounded-full ${statusClass(t.status)}`}>
+                {t.status}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-sm border ${methodClass(t.paymentMethod)}`}>
+                  {t.paymentMethod}
+                </span>
+                <span className="font-bold text-gray-900">&#x20B9;{t.totalAmount.toLocaleString('en-IN')}</span>
+              </div>
+              <Link href={`/admin/orders?search=${t.id}`} className="inline-flex items-center gap-1 text-xs font-medium text-brand-rose">
+                View <ExternalLink className="w-3 h-3" />
+              </Link>
+            </div>
+            <p className="text-xs text-gray-400">{formatIST(t.createdAt)}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
