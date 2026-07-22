@@ -8,6 +8,7 @@ interface StaffMember {
   email: string;
   firstName: string;
   lastName: string | null;
+  role: string;
   createdAt: string;
   staffProfile: { staffCode: string; isActive: boolean };
   _count: { listedProducts: number };
@@ -19,7 +20,7 @@ export default function AdminStaffPage() {
   const [showForm, setShowForm] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", role: "STAFF" });
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
 
@@ -46,9 +47,9 @@ export default function AdminStaffPage() {
         body: JSON.stringify(form),
       });
       const data = await res.json();
-      if (!res.ok) { setFormError(data.error || "Failed to create staff"); return; }
+      if (!res.ok) { setFormError(data.error || "Failed to create account"); return; }
       setShowForm(false);
-      setForm({ firstName: "", lastName: "", email: "", password: "" });
+      setForm({ firstName: "", lastName: "", email: "", password: "", role: "STAFF" });
       fetchStaff();
     } finally {
       setFormLoading(false);
@@ -94,27 +95,24 @@ export default function AdminStaffPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-brand-ink">Staff Management</h1>
+          <h1 className="text-2xl font-serif font-bold text-brand-ink">Team Management</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Create and manage staff accounts — max 3 allowed.{" "}
-            <span className="font-semibold text-brand-gold">{staff.length}/3 used</span>
+            Create and manage Staff and Admin accounts.
           </p>
         </div>
-        {staff.length < 3 && (
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="bg-brand-ink text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-ink/90 transition-colors flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Create Staff
-          </button>
-        )}
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="bg-brand-ink text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-ink/90 transition-colors flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Create Account
+        </button>
       </div>
 
       {/* Create Form */}
       {showForm && (
         <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900 mb-4">New Staff Account</h2>
+          <h2 className="text-base font-semibold text-gray-900 mb-4">New Team Account</h2>
           <form onSubmit={handleCreate} className="grid grid-cols-2 gap-4">
             <input required placeholder="First Name" value={form.firstName}
               onChange={e => setForm({ ...form, firstName: e.target.value })}
@@ -127,7 +125,15 @@ export default function AdminStaffPage() {
               className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-gold col-span-2" />
             <input required type="password" placeholder="Set Password" value={form.password}
               onChange={e => setForm({ ...form, password: e.target.value })}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-gold col-span-2" />
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-gold" />
+            <select
+              value={form.role}
+              onChange={e => setForm({ ...form, role: e.target.value })}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-gold bg-white"
+            >
+              <option value="STAFF">Staff (Limited Access)</option>
+              <option value="ADMIN">Admin (Full Access)</option>
+            </select>
             {formError && <p className="col-span-2 text-sm text-red-600">{formError}</p>}
             <div className="col-span-2 flex gap-3 justify-end">
               <button type="button" onClick={() => setShowForm(false)}
@@ -147,7 +153,7 @@ export default function AdminStaffPage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Staff ID</th>
+              <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">ID & Role</th>
               <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Name / Email</th>
               <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Products Listed</th>
               <th className="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
@@ -166,14 +172,16 @@ export default function AdminStaffPage() {
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-sm font-bold text-brand-gold bg-brand-gold/10 px-2 py-1 rounded">
-                      {s.staffProfile.staffCode}
+                      {s.staffProfile?.staffCode || s.id.slice(0,8)}
                     </span>
-                    <button onClick={() => copyToClipboard(s.staffProfile.staffCode, s.id)}
-                      className="text-gray-400 hover:text-brand-gold transition-colors">
-                      {copiedId === s.id ? <CheckCheck className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
+                    {s.staffProfile && (
+                      <button onClick={() => copyToClipboard(s.staffProfile.staffCode, s.id)}
+                        className="text-gray-400 hover:text-brand-gold transition-colors">
+                        {copiedId === s.id ? <CheckCheck className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">#{idx + 1}</p>
+                  <p className="text-xs font-semibold mt-1 text-gray-500">{s.role}</p>
                 </td>
                 <td className="px-6 py-4">
                   <p className="text-sm font-medium text-gray-900">{s.firstName} {s.lastName}</p>
@@ -185,24 +193,24 @@ export default function AdminStaffPage() {
                 </td>
                 <td className="px-6 py-4">
                   <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                    s.staffProfile.isActive
+                    s.staffProfile?.isActive
                       ? "bg-green-50 text-green-700"
                       : "bg-red-50 text-red-600"
                   }`}>
-                    {s.staffProfile.isActive ? "Active" : "Suspended"}
+                    {s.staffProfile?.isActive ? "Active" : "Suspended"}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center gap-2 justify-end">
                     <button
-                      onClick={() => handleToggleActive(s.id, s.staffProfile.isActive)}
-                      disabled={actionLoading === s.id}
-                      title={s.staffProfile.isActive ? "Suspend" : "Activate"}
-                      className="text-gray-400 hover:text-brand-gold transition-colors p-1"
+                      onClick={() => handleToggleActive(s.id, s.staffProfile?.isActive ?? true)}
+                      disabled={actionLoading === s.id || !s.staffProfile}
+                      title={s.staffProfile?.isActive ? "Suspend" : "Activate"}
+                      className="text-gray-400 hover:text-brand-gold transition-colors p-1 disabled:opacity-50"
                     >
                       {actionLoading === s.id ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : s.staffProfile.isActive ? (
+                      ) : s.staffProfile?.isActive ? (
                         <ShieldOff className="w-4 h-4" />
                       ) : (
                         <Shield className="w-4 h-4" />

@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     }
 
     const staff = await prisma.user.findMany({
-      where: { role: "STAFF" },
+      where: { role: { in: ["STAFF", "ADMIN"] } },
       include: {
         staffProfile: true,
         _count: { select: { listedProducts: true } },
@@ -36,17 +36,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Enforce max 3 staff
-    const staffCount = await prisma.user.count({ where: { role: "STAFF" } });
-    if (staffCount >= 3) {
-      return NextResponse.json(
-        { error: "Maximum of 3 staff accounts allowed." },
-        { status: 400 }
-      );
-    }
+    // Enforce limits if necessary (removed max 3 limit to allow multiple admins/staff)
 
     const body = await request.json();
-    const { email, password, firstName, lastName } = body;
+    const { email, password, firstName, lastName, role = "STAFF" } = body;
+
+    if (!["STAFF", "ADMIN"].includes(role)) {
+      return NextResponse.json({ error: "Invalid role specified." }, { status: 400 });
+    }
 
     if (!email || !password || !firstName) {
       return NextResponse.json(
@@ -63,12 +60,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate unique staff code STAFF-001, STAFF-002, etc.
-    const allStaff = await prisma.staffProfile.findMany({
-      orderBy: { createdAt: "asc" },
+    // Generate unique code ADMIN-001, STAFF-001, etc.
+    const sameRoleProfiles = await prisma.user.findMany({
+      where: { role },
+      include: { staffProfile: true }
     });
-    const nextNum = (allStaff.length + 1).toString().padStart(3, "0");
-    const staffCode = `STAFF-${nextNum}`;
+    const profileCount = sameRoleProfiles.filter(u => u.staffProfile).length;
+    const nextNum = (profileCount + 1).toString().padStart(3, "0");
+    const prefix = role === "ADMIN" ? "ADM" : "STAFF";
+    const staffCode = `${prefix}-${nextNum}`;
 
     const hashed = await bcrypt.hash(password, 12);
 
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
         password: hashed,
         firstName,
         lastName: lastName || null,
-        role: "STAFF",
+        role,
         isEmailVerified: true,
         provider: "CREDENTIALS",
         staffProfile: {

@@ -16,8 +16,12 @@ export async function DELETE(
     }
 
     const staff = await prisma.user.findUnique({ where: { id } });
-    if (!staff || staff.role !== "STAFF") {
-      return NextResponse.json({ error: "Staff not found" }, { status: 404 });
+    if (!staff || !["STAFF", "ADMIN"].includes(staff.role)) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (staff.id === session.user.id) {
+      return NextResponse.json({ error: "You cannot delete your own account" }, { status: 400 });
     }
 
     await prisma.user.delete({ where: { id } });
