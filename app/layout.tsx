@@ -11,7 +11,7 @@ import { CartProvider } from "@/components/providers/CartProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GlobalLoader } from "@/components/ui/GlobalLoader";
 import { StorefrontUI } from "./StorefrontUI";
-import { Chatbot } from "@/components/ui/Chatbot";
+// import { Chatbot } from "@/components/ui/Chatbot";
 import { getCategories, getAnnouncement } from "@/lib/api";
 
 export const metadata: Metadata = {
@@ -68,7 +68,7 @@ export default async function RootLayout({
             <StorefrontUI categories={categories} announcement={announcement}>
               {children}
             </StorefrontUI>
-            <Chatbot />
+            {/* <Chatbot /> */}
           </CartProvider>
         </AuthProvider>
       </body>
