@@ -55,22 +55,22 @@ const STATS = [
 
 const TEAM = [
   {
-    name: "Rania Kapoor",
+    name: "Ashraf Siddiqui",
     role: "Founder & Creative Director",
-    emoji: "👩‍💼",
-    bio: "With a passion for fashion and a decade of retail experience, Rania started Ranique to bring affordable premium to every Indian woman.",
+    emoji: "🎨",
+    bio: "The visionary behind Ranique — Ashraf's creative direction shapes every collection, every campaign, and the brand's identity. He also oversees Operations & Logistics, ensuring seamless delivery from source to doorstep.",
   },
   {
-    name: "Priya Mehta",
-    role: "Head of Product Curation",
-    emoji: "💄",
-    bio: "Former beauty editor turned buyer — Priya's eye for trend and quality ensures every piece in our collection is worthy of your collection.",
+    name: "Varis",
+    role: "CEO & Owner",
+    emoji: "👑",
+    bio: "Varis leads Ranique with a sharp business acumen and a customer-first philosophy. As CEO & Owner, he drives the company's vision, growth strategy, and long-term direction.",
   },
   {
-    name: "Aarav Sharma",
-    role: "Operations & Logistics",
-    emoji: "🚚",
-    bio: "Aarav keeps the gears turning — from supplier relationships to last-mile delivery, ensuring your order reaches you perfectly.",
+    name: "MD Shamim",
+    role: "Stock & Inventory Management",
+    emoji: "📦",
+    bio: "MD Shamim keeps Ranique's inventory running like clockwork — overseeing stock levels, supplier coordination, and warehouse operations to ensure products are always available when you need them.",
   },
 ];
 
@@ -227,7 +227,7 @@ export default function AboutPage() {
             Meet Our Team
           </h2>
           <p className="font-sans text-sm text-brand-slate mt-2">
-            A passionate team of women who live and breathe fashion, beauty, and excellence.
+            The dedicated people who bring Ranique's vision to life — every single day.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
