@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
 
     const result = await streamText({
-      model: google('gemini-2.5-flash'),
+      model: google('gemini-3.6-flash'),
       system: `You are the Ranique Shopping Assistant, a friendly and helpful AI bot for the Ranique e-commerce store.
 Your role is to assist customers with product inquiries, fashion recommendations, and order instructions.
 
