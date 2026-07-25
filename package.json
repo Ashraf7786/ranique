@@ -12,11 +12,13 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@ai-sdk/google": "^0.0.52",
     "@neondatabase/serverless": "^0.10.4",
     "@next/third-parties": "^16.2.10",
     "@prisma/adapter-neon": "^5.22.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/nodemailer": "^8.0.1",
+    "ai": "^3.4.33",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.0",
     "clsx": "^2.1.1",
@@ -28,7 +30,9 @@
     "razorpay": "^2.9.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-markdown": "^10.1.0",
     "recharts": "^3.9.2",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.6.0",
     "ws": "^8.21.0",
     "zod": "^4.4.3"
