@@ -321,7 +321,7 @@ export default function CheckoutPage() {
 
   if (status === "unauthenticated") {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-4">
+      <div className="min-h-[calc(100vh-140px)] pt-24 pb-12 flex flex-col items-center justify-center gap-4 px-4 bg-gray-50/50">
         <ShoppingBag className="w-16 h-16 text-brand-rose" />
         <h2 className="font-serif text-2xl font-bold text-brand-ink">Please sign in to checkout</h2>
         <p className="text-gray-500 text-center">You need to be logged in to place an order.</p>
@@ -334,7 +334,7 @@ export default function CheckoutPage() {
 
   if (items.length === 0 && step !== "success") {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-4">
+      <div className="min-h-[calc(100vh-140px)] pt-24 pb-12 flex flex-col items-center justify-center gap-4 px-4 bg-gray-50/50">
         <ShoppingBag className="w-16 h-16 text-brand-rose" />
         <h2 className="font-serif text-2xl font-bold text-brand-ink">Your bag is empty</h2>
         <Link href="/shop" className="px-8 py-3 bg-brand-ink text-white font-medium rounded-full hover:bg-gray-900 transition-colors">
