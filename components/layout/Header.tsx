@@ -256,14 +256,42 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
              : "bg-white border-b border-brand-border"
          )}
        >
-         {/* Announcement Bar */}
+        {/* Announcement Bar — CSS Marquee Ticker */}
         {announcement && announcement.isActive && (
-          <div className="bg-gradient-to-r from-brand-rose via-[#d88499] to-brand-rose text-white py-2 flex items-center w-full overflow-hidden h-9 sm:h-10 border-b border-[#bd657b] shadow-sm">
-            {React.createElement(
-              'marquee' as any,
-              { scrollamount: "6", className: "w-full text-xs sm:text-sm font-medium tracking-wide flex items-center" },
-              <span dangerouslySetInnerHTML={{ __html: announcement.text }} />
-            )}
+          <div className="relative bg-gradient-to-r from-brand-rose via-[#be5c75] to-brand-rose text-white overflow-hidden h-9 sm:h-10 border-b border-[#a84f68] shadow-sm animate-ticker-in">
+            {/* Blinking live dot left */}
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 z-10 pointer-events-none">
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-300 badge-blink" />
+              <span className="text-[10px] font-bold tracking-widest uppercase text-yellow-200 hidden sm:inline">Live</span>
+            </div>
+
+            {/* CSS Marquee */}
+            <div className="marquee-wrapper h-full items-center flex pl-16 sm:pl-20 pr-4">
+              <div className="marquee-track items-center gap-0">
+                {/* Render items twice for seamless loop */}
+                {[0, 1].map((copy) => (
+                  <div key={copy} className="flex items-center gap-0">
+                    {[
+                      announcement.text,
+                      "🌸 Free Shipping on Orders ₹999+",
+                      "✨ New Arrivals Every Week",
+                      "💎 Premium Quality Guaranteed",
+                      "🎁 COD Available Pan-India",
+                    ].map((item, i) => (
+                      <span key={i} className="flex items-center gap-3 px-6 text-xs sm:text-sm font-medium whitespace-nowrap">
+                        <span dangerouslySetInnerHTML={{ __html: item }} />
+                        <span className="w-1 h-1 rounded-full bg-white/40 shrink-0" />
+                      </span>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Blinking SALE badge right */}
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none hidden sm:flex items-center gap-1.5">
+              <span className="px-2 py-0.5 bg-yellow-400 text-yellow-900 text-[10px] font-black rounded tracking-widest uppercase badge-blink">SALE</span>
+            </div>
           </div>
         )}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -165,8 +165,22 @@ export function Hero({ slides }: HeroProps) {
 
       {/* Flash Sale Pulsing top bar */}
       {slide.type === "FLASH_SALE" && (
-        <div className="relative z-10 bg-gradient-to-r from-red-600 via-rose-600 to-red-600 text-white text-center py-2 text-xs font-bold tracking-widest uppercase animate-pulse">
-          ⚡ Flash Sale Live Now — Limited Time Offer! ⚡
+        <div className="relative z-10 bg-gradient-to-r from-red-600 via-rose-500 to-red-600 text-white text-center py-2 text-xs font-bold tracking-widest uppercase overflow-hidden">
+          <div className="marquee-wrapper">
+            <div className="marquee-track gap-0">
+              {[0, 1].map((copy) => (
+                <div key={copy} className="flex items-center gap-0">
+                  {["⚡ Flash Sale Live Now", "🔥 Limited Time Offer", "💥 Huge Discounts", "⚡ Shop Before It Ends", "🔥 Don't Miss Out"].map((t, i) => (
+                    <span key={i} className="flex items-center gap-3 px-8 whitespace-nowrap">
+                      {t} <span className="w-1 h-1 rounded-full bg-white/40" />
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Blinking LIVE pill pinned right */}
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-white text-red-600 text-[10px] font-black rounded tracking-widest uppercase badge-blink">LIVE</span>
         </div>
       )}
 
@@ -192,12 +206,14 @@ export function Hero({ slides }: HeroProps) {
                 {slide.eyebrow}
               </div>
               {slide.discountPercent && (
-                <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-600 text-white text-xs font-bold shadow">
+                <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-600 text-white text-xs font-bold shadow badge-blink">
                   <Tag className="w-3 h-3" /> {slide.discountPercent}% OFF
                 </div>
               )}
               {slide.saleBadge && (
-                <div className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-white text-xs font-bold shadow ${slide.type === "FLASH_SALE" ? "bg-red-600 animate-pulse" : "bg-orange-500"}`}>
+                <div className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-white text-xs font-bold shadow badge-glow ${
+                  slide.type === "FLASH_SALE" ? "bg-red-600 badge-blink" : "bg-orange-500"
+                }`}>
                   {slide.type === "FLASH_SALE" ? <Zap className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
                   {slide.saleBadge}
                 </div>
