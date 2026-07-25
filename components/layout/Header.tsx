@@ -11,6 +11,43 @@ import { GoogleTranslate } from "./GoogleTranslate";
 
 // ─── Icons (inline SVG) ───────────────────────────────────────────────────────
 
+function ShoppingBagIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" x2="21" y1="6" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  );
+}
+function TruckIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11v14" /><path d="M16 3h4l2 4v8h-2" /><circle cx="7.5" cy="17.5" r="2.5" /><circle cx="17.5" cy="17.5" r="2.5" />
+    </svg>
+  );
+}
+function StarIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+function ShieldIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
+function PackageIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="16.5" y1="9.4" x2="7.5" y2="4.21" /><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" />
+    </svg>
+  );
+}
+
+
 function SearchIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -259,28 +296,28 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
         {/* Announcement Bar — CSS Marquee Ticker */}
         {announcement && announcement.isActive && (
           <div className="relative bg-gradient-to-r from-brand-rose via-[#be5c75] to-brand-rose text-white overflow-hidden h-9 sm:h-10 border-b border-[#a84f68] shadow-sm animate-ticker-in">
-            {/* Blinking live dot left */}
+            {/* Live dot */}
             <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 z-10 pointer-events-none">
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-300 badge-blink" />
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-300 badge-blink shrink-0" />
               <span className="text-[10px] font-bold tracking-widest uppercase text-yellow-200 hidden sm:inline">Live</span>
             </div>
 
-            {/* CSS Marquee */}
-            <div className="marquee-wrapper h-full items-center flex pl-16 sm:pl-20 pr-4">
-              <div className="marquee-track items-center gap-0">
-                {/* Render items twice for seamless loop */}
+            {/* CSS Marquee — SVG icons only */}
+            <div className="marquee-wrapper h-full items-center flex pl-14 sm:pl-20 pr-16">
+              <div className="marquee-track items-center">
                 {[0, 1].map((copy) => (
-                  <div key={copy} className="flex items-center gap-0">
+                  <div key={copy} className="flex items-center">
                     {[
-                      announcement.text,
-                      "🌸 Free Shipping on Orders ₹999+",
-                      "✨ New Arrivals Every Week",
-                      "💎 Premium Quality Guaranteed",
-                      "🎁 COD Available Pan-India",
-                    ].map((item, i) => (
-                      <span key={i} className="flex items-center gap-3 px-6 text-xs sm:text-sm font-medium whitespace-nowrap">
-                        <span dangerouslySetInnerHTML={{ __html: item }} />
-                        <span className="w-1 h-1 rounded-full bg-white/40 shrink-0" />
+                      { Icon: ShoppingBagIcon, text: announcement.text },
+                      { Icon: TruckIcon,       text: "Free Shipping on Orders above 999" },
+                      { Icon: StarIcon,        text: "New Arrivals Every Week" },
+                      { Icon: ShieldIcon,      text: "Premium Quality Guaranteed" },
+                      { Icon: PackageIcon,     text: "COD Available Pan-India" },
+                    ].map(({ Icon, text }, i) => (
+                      <span key={i} className="flex items-center gap-2 px-5 text-xs sm:text-sm font-medium whitespace-nowrap">
+                        <Icon className="w-3.5 h-3.5 shrink-0 opacity-80" />
+                        <span dangerouslySetInnerHTML={{ __html: text }} />
+                        <span className="w-px h-3 bg-white/30 shrink-0" />
                       </span>
                     ))}
                   </div>
@@ -288,8 +325,8 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
               </div>
             </div>
 
-            {/* Blinking SALE badge right */}
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none hidden sm:flex items-center gap-1.5">
+            {/* Blinking SALE badge */}
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none hidden sm:flex items-center">
               <span className="px-2 py-0.5 bg-yellow-400 text-yellow-900 text-[10px] font-black rounded tracking-widest uppercase badge-blink">SALE</span>
             </div>
           </div>

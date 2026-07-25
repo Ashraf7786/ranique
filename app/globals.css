@@ -409,7 +409,11 @@ body {
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee-scroll 28s linear infinite;
+  animation: marquee-scroll 30s linear infinite;
+  will-change: transform;
+  /* GPU layer for smooth mobile rendering */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 .marquee-track:hover {
   animation-play-state: paused;
@@ -418,6 +422,8 @@ body {
   overflow: hidden;
   display: flex;
   width: 100%;
+  /* Prevent iOS momentum scroll interference */
+  -webkit-overflow-scrolling: auto;
 }
 
 /* ─── Sale / Discount Blink Badge ───────────────────────────────── */
