@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Heart, Star, Globe, Leaf, Users, Award, ShieldCheck, Truck } from "lucide-react";
+import { Heart, Star, Globe, Leaf, Users, Award, ShieldCheck, Truck, Palette, Crown, Package } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About Us | Ranique — Premium Ladies' Boutique",
@@ -57,19 +57,19 @@ const TEAM = [
   {
     name: "Ashraf Siddiqui",
     role: "Founder & Creative Director",
-    emoji: "🎨",
+    icon: Palette,
     bio: "The visionary behind Ranique — Ashraf's creative direction shapes every collection, every campaign, and the brand's identity. He also oversees Operations & Logistics, ensuring seamless delivery from source to doorstep.",
   },
   {
     name: "Varis",
     role: "CEO & Owner",
-    emoji: "👑",
+    icon: Crown,
     bio: "Varis leads Ranique with a sharp business acumen and a customer-first philosophy. As CEO & Owner, he drives the company's vision, growth strategy, and long-term direction.",
   },
   {
     name: "MD Shamim",
     role: "Stock & Inventory Management",
-    emoji: "📦",
+    icon: Package,
     bio: "MD Shamim keeps Ranique's inventory running like clockwork — overseeing stock levels, supplier coordination, and warehouse operations to ensure products are always available when you need them.",
   },
 ];
@@ -236,8 +236,8 @@ export default function AboutPage() {
               key={member.name}
               className="bg-white rounded-2xl border border-brand-border shadow-card p-6 text-center hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-blush to-brand-rose-light flex items-center justify-center text-4xl mx-auto mb-4">
-                {member.emoji}
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-blush to-brand-rose-light flex items-center justify-center text-brand-rose-dark mx-auto mb-4">
+                <member.icon className="w-8 h-8" strokeWidth={1.5} />
               </div>
               <h3 className="font-serif text-base font-semibold text-brand-ink">{member.name}</h3>
               <p className="font-sans text-xs text-brand-rose font-medium mt-1 mb-3">{member.role}</p>
