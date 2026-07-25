@@ -39,7 +39,7 @@ export function WhatsAppButton() {
 
   return (
     <div
-      className={`hidden md:flex fixed bottom-6 right-5 z-50 flex-col items-end gap-2 transition-all duration-500 ${
+      className={`hidden md:flex fixed bottom-6 left-5 z-50 flex-col items-start gap-2 transition-all duration-500 ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
       }`}
     >
@@ -51,7 +51,7 @@ export function WhatsAppButton() {
         role="tooltip"
       >
         {/* Tail */}
-        <div className="absolute -bottom-2 right-6 w-4 h-4 bg-white border-r border-b border-brand-border rotate-45" />
+        <div className="absolute -bottom-2 left-6 w-4 h-4 bg-white border-r border-b border-brand-border rotate-45" />
         <p className="font-sans text-xs font-semibold text-brand-ink leading-snug">
           Order on WhatsApp 🛍️
         </p>
