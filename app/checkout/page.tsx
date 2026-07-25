@@ -350,13 +350,13 @@ export default function CheckoutPage() {
 
   const validateAddress = (): boolean => {
     const newErrors: Partial<ShippingForm> = {};
-    if (!form.name.trim()) newErrors.name = "Full name is required";
-    if (!form.phone.trim() || !/^\+?[\d\s\-]{8,15}$/.test(form.phone)) newErrors.phone = "Valid phone number is required";
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Valid email is required";
-    if (!form.line1.trim()) newErrors.line1 = "Address is required";
-    if (!form.city.trim()) newErrors.city = "City is required";
-    if (!form.state.trim()) newErrors.state = "State is required";
-    if (!form.zip.trim() || !/^\d{4,10}$/.test(form.zip)) newErrors.zip = "Valid PIN code is required";
+    if (!form.name?.trim()) newErrors.name = "Full name is required";
+    if (!form.phone?.trim() || !/^\+?[\d\s\-]{8,15}$/.test(form.phone)) newErrors.phone = "Valid phone number is required";
+    if (!form.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Valid email is required";
+    if (!form.line1?.trim()) newErrors.line1 = "Address is required";
+    if (!form.city?.trim()) newErrors.city = "City is required";
+    if (!form.state?.trim()) newErrors.state = "State is required";
+    if (!form.zip?.trim() || !/^\d{4,10}$/.test(form.zip)) newErrors.zip = "Valid PIN code is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

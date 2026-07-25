@@ -107,31 +107,38 @@ export function OnlinePaymentModal({ isOpen, onClose, totalAmount, onSubmit, isS
               )}
 
               {images.length < 2 && (
-                <CldUploadWidget 
-                  signatureEndpoint="/api/upload-payment"
-                  onSuccess={(result: any) => {
-                    if (result.info?.secure_url) {
-                      setImages(prev => [...prev, result.info.secure_url]);
-                    }
-                  }}
-                  options={{
-                    maxFiles: 2 - images.length,
-                    resourceType: "image",
-                    clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
-                    folder: "payment_proofs"
-                  }}
-                >
-                  {({ open }) => (
-                    <button 
-                      type="button" 
-                      onClick={() => open()} 
-                      className="w-full py-4 border-2 border-dashed border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 hover:border-brand-blush hover:text-brand-rose transition-all flex flex-col items-center gap-2"
-                    >
-                      <UploadCloud className="w-6 h-6 text-gray-400" />
-                      <span>Click to upload screenshot</span>
-                    </button>
-                  )}
-                </CldUploadWidget>
+                !process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
+                  <div className="w-full py-4 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex flex-col items-center gap-2 text-center p-3">
+                    <span>Cloudinary is not configured.</span>
+                    <span className="text-xs font-normal">Please add NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME to Vercel env variables.</span>
+                  </div>
+                ) : (
+                  <CldUploadWidget 
+                    signatureEndpoint="/api/upload-payment"
+                    onSuccess={(result: any) => {
+                      if (result.info?.secure_url) {
+                        setImages(prev => [...prev, result.info.secure_url]);
+                      }
+                    }}
+                    options={{
+                      maxFiles: 2 - images.length,
+                      resourceType: "image",
+                      clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
+                      folder: "payment_proofs"
+                    }}
+                  >
+                    {({ open }) => (
+                      <button 
+                        type="button" 
+                        onClick={() => open()} 
+                        className="w-full py-4 border-2 border-dashed border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 hover:border-brand-blush hover:text-brand-rose transition-all flex flex-col items-center gap-2"
+                      >
+                        <UploadCloud className="w-6 h-6 text-gray-400" />
+                        <span>Click to upload screenshot</span>
+                      </button>
+                    )}
+                  </CldUploadWidget>
+                )
               )}
             </div>
           </form>
