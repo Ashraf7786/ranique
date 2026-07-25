@@ -21,16 +21,16 @@ export function MobileBottomNav() {
   }
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[60] pb-safe">
-      <div className="flex items-center justify-around h-16">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/60 backdrop-blur-xl border-t border-white/50 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] z-[60] pb-safe">
+      <div className="flex items-center justify-around h-[68px] px-2 relative">
         
         {/* Home */}
         <Link 
           href="/" 
-          className={`flex flex-col items-center justify-center w-full h-full gap-1 ${pathname === '/' ? 'text-brand-rose' : 'text-gray-500 hover:text-gray-900'}`}
+          className={`flex flex-col items-center justify-center w-full h-full gap-1.5 transition-all ${pathname === '/' ? 'text-brand-rose scale-105' : 'text-gray-500 hover:text-brand-rose/80'}`}
         >
-          <Home className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Home</span>
+          <Home className={`w-5 h-5 ${pathname === '/' ? 'fill-brand-rose/10 stroke-[2.5px]' : 'stroke-2'}`} />
+          <span className="text-[10px] font-semibold">Home</span>
         </Link>
 
         {/* WhatsApp */}
@@ -38,35 +38,37 @@ export function MobileBottomNav() {
           href={WA_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex flex-col items-center justify-center w-full h-full gap-1 text-[#25D366]"
+          className="flex flex-col items-center justify-center w-full h-full gap-1.5 transition-all group"
         >
-          <MessageCircle className="w-5 h-5 fill-current" />
-          <span className="text-[10px] font-medium">WhatsApp</span>
+          <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-brand-rose/10 text-brand-rose group-active:scale-95 transition-transform shadow-sm border border-brand-rose/20">
+            <MessageCircle className="w-5 h-5 stroke-[2.5px]" />
+          </div>
+          <span className="text-[10px] font-semibold text-brand-rose">Chat</span>
         </a>
 
         {/* Dashboard/Account */}
         <Link 
           href="/account" 
-          className={`flex flex-col items-center justify-center w-full h-full gap-1 ${pathname?.startsWith('/account') ? 'text-brand-rose' : 'text-gray-500 hover:text-gray-900'}`}
+          className={`flex flex-col items-center justify-center w-full h-full gap-1.5 transition-all ${pathname?.startsWith('/account') ? 'text-brand-rose scale-105' : 'text-gray-500 hover:text-brand-rose/80'}`}
         >
-          <User className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Account</span>
+          <User className={`w-5 h-5 ${pathname?.startsWith('/account') ? 'fill-brand-rose/10 stroke-[2.5px]' : 'stroke-2'}`} />
+          <span className="text-[10px] font-semibold">Account</span>
         </Link>
 
         {/* Cart */}
         <button 
           onClick={openCart}
-          className="relative flex flex-col items-center justify-center w-full h-full gap-1 text-gray-500 hover:text-gray-900 focus:outline-none"
+          className="relative flex flex-col items-center justify-center w-full h-full gap-1.5 text-gray-500 hover:text-brand-rose/80 transition-all focus:outline-none active:scale-95"
         >
           <div className="relative">
-            <ShoppingBag className="w-5 h-5" />
+            <ShoppingBag className="w-5 h-5 stroke-2" />
             {totalItems > 0 && (
-              <span className="absolute -top-1 -right-2 bg-brand-rose text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1.5 -right-2 bg-brand-rose text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-md border border-white">
                 {totalItems}
               </span>
             )}
           </div>
-          <span className="text-[10px] font-medium">Cart</span>
+          <span className="text-[10px] font-semibold">Cart</span>
         </button>
 
       </div>
