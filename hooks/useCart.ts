@@ -18,8 +18,8 @@ export function useCart() {
         type: "ADD_ITEM",
         payload: { product, selectedColor, selectedSize, quantity },
       });
-      // Open drawer after add
-      dispatch({ type: "OPEN_CART" });
+      // Open drawer after add (Removed per user request)
+      // dispatch({ type: "OPEN_CART" });
     },
     [dispatch]
   );
