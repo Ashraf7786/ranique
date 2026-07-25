@@ -12,6 +12,7 @@ export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/chat',
+    maxSteps: 5,
     initialMessages: [
       {
         id: 'welcome-message',

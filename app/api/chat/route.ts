@@ -55,18 +55,20 @@ Your role is to assist customers with product inquiries, fashion recommendations
               },
             });
 
-            return products.map(p => ({
-              name: p.title,
-              category: p.category?.name || 'Unknown',
-              price: `₹${p.sellingPrice}`,
-              originalPrice: p.originalPrice ? `₹${p.originalPrice}` : null,
-              status: p.stockStatus === 'IN_STOCK' ? 'In Stock' : 'Out of Stock',
-              link: `/shop/product/${p.slug}`
-            }));
+            return {
+              results: products.map(p => ({
+                name: p.title,
+                category: p.category?.name || 'Unknown',
+                price: `₹${p.sellingPrice}`,
+                originalPrice: p.originalPrice ? `₹${p.originalPrice}` : null,
+                status: p.stockStatus === 'IN_STOCK' ? 'In Stock' : 'Out of Stock',
+                link: `/shop/product/${p.slug}`
+              }))
+            };
           },
         }),
       },
-      maxToolRoundtrips: 5,
+      maxSteps: 5,
     });
 
     return result.toDataStreamResponse();
