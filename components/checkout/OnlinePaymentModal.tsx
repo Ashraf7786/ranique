@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { CldUploadWidget } from "next-cloudinary";
 import { X, UploadCloud, Loader2, IndianRupee, Image as ImageIcon, CheckCircle } from "lucide-react";
 
 interface OnlinePaymentModalProps {
@@ -15,6 +14,7 @@ interface OnlinePaymentModalProps {
 export function OnlinePaymentModal({ isOpen, onClose, totalAmount, onSubmit, isSubmitting }: OnlinePaymentModalProps) {
   const [utrNumber, setUtrNumber] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
 
   if (!isOpen) return null;
 
@@ -107,38 +107,59 @@ export function OnlinePaymentModal({ isOpen, onClose, totalAmount, onSubmit, isS
               )}
 
               {images.length < 2 && (
-                !process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
-                  <div className="w-full py-4 bg-red-50 border border-red-200 rounded-xl text-sm font-medium text-red-600 flex flex-col items-center gap-2 text-center p-3">
-                    <span>Cloudinary is not configured.</span>
-                    <span className="text-xs font-normal">Please add NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME to Vercel env variables.</span>
-                  </div>
-                ) : (
-                  <CldUploadWidget 
-                    signatureEndpoint="/api/upload-payment"
-                    onSuccess={(result: any) => {
-                      if (result.info?.secure_url) {
-                        setImages(prev => [...prev, result.info.secure_url]);
+                <div className="relative">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    disabled={isUploadingFile}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      setIsUploadingFile(true);
+                      const formData = new FormData();
+                      formData.append("file", file);
+                      formData.append("folder", "payment_proofs");
+
+                      try {
+                        const res = await fetch("/api/upload-manual", {
+                          method: "POST",
+                          body: formData
+                        });
+                        const data = await res.json();
+                        if (data.success && data.url) {
+                          setImages(prev => [...prev, data.url]);
+                        } else {
+                          alert(data.error || "Upload failed");
+                        }
+                      } catch (err) {
+                        alert("An error occurred while uploading.");
+                      } finally {
+                        setIsUploadingFile(false);
+                        // Clear the input so the same file can be uploaded again if needed
+                        e.target.value = "";
                       }
                     }}
-                    options={{
-                      maxFiles: 2 - images.length,
-                      resourceType: "image",
-                      clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
-                      folder: "payment_proofs"
-                    }}
-                  >
-                    {({ open }) => (
-                      <button 
-                        type="button" 
-                        onClick={() => open()} 
-                        className="w-full py-4 border-2 border-dashed border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 hover:border-brand-blush hover:text-brand-rose transition-all flex flex-col items-center gap-2"
-                      >
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed" 
+                  />
+                  <div className={`w-full py-4 border-2 border-dashed rounded-xl text-sm font-medium transition-all flex flex-col items-center gap-2 ${
+                    isUploadingFile 
+                      ? "border-gray-200 bg-gray-50 text-gray-400" 
+                      : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-brand-blush hover:text-brand-rose"
+                  }`}>
+                    {isUploadingFile ? (
+                      <>
+                        <Loader2 className="w-6 h-6 animate-spin" />
+                        <span>Uploading...</span>
+                      </>
+                    ) : (
+                      <>
                         <UploadCloud className="w-6 h-6 text-gray-400" />
-                        <span>Click to upload screenshot</span>
-                      </button>
+                        <span>Click to choose screenshot</span>
+                      </>
                     )}
-                  </CldUploadWidget>
-                )
+                  </div>
+                </div>
               )}
             </div>
           </form>
