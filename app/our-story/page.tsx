@@ -16,46 +16,39 @@ export const metadata: Metadata = {
 
 const TIMELINE = [
   {
-    year: "2019",
-    emoji: "🌱",
-    title: "The Seed is Planted",
-    desc: "Rania, a fashion-obsessed girl from Jaipur, starts gifting hand-curated beauty hampers to friends and family. The response is overwhelming — 'You should sell these!'",
+    year: "1999",
+    emoji: "🏬",
+    title: "The Legacy Begins",
+    desc: "Rani Store opens its doors as a humble offline shop. For over two decades, we built trust with local customers by offering quality bangles, cosmetics, and festival items.",
     side: "left",
   },
   {
-    year: "2020",
-    emoji: "📦",
-    title: "First 100 Orders",
-    desc: "Operating from her bedroom with an Instagram page and a WhatsApp number, Ranique takes its first 100 orders. Every package was wrapped by hand with a handwritten note.",
+    year: "2010s",
+    emoji: "🤝",
+    title: "Building Trust",
+    desc: "Rani Store becomes a go-to destination for female jewelry, purses, and fashion accessories. Our promise of quality forms the foundation of everything we do.",
     side: "right",
   },
   {
-    year: "2021",
-    emoji: "💎",
-    title: "Expanding the Collection",
-    desc: "Bangles, accessories, and purses join the catalogue. Ranique partners with 12 artisan suppliers from Jaipur, Mumbai, and Surat to bring wider variety without compromising quality.",
+    year: "2024",
+    emoji: "💡",
+    title: "A New Vision",
+    desc: "Realizing the potential to serve customers across the nation, the idea of an online expansion takes shape under the leadership of Varis (CEO) and Ashraf Siddiqui.",
     side: "left",
   },
   {
-    year: "2022",
+    year: "2025",
     emoji: "🚀",
-    title: "Going Digital",
-    desc: "The official Ranique website launches. Orders pour in from across India — from Kanyakumari to Kashmir. The team grows from 1 to 8 passionate women.",
+    title: "Ranique is Born",
+    desc: "We officially launch Ranique, the digital avatar of Rani Store. We also expand our presence to major e-commerce marketplaces like Flipkart and Meesho.",
     side: "right",
   },
   {
-    year: "2023",
-    emoji: "🏆",
-    title: "10,000 Happy Customers",
-    desc: "Ranique crosses a milestone — 10,000 orders shipped, a 4.9-star average rating, and features in two regional lifestyle magazines. The dream is very much alive.",
+    year: "2025+",
+    emoji: "📦",
+    title: "Nationwide Promise",
+    desc: "With a seamless online platform and robust logistics, our new motive is simple: anyone can order from anywhere, and we promise to deliver it right to their doorstep.",
     side: "left",
-  },
-  {
-    year: "2024–25",
-    emoji: "🌸",
-    title: "The Next Chapter",
-    desc: "New product lines, collaborations with Indian designers, and the launch of our full-service e-commerce platform. Ranique is just getting started.",
-    side: "right",
   },
 ];
 
@@ -96,7 +89,7 @@ export default function OurStoryPage() {
             <em className="not-italic text-brand-rose">Jaipur's Pink City</em>
           </h1>
           <p className="font-sans text-base sm:text-lg text-brand-slate max-w-2xl mx-auto leading-relaxed">
-            Every great brand begins with a simple idea. Ours began with a girl, a passion for beautiful things, and the belief that every woman deserves to feel like royalty — without breaking the bank.
+            Every great brand has a history. Ours began in 1999 with an offline shop called Rani Store. Today, we step into the digital age as Ranique, bringing our legacy of trust to the entire nation.
           </p>
         </div>
       </section>
@@ -106,10 +99,10 @@ export default function OurStoryPage() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <blockquote>
             <p className="font-serif text-2xl sm:text-3xl text-brand-rose italic leading-relaxed mb-4">
-              "I didn't start Ranique to build a business. I started it because I genuinely believed every woman around me deserved something more beautiful."
+              "What started as a small offline store in 1999 has now evolved into Ranique. Our mission remains the same: bringing the best products to women, now anywhere in India."
             </p>
             <footer className="font-sans text-sm text-brand-slate">
-              — <cite>Rania, Founder of Ranique</cite>
+              — <cite>Varis (CEO) & Ashraf Siddiqui (Founder, Online)</cite>
             </footer>
           </blockquote>
         </div>

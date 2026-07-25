@@ -82,7 +82,7 @@ const structuredData = {
   url: "https://ranique.in",
   description:
     "Ranique is India's premier curated premium boutique for women, offering premium cosmetics, bangles, accessories, purses, and lifestyle essentials.",
-  foundingDate: "2019",
+  foundingDate: "1999",
   foundingLocation: "Jaipur, Rajasthan, India",
   address: {
     "@type": "PostalAddress",
@@ -118,7 +118,7 @@ export default function AboutPage() {
             <em className="not-italic text-brand-rose">Crafted for You</em>
           </h1>
           <p className="font-sans text-base sm:text-lg text-brand-slate max-w-2xl mx-auto leading-relaxed mb-8">
-            Ranique is more than a boutique — it's a celebration of the modern Indian woman. From premium cosmetics to hand-crafted bangles and designer purses, we bring you the finest things in life, delivered with care.
+            Ranique is the digital evolution of Rani Store, a trusted offline boutique running since 1999. From premium cosmetics to hand-crafted bangles, festival items, and designer purses, we bring you the finest things in life, delivered with care anywhere in India.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
@@ -164,13 +164,13 @@ export default function AboutPage() {
               <em className="not-italic text-brand-rose">Beautiful Things</em>
             </h2>
             <p className="font-sans text-brand-slate leading-relaxed mb-4">
-              We believe every woman deserves to feel extraordinary — not just on special occasions, but every single day. Ranique was born from the idea that premium quality shouldn't come with an unreachable price tag.
+              Our journey started offline in 1999 with "Rani Store". After decades of serving our local community, we decided in 2025 to take our legacy online as Ranique, expanding our reach to our own website and major marketplaces like Flipkart and Meesho.
             </p>
             <p className="font-sans text-brand-slate leading-relaxed mb-4">
-              From the vibrant markets of Jaipur to the fashion capitals of the world, we source the finest cosmetics, jewellery, and accessories, bringing them directly to your hands with the warmth and trust of a personal stylist.
+              We specialize in a wide range of products including Bangles, Cosmetics, Festival items, Female Jewelry, Fashion Accessories for girls, and Purses. Under the leadership of Varis (CEO) and Ashraf Siddiqui, our motive is to grow our business while keeping our core promise: anyone can order from anywhere, and we will deliver.
             </p>
             <p className="font-sans text-brand-slate leading-relaxed">
-              Our team of passionate women curates every piece, ensuring it meets our three golden standards: <strong className="text-brand-ink">beauty</strong>, <strong className="text-brand-ink">quality</strong>, and <strong className="text-brand-ink">value</strong>.
+              Our team curates every piece, ensuring it meets our three golden standards: <strong className="text-brand-ink">beauty</strong>, <strong className="text-brand-ink">quality</strong>, and <strong className="text-brand-ink">value</strong>.
             </p>
           </div>
 
