@@ -116,6 +116,8 @@ export const OrderCreateSchema = z.object({
   razorpayOrderId: z.string().optional().nullable(),
   razorpayPaymentId: z.string().optional().nullable(),
   razorpaySignature: z.string().optional().nullable(),
+  paymentProofUrl: z.string().optional().nullable(),
+  utrNumber: z.string().optional().nullable(),
 });
 
 // ─── USER / PROFILE ──────────────────────────────────────────────────────────

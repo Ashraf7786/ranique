@@ -8,8 +8,9 @@ import { useCart } from "@/hooks/useCart";
 import {
   ChevronRight, Package, MapPin, CreditCard,
   CheckCircle, ShoppingBag, Phone, Loader2,
-  Check, Truck, Receipt
+  Check, Truck, Receipt, QrCode
 } from "lucide-react";
+import { OnlinePaymentModal } from "@/components/checkout/OnlinePaymentModal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -170,8 +171,9 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<Partial<ShippingForm>>({});
   const [orderId, setOrderId] = useState<string | null>(null);
   const [placedOrderData, setPlacedOrderData] = useState<any>(null);
-  const [paymentMethod, setPaymentMethod] = useState<"WHATSAPP" | "COD" | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"WHATSAPP" | "COD" | "ONLINE" | null>(null);
   const [showCODConfirm, setShowCODConfirm] = useState(false);
+  const [showOnlineModal, setShowOnlineModal] = useState(false);
   const [timeLeft, setTimeLeft] = useState(9 * 60); // 9 minutes in seconds
 
   const [couponCode, setCouponCode] = useState("");
@@ -361,7 +363,7 @@ export default function CheckoutPage() {
 
   // ── Place order ──────────────────────────────────────────────────────────
 
-  const placeOrder = async (method: "WHATSAPP" | "COD", skipConfirm = false) => {
+  const placeOrder = async (method: "WHATSAPP" | "COD" | "ONLINE", skipConfirm = false, paymentData?: { paymentProofUrl: string, utrNumber: string }) => {
     if (method === "COD" && !skipConfirm) {
       setShowCODConfirm(true);
       return;
@@ -371,7 +373,7 @@ export default function CheckoutPage() {
       setShowCODConfirm(false);
     }
 
-    setPaymentMethod(method);
+    setPaymentMethod(method as any);
     setLoading(true);
 
     const orderItems = items.map(item => ({
@@ -379,7 +381,6 @@ export default function CheckoutPage() {
       quantity: item.quantity,
     }));
 
-    // Handle COD & WHATSAPP
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -390,6 +391,7 @@ export default function CheckoutPage() {
           paymentMethod: method,
           totalAmount: finalTotal,
           couponCode: appliedCoupon?.couponCode || null,
+          ...(paymentData ? paymentData : {})
         }),
       });
 
@@ -860,43 +862,38 @@ Please confirm this order and share payment details. Thank you! 💕`
                       </button>
                     </div>
 
-                    {/* Online Payment — Coming Soon */}
-                    <div className="relative border-2 border-dashed border-gray-200 rounded-2xl p-6 bg-gray-50/60 overflow-hidden">
-                      {/* Coming Soon ribbon */}
-                      <div className="absolute top-3 right-3">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold tracking-wide">
-                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          Coming Soon
-                        </span>
-                      </div>
-
+                    {/* Online Payment (Manual QR) */}
+                    <div className="border-2 border-brand-rose/20 rounded-2xl p-6 bg-brand-rose/5 hover:border-brand-rose/40 transition-all">
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gray-200 flex items-center justify-center shrink-0">
-                          <CreditCard className="w-7 h-7 text-gray-400" />
+                        <div className="w-12 h-12 rounded-xl bg-brand-rose text-white flex items-center justify-center shrink-0">
+                          <QrCode className="w-6 h-6" />
                         </div>
-                        <div>
-                          <h4 className="font-bold text-gray-400 text-lg">Online Payment</h4>
-                          <p className="text-gray-400 text-sm mt-1">Pay via UPI, Credit/Debit Card, or Net Banking — launching soon!</p>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-brand-ink text-lg">Online Payment (UPI/QR)</h4>
+                          <p className="text-gray-600 text-sm mt-1">Scan our QR code using any UPI app (GPay, PhonePe, Paytm, etc.) and upload the screenshot.</p>
                           <div className="flex gap-2 mt-3">
-                            {["UPI", "Visa", "Mastercard", "RuPay"].map(m => (
-                              <span key={m} className="px-2 py-1 bg-white border border-gray-200 text-gray-300 text-xs font-medium rounded-md">{m}</span>
+                            {["UPI", "GPay", "PhonePe", "Paytm"].map(m => (
+                              <span key={m} className="px-2 py-1 bg-white border border-gray-200 text-gray-600 text-xs font-medium rounded-md">{m}</span>
                             ))}
                           </div>
                         </div>
                       </div>
 
-                      {/* Disabled Coming Soon button */}
                       <button
                         type="button"
-                        disabled
-                        className="mt-5 w-full py-3.5 bg-gray-200 text-gray-400 font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-2 text-base select-none"
+                        onClick={() => {
+                          if (!validateAddress()) return;
+                          setShowOnlineModal(true);
+                        }}
+                        disabled={loading}
+                        className="mt-5 w-full py-3.5 bg-brand-rose text-white font-bold rounded-xl hover:brightness-105 transition-all shadow-sm flex items-center justify-center gap-2 text-base disabled:opacity-60"
                       >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Coming Soon
+                        {loading && paymentMethod === "ONLINE" ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <CreditCard className="w-5 h-5" />
+                        )}
+                        Pay via UPI / QR Code
                       </button>
                     </div>
                   </div>
@@ -955,6 +952,18 @@ Please confirm this order and share payment details. Thank you! 💕`
           </div>
         </div>
       )}
+
+      {/* ── Online Payment Modal ──────────────────────────────────────────────── */}
+      <OnlinePaymentModal 
+        isOpen={showOnlineModal}
+        onClose={() => setShowOnlineModal(false)}
+        totalAmount={finalTotal}
+        isSubmitting={loading && paymentMethod === "ONLINE"}
+        onSubmit={async (data) => {
+           setShowOnlineModal(false);
+           await placeOrder("ONLINE", false, data);
+        }}
+      />
     </div>
   );
 }

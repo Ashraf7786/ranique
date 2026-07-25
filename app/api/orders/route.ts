@@ -18,24 +18,33 @@ export async function POST(req: Request) {
     const parsed = OrderCreateSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
     const { items, shippingAddress, paymentMethod, couponCode,
-      razorpayOrderId, razorpayPaymentId, razorpaySignature } = parsed.data;
+      razorpayOrderId, razorpayPaymentId, razorpaySignature, paymentProofUrl, utrNumber } = parsed.data;
+
+    let initialStatus = 'CONFIRMED';
 
     if (paymentMethod === 'ONLINE') {
-      if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-        return NextResponse.json({ error: 'Missing Razorpay payment details' }, { status: 400 });
-      }
-      
-      const crypto = require('crypto');
-      const secret = process.env.RAZORPAY_KEY_SECRET;
-      
-      const generatedSignature = crypto
-        .createHmac('sha256', secret)
-        .update(razorpayOrderId + '|' + razorpayPaymentId)
-        .digest('hex');
+      if (razorpayOrderId && razorpayPaymentId && razorpaySignature) {
+        // Razorpay Verification
+        const crypto = require('crypto');
+        const secret = process.env.RAZORPAY_KEY_SECRET;
         
-      if (generatedSignature !== razorpaySignature) {
-        return NextResponse.json({ error: 'Invalid payment signature' }, { status: 400 });
+        const generatedSignature = crypto
+          .createHmac('sha256', secret)
+          .update(razorpayOrderId + '|' + razorpayPaymentId)
+          .digest('hex');
+          
+        if (generatedSignature !== razorpaySignature) {
+          return NextResponse.json({ error: 'Invalid payment signature' }, { status: 400 });
+        }
+      } else {
+        // Manual QR Code Payment Verification
+        if (!paymentProofUrl || !utrNumber) {
+          return NextResponse.json({ error: 'Payment proof and UTR number are required' }, { status: 400 });
+        }
+        initialStatus = 'PENDING'; // Requires admin verification
       }
+    } else if (paymentMethod === 'COD' || paymentMethod === 'WHATSAPP') {
+      initialStatus = 'PENDING';
     }
 
     // Fetch product data to get current prices
@@ -116,10 +125,12 @@ export async function POST(req: Request) {
         totalAmount: finalTotal,
         currency: 'INR',
         paymentMethod,
-        status: 'CONFIRMED',
+        status: initialStatus,
         razorpayOrderId: razorpayOrderId || null,
         razorpayPaymentId: razorpayPaymentId || null,
         razorpaySignature: razorpaySignature || null,
+        paymentProofUrl: paymentProofUrl || null,
+        utrNumber: utrNumber || null,
         shippingName: name,
         shippingPhone: phone,
         shippingEmail: email,

@@ -87,6 +87,45 @@ export function OrderDetailsModal({ order }: { order: any }) {
                 </div>
               </div>
 
+              {/* Online Payment Details */}
+              {order.paymentMethod === 'ONLINE' && (order.utrNumber || order.paymentProofUrl) && (
+                <div className="mb-8">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Online Payment Details</h4>
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-4">
+                    {order.utrNumber && (
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">UTR / Transaction Number</p>
+                        <p className="font-mono text-sm font-semibold text-gray-900 bg-white px-3 py-1.5 rounded-lg border border-gray-200 inline-block">{order.utrNumber}</p>
+                      </div>
+                    )}
+                    {order.paymentProofUrl && (
+                      <div>
+                        <p className="text-xs text-gray-500 mb-2">Payment Proof(s)</p>
+                        <div className="flex flex-wrap gap-3">
+                          {(() => {
+                            let images: string[] = [];
+                            try {
+                              images = JSON.parse(order.paymentProofUrl);
+                              if (!Array.isArray(images)) images = [order.paymentProofUrl];
+                            } catch (e) {
+                              images = [order.paymentProofUrl];
+                            }
+                            return images.map((img, idx) => (
+                              <a key={idx} href={img} target="_blank" rel="noopener noreferrer" className="relative w-24 h-24 rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:ring-2 hover:ring-brand-rose transition-all inline-block">
+                                <img src={img} alt={`Payment Proof ${idx + 1}`} className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity">
+                                  <Eye className="w-5 h-5 text-white" />
+                                </div>
+                              </a>
+                            ));
+                          })()}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Order Items */}
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Order Items ({order.items.length})</h4>
