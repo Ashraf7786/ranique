@@ -112,33 +112,61 @@ export function OnlinePaymentModal({ isOpen, onClose, totalAmount, onSubmit, isS
                     type="file" 
                     accept="image/*"
                     disabled={isUploadingFile}
-                    onChange={async (e) => {
+                    onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
 
                       setIsUploadingFile(true);
-                      const formData = new FormData();
-                      formData.append("file", file);
-                      formData.append("folder", "payment_proofs");
 
-                      try {
-                        const res = await fetch("/api/upload-manual", {
-                          method: "POST",
-                          body: formData
-                        });
-                        const data = await res.json();
-                        if (data.success && data.url) {
-                          setImages(prev => [...prev, data.url]);
-                        } else {
-                          alert(data.error || "Upload failed");
-                        }
-                      } catch (err) {
-                        alert("An error occurred while uploading.");
-                      } finally {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        const img = new Image();
+                        img.onload = () => {
+                          const canvas = document.createElement("canvas");
+                          const MAX_WIDTH = 800;
+                          const MAX_HEIGHT = 1200;
+                          let width = img.width;
+                          let height = img.height;
+
+                          if (width > height) {
+                            if (width > MAX_WIDTH) {
+                              height *= MAX_WIDTH / width;
+                              width = MAX_WIDTH;
+                            }
+                          } else {
+                            if (height > MAX_HEIGHT) {
+                              width *= MAX_HEIGHT / height;
+                              height = MAX_HEIGHT;
+                            }
+                          }
+
+                          canvas.width = width;
+                          canvas.height = height;
+                          const ctx = canvas.getContext("2d");
+                          if (ctx) {
+                            ctx.drawImage(img, 0, 0, width, height);
+                            // Compress to JPEG with 0.7 quality
+                            const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+                            setImages(prev => [...prev, dataUrl]);
+                          } else {
+                            alert("Failed to process image.");
+                          }
+                          setIsUploadingFile(false);
+                        };
+                        img.onerror = () => {
+                          alert("Failed to load image.");
+                          setIsUploadingFile(false);
+                        };
+                        img.src = event.target?.result as string;
+                      };
+                      reader.onerror = () => {
+                        alert("Failed to read file.");
                         setIsUploadingFile(false);
-                        // Clear the input so the same file can be uploaded again if needed
-                        e.target.value = "";
-                      }
+                      };
+                      reader.readAsDataURL(file);
+
+                      // Clear the input
+                      e.target.value = "";
                     }}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed" 
                   />
