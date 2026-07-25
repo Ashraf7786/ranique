@@ -21,7 +21,7 @@ export function MobileBottomNav() {
   }
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/60 backdrop-blur-xl border-t border-white/50 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] z-[60] pb-safe">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/20 backdrop-blur-2xl border-t border-white/30 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] z-[60] pb-safe">
       <div className="flex items-center justify-around h-[68px] px-2 relative">
         
         {/* Home */}
