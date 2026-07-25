@@ -66,9 +66,10 @@ export function AddToCartBar({
           {qty}
         </span>
         <button
-          onClick={() => setQty((q) => q + 1)}
+          onClick={() => setQty((q) => Math.min(3, q + 1))}
+          disabled={qty >= 3}
           aria-label="Increase quantity"
-          className="px-3 h-full text-brand-slate active:text-brand-rose active:bg-brand-blush transition-colors text-lg leading-none cursor-pointer"
+          className="px-3 h-full text-brand-slate active:text-brand-rose active:bg-brand-blush transition-colors text-lg leading-none cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
           style={{ touchAction: "manipulation" }}
         >
           +

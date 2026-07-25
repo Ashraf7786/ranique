@@ -197,8 +197,9 @@ export function CartDrawer() {
                         </span>
                         <button
                           onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
+                          disabled={item.quantity >= 3}
                           aria-label="Increase quantity"
-                          className="px-2.5 h-full text-brand-slate active:text-brand-rose active:bg-brand-blush transition-colors text-sm cursor-pointer"
+                          className="px-2.5 h-full text-brand-slate active:text-brand-rose active:bg-brand-blush transition-colors text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                           style={{ touchAction: "manipulation" }}
                         >
                           +

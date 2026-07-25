@@ -22,7 +22,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           ...state,
           items: state.items.map((i) =>
             i.cartItemId === cartItemId
-              ? { ...i, quantity: i.quantity + quantity }
+              ? { ...i, quantity: Math.min(3, i.quantity + quantity) }
               : i
           ),
         };
@@ -31,7 +31,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ...state,
         items: [
           ...state.items,
-          { cartItemId, product, selectedColor, selectedSize, quantity },
+          { cartItemId, product, selectedColor, selectedSize, quantity: Math.min(3, quantity) },
         ],
       };
     }
@@ -47,7 +47,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ...state,
         items: state.items.map((i) =>
           i.cartItemId === action.payload.cartItemId
-            ? { ...i, quantity: Math.max(1, action.payload.quantity) }
+            ? { ...i, quantity: Math.max(1, Math.min(3, action.payload.quantity)) }
             : i
         ),
       };
