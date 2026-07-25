@@ -19,6 +19,7 @@ import {
   UserCog,
   ClipboardList,
   Megaphone,
+  SlidersHorizontal,
   X,
   ArrowLeft,
 } from "lucide-react";
@@ -40,6 +41,7 @@ const NAV_LINKS = [
   { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
   { href: "/admin/enquiries", label: "Bugs & Queries", icon: Inbox },
   { href: "/admin/announcements", label: "Announcement Bar", icon: Megaphone },
+  { href: "/admin/hero-banners", label: "Hero Banners", icon: SlidersHorizontal },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

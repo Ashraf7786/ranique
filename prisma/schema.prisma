@@ -423,3 +423,48 @@ model Announcement {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ─── HERO BANNERS ─────────────────────────────────────────────────────────────
+
+model HeroBanner {
+  id             String    @id @default(uuid())
+
+  // Slide Type: REGULAR | FLASH_SALE | FESTIVE_SALE
+  type           String    @default("REGULAR")
+
+  // Content
+  eyebrow        String    // Small tag above headline e.g. "New Collection"
+  title          String    // Main headline
+  emphasis       String    // Highlighted/colored part of headline
+  description    String    // Subtext paragraph
+  image          String    // Cloudinary or absolute URL
+
+  // CTAs
+  primaryLabel   String
+  primaryHref    String
+  secondaryLabel String?
+  secondaryHref  String?
+
+  // Styling
+  bgColor        String    @default("#FAFAFA")
+  bgGradient     String?   // e.g. "from-pink-50 to-rose-100"
+
+  // Sale / Flash Sale options
+  isSale         Boolean   @default(false)
+  saleLabel      String?   // e.g. "Flash Sale Ends In:"
+  saleEndDate    DateTime? // Countdown target
+  discountPercent Int?     // e.g. 40 for "40% OFF" badge
+  saleBadge      String?   // "LIVE" | "HOT" | "LIMITED" | custom
+
+  // Festive theme
+  festiveTheme   String?   // "DIWALI" | "EID" | "HOLI" | "CHRISTMAS" | "NAVRATRI"
+
+  // Control
+  sortOrder      Int       @default(0)
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([isActive])
+  @@index([sortOrder])
+}

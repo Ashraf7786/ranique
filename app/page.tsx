@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getProducts, getCategories } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
 import { Hero } from "@/components/home/Hero";
+import type { HeroBannerSlide } from "@/components/home/Hero";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { RecentlyViewedSection } from "@/components/home/RecentlyViewedSection";
 import { Suspense } from "react";
@@ -193,19 +194,23 @@ function TrustBar() {
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [allProducts, categories, testimonials] = await Promise.all([
+  const [allProducts, categories, testimonials, heroBanners] = await Promise.all([
     getProducts(),
     getCategories(),
     prisma.testimonial.findMany({
       where: { status: 'PUBLISHED' },
       orderBy: { createdAt: 'desc' },
       take: 20
-    })
+    }),
+    prisma.heroBanner.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: 'asc' },
+    }),
   ]);
 
   return (
     <>
-      <Hero />
+      <Hero slides={heroBanners as HeroBannerSlide[]} />
       <OfferProductsSection products={allProducts} />
       <TrustBar />
       <CategoryGrid categories={categories} />
