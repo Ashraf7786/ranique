@@ -88,7 +88,13 @@ export default function RegisterPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to register");
+      if (!res.ok) {
+        if (data.details) {
+          const firstError = Object.values(data.details)[0] as string[];
+          throw new Error(firstError[0] || "Validation failed");
+        }
+        throw new Error(data.error || "Failed to register");
+      }
 
       setStep("VERIFY");
       setSuccessMsg("An OTP has been sent to your email.");

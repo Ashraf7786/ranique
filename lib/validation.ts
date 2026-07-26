@@ -12,7 +12,7 @@ export const RegisterSchema = z.object({
     .max(100),
   mobileNumber: z
     .string()
-    .regex(/^\d{10}$/, 'Mobile number must be exactly 10 digits'),
+    .regex(/^\+?\d{10,15}$/, 'Invalid mobile number format'),
 });
 
 export const ForgotPasswordSchema = z.object({
