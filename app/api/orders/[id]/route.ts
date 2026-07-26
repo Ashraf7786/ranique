@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { sendOrderNotification } from '@/lib/mailer';
+import { sendBeautifulOrderEmail } from '@/lib/mailer';
 
 export async function PATCH(request: Request, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -20,14 +20,21 @@ export async function PATCH(request: Request, props: { params: Promise<{ id: str
     const order = await prisma.order.update({
       where: { id: params.id },
       data: { status },
-      include: { user: true }
+      include: { 
+        user: true,
+        items: {
+          include: {
+            product: {
+              include: { images: true }
+            }
+          }
+        }
+      }
     });
 
     // Send email notification for specific status updates
-    if (status === 'CONFIRMED' || status === 'SHIPPED') {
-      if (order.user && order.user.email) {
-        await sendOrderNotification(order.user.email, order.id, status, order.totalAmount);
-      }
+    if (status === 'CONFIRMED' || status === 'SHIPPED' || status === 'DELIVERED') {
+      await sendBeautifulOrderEmail(order);
     }
 
     return NextResponse.json(order);
