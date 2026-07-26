@@ -5,6 +5,7 @@ import { X, Eye } from "lucide-react";
 
 export function OrderDetailsModal({ order }: { order: any }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const customerName = order.shippingName || (order.user ? `${order.user.firstName} ${order.user.lastName}` : 'Unknown Customer');
   const customerEmail = order.shippingEmail || order.user?.email || 'No email';
@@ -111,12 +112,16 @@ export function OrderDetailsModal({ order }: { order: any }) {
                               images = [order.paymentProofUrl];
                             }
                             return images.map((img, idx) => (
-                              <a key={idx} href={img} target="_blank" rel="noopener noreferrer" className="relative w-24 h-24 rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:ring-2 hover:ring-brand-rose transition-all inline-block">
+                              <button 
+                                key={idx} 
+                                onClick={() => setSelectedImage(img)}
+                                className="relative w-24 h-24 rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:ring-2 hover:ring-brand-rose transition-all inline-block focus:outline-none"
+                              >
                                 <img src={img} alt={`Payment Proof ${idx + 1}`} className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity">
                                   <Eye className="w-5 h-5 text-white" />
                                 </div>
-                              </a>
+                              </button>
                             ));
                           })()}
                         </div>
@@ -176,6 +181,25 @@ export function OrderDetailsModal({ order }: { order: any }) {
                 <p className="text-xl font-bold text-gray-900 mt-0.5">₹{order.totalAmount.toLocaleString()}</p>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Viewer Modal */}
+      {selectedImage && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 transition-all">
+          <button 
+            onClick={() => setSelectedImage(null)}
+            className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors focus:outline-none"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <div className="relative w-full max-w-4xl max-h-[90vh] flex items-center justify-center animate-in fade-in zoom-in duration-200">
+            <img 
+              src={selectedImage} 
+              alt="Payment Proof Full Size" 
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            />
           </div>
         </div>
       )}
