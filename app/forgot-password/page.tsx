@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -16,8 +17,50 @@ export default function ForgotPasswordPage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [timer, setTimer] = useState(0);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [otpStatus, setOtpStatus] = useState<"IDLE" | "VERIFYING" | "VALID" | "INVALID">("IDLE");
+
+  useEffect(() => {
+    let interval: any;
+    if (timer > 0) {
+      interval = setInterval(() => setTimer(t => t - 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
+
+  useEffect(() => {
+    if (otp.length === 6) {
+      verifyOtpInline(otp);
+    } else {
+      setOtpStatus("IDLE");
+      setIsOtpVerified(false);
+    }
+  }, [otp]);
+
+  const verifyOtpInline = async (code: string) => {
+    setOtpStatus("VERIFYING");
+    try {
+      const res = await fetch("/api/auth/verify-forgot-password-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp: code }),
+      });
+      if (res.ok) {
+        setOtpStatus("VALID");
+        setIsOtpVerified(true);
+      } else {
+        setOtpStatus("INVALID");
+        setIsOtpVerified(false);
+      }
+    } catch {
+      setOtpStatus("INVALID");
+      setIsOtpVerified(false);
+    }
+  };
+
   const handleEmailSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setLoading(true);
     setError("");
 
@@ -32,6 +75,7 @@ export default function ForgotPasswordPage() {
       if (!res.ok) throw new Error(data.error || "Failed to send reset email");
 
       setStep("VERIFY");
+      setTimer(59);
       setSuccessMsg("If your email exists, an OTP has been sent.");
     } catch (err: any) {
       setError(err.message);
@@ -42,6 +86,7 @@ export default function ForgotPasswordPage() {
 
   const handleVerifySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isOtpVerified) return;
     setLoading(true);
     setError("");
 
@@ -120,26 +165,44 @@ export default function ForgotPasswordPage() {
           <form className="mt-8 space-y-6" onSubmit={handleVerifySubmit}>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wider text-center">Enter 6-Digit OTP</label>
-              <input
-                type="text"
-                required
-                maxLength={6}
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                className="appearance-none block w-full px-3 py-4 text-center text-2xl tracking-[0.5em] border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-rose focus:border-brand-rose transition-colors font-mono"
-                placeholder="000000"
-              />
-              <p className="mt-2 text-xs text-center text-gray-500">
-                Please check your email (or the terminal) for the code.
-              </p>
+              <div className="relative">
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                  className={`appearance-none block w-full px-3 py-4 text-center text-2xl tracking-[0.5em] border rounded-lg focus:outline-none focus:ring-2 transition-colors font-mono ${
+                    otpStatus === "VALID" ? "border-green-500 focus:ring-green-500 text-green-700" :
+                    otpStatus === "INVALID" ? "border-red-500 focus:ring-red-500 text-red-700" :
+                    "border-gray-200 focus:ring-brand-rose focus:border-brand-rose"
+                  }`}
+                  placeholder="000000"
+                />
+                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                  {otpStatus === "VERIFYING" && <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />}
+                  {otpStatus === "VALID" && <CheckCircle className="w-6 h-6 text-green-500" />}
+                  {otpStatus === "INVALID" && <XCircle className="w-6 h-6 text-red-500" />}
+                </div>
+              </div>
+              {otpStatus === "INVALID" && (
+                <p className="mt-2 text-xs text-center text-red-500 font-medium">Enter a valid OTP</p>
+              )}
+              {otpStatus !== "INVALID" && (
+                <p className="mt-2 text-xs text-center text-gray-500">
+                  Please check your email (or the terminal) for the code.
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wider">New Password</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wider">
+                New Password <span className="text-[10px] text-gray-400 font-normal normal-case">(Min 8 chars)</span>
+              </label>
               <input
                 type="password"
                 required
-                minLength={6}
+                minLength={8}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="appearance-none block w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-rose focus:border-brand-rose transition-colors"
@@ -150,10 +213,21 @@ export default function ForgotPasswordPage() {
             <div>
               <button
                 type="submit"
-                disabled={loading || otp.length !== 6 || newPassword.length < 6}
+                disabled={loading || !isOtpVerified || newPassword.length < 8}
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-ink hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-ink transition-colors disabled:opacity-50"
               >
                 {loading ? "Resetting..." : "Reset Password"}
+              </button>
+            </div>
+            
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                onClick={handleEmailSubmit}
+                disabled={timer > 0 || loading}
+                className="text-sm font-medium text-brand-rose hover:text-brand-rose-dark disabled:text-gray-400 transition-colors"
+              >
+                {timer > 0 ? `Resend OTP in ${timer}s` : "Resend OTP"}
               </button>
             </div>
           </form>

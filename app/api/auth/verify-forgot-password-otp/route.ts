@@ -1,16 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
-import { ResetPasswordSchema, validationError } from '@/lib/validation';
+import { VerifyOtpSchema, validationError } from '@/lib/validation';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Zod validation
-    const parsed = ResetPasswordSchema.safeParse(body);
+    const parsed = VerifyOtpSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
-    const { email, otp, newPassword } = parsed.data;
+    const { email, otp } = parsed.data;
 
     const otpRecord = await prisma.otpRequest.findFirst({
       where: {
@@ -29,20 +27,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'OTP has expired' }, { status: 400 });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Do NOT delete the OTP here, as we need it for the final reset-password step
+    // and for rate-limiting history. We just confirm it's valid.
 
-    await prisma.user.update({
-      where: { email },
-      data: { password: hashedPassword }
-    });
-
-    await prisma.otpRequest.deleteMany({
-      where: { email, type: 'FORGOT_PASSWORD' }
-    });
-
-    return NextResponse.json({ success: true, message: 'Password reset successfully' });
+    return NextResponse.json({ success: true, message: 'OTP is valid' });
   } catch (error: any) {
-    console.error("Reset Password Error:", error);
+    console.error("Verify Forgot Password OTP Error:", error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

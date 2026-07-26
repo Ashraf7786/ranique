@@ -23,19 +23,18 @@ export async function POST(req: Request) {
     if (!parsed.success) return validationError(parsed.error);
     const { email } = parsed.data;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const recentOTPs = await prisma.otpRequest.count({
+      where: { email, type: 'FORGOT_PASSWORD', createdAt: { gte: last24h } }
+    });
 
-    if (!user) {
-      // Don't leak whether the email exists, just say sent
-      return NextResponse.json({ success: true, message: 'If the email exists, an OTP was sent' });
+    if (recentOTPs >= 2) {
+      return NextResponse.json({ error: 'Limit exhausted. Please try again after 24 hours.' }, { status: 429 });
     }
 
     const otpCode = generateOTP();
 
-    await prisma.otpRequest.deleteMany({
-      where: { email, type: 'FORGOT_PASSWORD' }
-    });
-
+    // Save the request for both real and fake emails to prevent enumeration via rate limits
     await prisma.otpRequest.create({
       data: {
         email,
@@ -45,7 +44,12 @@ export async function POST(req: Request) {
       }
     });
 
-    await sendOTP(email, otpCode);
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    // Only actually send an email if the user exists
+    if (user) {
+      await sendOTP(email, otpCode);
+    }
 
     return NextResponse.json({ success: true, message: 'If the email exists, an OTP was sent' });
   } catch (error: any) {
