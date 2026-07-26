@@ -33,9 +33,13 @@ export default async function OrderTrackingDetailsPage({ params, searchParams }:
     redirect("/track-order");
   }
 
+  // Decode the ID from the URL (e.g. %23 -> #) and strip any leading '#' the user might have pasted
+  const decodedId = decodeURIComponent(id);
+  const cleanId = decodedId.startsWith("#") ? decodedId.substring(1) : decodedId;
+
   // Fetch the order from the database
   const order = await prisma.order.findUnique({
-    where: { id },
+    where: { id: cleanId },
     include: {
       user: {
         select: { email: true }
@@ -65,7 +69,7 @@ export default async function OrderTrackingDetailsPage({ params, searchParams }:
         </div>
         <h1 className="text-2xl font-serif font-semibold text-gray-900 mb-2">Order Not Found</h1>
         <p className="text-gray-500 mb-8 max-w-sm text-center">
-          We couldn't find an order with ID "{id}". Please check your order ID and try again.
+          We couldn't find an order with ID "{decodedId}". Please check your order ID and try again.
         </p>
         <Link 
           href="/track-order" 
