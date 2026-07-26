@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ShoppingBag, MessageCircle, PackageOpen } from "lucide-react";
 
 const WA_NUMBER = "919288467633";
 const WA_MESSAGE = encodeURIComponent(
@@ -19,19 +20,19 @@ function WhatsAppIcon({ className }: { className?: string }) {
 const STEPS = [
   {
     num: "01",
-    emoji: "🛍️",
+    icon: ShoppingBag,
     title: "Browse & Choose",
     desc: "Pick any product you love from our collection",
   },
   {
     num: "02",
-    emoji: "📲",
+    icon: MessageCircle,
     title: "Send on WhatsApp",
     desc: "Share the product with us — we reply instantly",
   },
   {
     num: "03",
-    emoji: "🎀",
+    icon: PackageOpen,
     title: "Delivered to You",
     desc: "Confirm your order & receive at your doorstep",
   },
@@ -114,8 +115,8 @@ export function WhatsAppOrderBanner() {
               >
                 {/* Step circle */}
                 <div className="relative mb-4">
-                  <div className="w-16 h-16 rounded-full bg-white border-2 border-brand-border shadow-card group-hover:border-brand-rose group-hover:shadow-card-hover transition-all duration-300 flex items-center justify-center text-2xl">
-                    {step.emoji}
+                  <div className="w-16 h-16 rounded-full bg-white border-2 border-brand-border shadow-card group-hover:border-brand-rose group-hover:shadow-card-hover transition-all duration-300 flex items-center justify-center">
+                    <step.icon className="w-7 h-7 text-brand-rose group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
                   </div>
                   {/* Step number badge */}
                   <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-brand-rose text-white text-[10px] font-bold font-sans flex items-center justify-center leading-none">
