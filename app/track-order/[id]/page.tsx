@@ -33,13 +33,22 @@ export default async function OrderTrackingDetailsPage({ params, searchParams }:
     redirect("/track-order");
   }
 
-  // Decode the ID from the URL (e.g. %23 -> #) and strip any leading '#' the user might have pasted
-  const decodedId = decodeURIComponent(id);
-  const cleanId = decodedId.startsWith("#") ? decodedId.substring(1) : decodedId;
+  // Safely decode the ID (handles potential double encoding by Next.js router)
+  let decodedId = decodeURIComponent(id);
+  if (decodedId.includes("%")) {
+    try { decodedId = decodeURIComponent(decodedId); } catch (e) {}
+  }
+  
+  // Strip any leading non-alphanumeric characters (like #) the user might have pasted
+  const cleanId = decodedId.replace(/^[^a-zA-Z0-9]+/, "");
 
-  // Fetch the order from the database
-  const order = await prisma.order.findUnique({
-    where: { id: cleanId },
+  // Fetch the order from the database (supporting both full UUIDs and 8-character truncated IDs shown to users)
+  const order = await prisma.order.findFirst({
+    where: { 
+      id: {
+        startsWith: cleanId.toLowerCase()
+      }
+    },
     include: {
       user: {
         select: { email: true }
@@ -131,7 +140,7 @@ export default async function OrderTrackingDetailsPage({ params, searchParams }:
           <div className="p-6 md:p-8 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Order ID</p>
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900 font-mono tracking-tight">{order.id}</h1>
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900 font-mono tracking-tight">#{order.id.slice(0, 8).toUpperCase()}</h1>
             </div>
             {isCancelled ? (
               <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-red-50 text-red-600 font-semibold text-sm border border-red-100 self-start md:self-auto">
