@@ -308,8 +308,8 @@ export const sendBeautifulOrderEmail = async (order: any) => {
             @ranique.official
           </a>
           <span style="color: #cbd5e1; margin: 0 10px;">|</span>
-          <a href="https://ranique.com" style="color: #b76e79; text-decoration: none; font-weight: bold; font-size: 14px;">
-            www.ranique.com
+          <a href="https://ranique.in" style="color: #b76e79; text-decoration: none; font-weight: bold; font-size: 14px;">
+            www.ranique.in
           </a>
         </p>
         <p style="margin: 0 0 10px; font-size: 14px; color: #6b7280;">Thank you for shopping with Ranique!</p>
