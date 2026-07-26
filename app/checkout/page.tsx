@@ -719,7 +719,7 @@ Please confirm this order and share payment details. Thank you! 💕`
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5">Phone Number *</label>
-                      <input value={form.phone} onChange={set("phone")} type="tel" className={inputClass("phone")} placeholder="+91 98765 43210" />
+                      <input value={form.phone} onChange={set("phone")} type="tel" className={inputClass("phone")} placeholder="+91 92884 67633" />
                       {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                     </div>
                     <div>
@@ -759,7 +759,7 @@ Please confirm this order and share payment details. Thank you! 💕`
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5">PIN Code *</label>
-                      <input value={form.zip} onChange={set("zip")} type="text" inputMode="numeric" maxLength={6} className={inputClass("zip")} placeholder="400001" />
+                      <input value={form.zip} onChange={set("zip")} type="text" inputMode="numeric" maxLength={6} className={inputClass("zip")} placeholder="824124" />
                       {errors.zip && <p className="text-red-500 text-xs mt-1">{errors.zip}</p>}
                     </div>
                   </div>

@@ -141,7 +141,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Mobile Number</label>
-              <input name="mobileNumber" value={form.mobileNumber} onChange={handleChange} className={inputClass} placeholder="+91 9876543210" />
+              <input name="mobileNumber" value={form.mobileNumber} onChange={handleChange} className={inputClass} placeholder="+91 9288467633" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Date of Birth</label>

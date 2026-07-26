@@ -45,10 +45,10 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
               <h1 className="font-serif text-4xl font-bold text-brand-ink tracking-tight">RANIQUE</h1>
               <p className="text-gray-500 mt-2 text-sm">Premium Skincare & Beauty</p>
               <div className="mt-6 text-sm text-gray-600 space-y-1">
-                <p>123 Beauty Boulevard</p>
-                <p>Mumbai, Maharashtra 400001</p>
+                <p>Ranique Obra</p>
+                <p>Aurangabad 824124, Bihar</p>
                 <p>India</p>
-                <p>support@ranique.com</p>
+                <p>raniqueofficial@gmail.com</p>
               </div>
             </div>
             <div className="mt-8 sm:mt-0 sm:text-right">

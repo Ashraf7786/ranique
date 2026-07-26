@@ -7,7 +7,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
     storeName: "Ranique",
-    supportEmail: "support@ranique.com",
+    supportEmail: "raniqueofficial@gmail.com",
     currency: "INR",
     taxRate: "18",
     freeShippingThreshold: "999",

@@ -233,7 +233,7 @@ export default function RegisterPage() {
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ""))}
                   className="appearance-none block w-full px-3 py-2.5 border border-gray-200 rounded-r-lg focus:outline-none focus:ring-1 focus:ring-brand-rose focus:border-brand-rose transition-colors"
-                  placeholder="9876543210"
+                  placeholder="9288467633"
                 />
               </div>
             </div>

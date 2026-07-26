@@ -87,7 +87,7 @@ export default function ContactUsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-brand-ink">Email Us</p>
-                    <p className="text-brand-slate text-sm mt-1">support@ranique.com</p>
+                    <p className="text-brand-slate text-sm mt-1">raniqueofficial@gmail.com</p>
                   </div>
                 </div>
 
@@ -97,7 +97,7 @@ export default function ContactUsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-brand-ink">Call Us</p>
-                    <p className="text-brand-slate text-sm mt-1">+91 98765 43210</p>
+                    <p className="text-brand-slate text-sm mt-1">+91 92884 67633</p>
                     <p className="text-xs text-brand-slate mt-0.5">Mon-Sat, 10 AM - 7 PM</p>
                   </div>
                 </div>
@@ -109,9 +109,9 @@ export default function ContactUsPage() {
                   <div>
                     <p className="text-sm font-semibold text-brand-ink">Visit Us</p>
                     <p className="text-brand-slate text-sm mt-1 leading-relaxed">
-                      123 Ranique Boutique Avenue,<br />
-                      Fashion District, Mumbai,<br />
-                      Maharashtra 400001
+                      Ranique Obra,<br />
+                      Aurangabad 824124,<br />
+                      Bihar
                     </p>
                   </div>
                 </div>
@@ -191,7 +191,7 @@ export default function ContactUsPage() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-rose focus:border-brand-rose transition-all"
-                    placeholder="+91 98765 43210"
+                    placeholder="+91 92884 67633"
                   />
                 </div>
 
