@@ -32,7 +32,7 @@ export function OrderDetailsModal({ order }: { order: any }) {
                 </h3>
                 <p className="text-sm text-gray-500 mt-0.5">
                   Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                    day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                    timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                   })}
                 </p>
               </div>

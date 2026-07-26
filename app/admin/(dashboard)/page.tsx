@@ -30,12 +30,12 @@ export default async function AdminDashboard() {
   for (let i = 29; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const dateStr = d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    const dateStr = d.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric' });
     chartDataMap.set(dateStr, { date: dateStr, revenue: 0, orders: 0 });
   }
 
   ordersLast30Days.forEach(order => {
-    const dateStr = order.createdAt.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    const dateStr = order.createdAt.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric' });
     if (chartDataMap.has(dateStr)) {
       const dayData = chartDataMap.get(dateStr);
       dayData.revenue += order.totalAmount;
@@ -115,7 +115,7 @@ export default async function AdminDashboard() {
                       </div>
                     </td>
                     <td className="py-4 px-6 text-sm text-gray-600">
-                      {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      {new Date(order.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="py-4 px-6 text-sm text-gray-900 font-medium">
                       &#x20B9;{order.totalAmount.toLocaleString()}
@@ -158,7 +158,7 @@ export default async function AdminDashboard() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                  <span>{new Date(order.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric' })}</span>
                   <span className="font-semibold text-gray-900">&#x20B9;{order.totalAmount.toLocaleString()}</span>
                 </div>
               </div>

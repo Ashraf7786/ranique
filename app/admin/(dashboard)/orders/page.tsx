@@ -142,7 +142,7 @@ export default async function OrdersAdminPage(props: { searchParams: Promise<{ [
                     </td>
                     <td className="py-4 px-4 text-sm text-gray-600 whitespace-nowrap">
                       {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                        timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                       })}
                     </td>
                     <td className="py-4 px-4 text-sm text-gray-600">
