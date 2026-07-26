@@ -20,12 +20,8 @@ export function OnlinePaymentModal({ isOpen, onClose, totalAmount, onSubmit, isS
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (images.length === 0) {
-      alert("Please upload at least one payment screenshot.");
-      return;
-    }
-    if (!utrNumber.trim()) {
-      alert("Please enter the UTR / Transaction number.");
+    if (images.length === 0 && !utrNumber.trim()) {
+      alert("Please provide either a UTR / Transaction number or upload a payment screenshot.");
       return;
     }
     // Pass the images as a JSON string since it's stored as String? in the DB
@@ -58,9 +54,9 @@ export function OnlinePaymentModal({ isOpen, onClose, totalAmount, onSubmit, isS
           <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex flex-col items-center justify-center">
             <p className="text-sm font-semibold text-brand-ink mb-4 text-center">Scan QR Code using any UPI App</p>
             <div className="w-48 h-48 bg-white p-2 rounded-xl border border-gray-200 shadow-sm flex items-center justify-center">
-              {/* Placeholder QR Code Image - Replace with actual store QR */}
+              {/* Store QR Code Image */}
               <img 
-                src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" 
+                src="/images/payment qr.jpeg" 
                 alt="Store Payment QR" 
                 className="w-full h-full object-contain"
               />
@@ -71,10 +67,9 @@ export function OnlinePaymentModal({ isOpen, onClose, totalAmount, onSubmit, isS
           <form id="payment-form" onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                UTR / Transaction Number *
+                UTR / Transaction Number <span className="text-red-500">*</span>
               </label>
               <input
-                required
                 type="text"
                 placeholder="e.g. 123456789012"
                 value={utrNumber}
@@ -85,7 +80,7 @@ export function OnlinePaymentModal({ isOpen, onClose, totalAmount, onSubmit, isS
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center justify-between">
-                <span>Payment Screenshot *</span>
+                <span>Payment Screenshot <span className="text-red-500">*</span></span>
                 <span className="text-xs font-normal text-gray-500">{images.length}/2 Uploaded</span>
               </label>
               
