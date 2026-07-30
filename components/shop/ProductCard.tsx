@@ -96,7 +96,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
       className={cn(
         "group relative bg-white rounded-2xl overflow-hidden",
         "shadow-card hover:shadow-card-hover transition-shadow duration-300",
-        "flex flex-col"
+        "flex flex-col h-full"
       )}
       aria-label={product.name}
     >
@@ -208,7 +208,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </div>
         
         {hasActiveOffer && (
-          <div className="mt-2 mb-3">
+          <div className="mt-2 mb-3 flex items-start">
             <OfferCountdown endsAt={product.offer!.endsAt} compact />
           </div>
         )}
