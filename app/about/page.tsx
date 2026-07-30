@@ -84,6 +84,19 @@ const structuredData = {
     "Ranique is India's premier curated premium boutique for women, offering premium cosmetics, bangles, accessories, purses, and lifestyle essentials.",
   foundingDate: "1999",
   foundingLocation: "Jaipur, Rajasthan, India",
+  founders: [
+    {
+      "@type": "Person",
+      name: "Ashraf Siddiqui"
+    }
+  ],
+  employee: [
+    {
+      "@type": "Person",
+      name: "Varis",
+      jobTitle: "CEO & Owner"
+    }
+  ],
   address: {
     "@type": "PostalAddress",
     addressLocality: "Jaipur",

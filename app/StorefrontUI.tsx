@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { MobileBottomNav } from "@/components/ui/MobileBottomNav";
+import { WelcomePopup } from "@/components/ui/WelcomePopup";
 
 export function StorefrontUI({ children, categories, announcement }: { children: React.ReactNode, categories?: any[], announcement?: any }) {
   const pathname = usePathname();
@@ -25,6 +26,7 @@ export function StorefrontUI({ children, categories, announcement }: { children:
       <CartDrawer />
       <WhatsAppButton />
       <MobileBottomNav />
+      <WelcomePopup />
     </>
   );
 }

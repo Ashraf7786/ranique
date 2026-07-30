@@ -47,7 +47,7 @@ const ALL_POSTS = [
     readTime: "7 min read",
     date: "June 22, 2025",
     tag: "Styling Guide",
-    author: "Rania Kapoor, Founder",
+    author: "Ashraf Siddiqui, Founder",
     content: [
       {
         heading: "Bangles — India Ki Pehchaan",
@@ -125,7 +125,7 @@ const ALL_POSTS = [
     readTime: "10 min read",
     date: "June 10, 2025",
     tag: "Festival Special",
-    author: "Rania Kapoor, Founder",
+    author: "Ashraf Siddiqui, Founder",
     content: [
       {
         heading: "Teej 2025 — Kya Trend Hai Is Saal?",
@@ -240,7 +240,7 @@ const ALL_POSTS = [
     readTime: "5 min read",
     date: "May 22, 2025",
     tag: "College Style",
-    author: "Rania Kapoor, Founder",
+    author: "Ashraf Siddiqui, Founder",
     content: [
       {
         heading: "Budget Mein Style — Possible Hai!",
