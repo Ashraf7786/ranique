@@ -166,6 +166,13 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             )}
           </div>
         )}
+
+        {/* Floating Timer at the bottom of the image */}
+        {hasActiveOffer && (
+          <div className="absolute bottom-3 left-0 right-0 flex justify-center z-10 pointer-events-none px-2">
+            <OfferCountdown endsAt={product.offer!.endsAt} compact />
+          </div>
+        )}
       </Link>
 
       {/* ── Info ── */}
@@ -207,11 +214,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           )}
         </div>
         
-        {hasActiveOffer && (
-          <div className="mt-2 mb-3 flex items-start">
-            <OfferCountdown endsAt={product.offer!.endsAt} compact />
-          </div>
-        )}
+        {/* Offer timer removed from here as it is now an image overlay */}
 
         {/* Color swatches (first 4) */}
         {product.variants?.colors && product.variants.colors.length > 0 && (
