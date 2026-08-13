@@ -229,6 +229,17 @@ function MobileMenu({ isOpen, onClose, categories = [] }: { isOpen: boolean; onC
           </div>
           <Link href="/" onClick={onClose} className="flex items-center px-3 py-2.5 rounded-xl font-sans text-sm text-brand-ink hover:bg-brand-blush hover:text-brand-rose transition-colors">Home</Link>
           <Link href="/shop" onClick={onClose} className="flex items-center px-3 py-2.5 rounded-xl font-sans text-sm font-semibold text-brand-rose bg-brand-blush">Shop All</Link>
+          <Link
+            href="/clothing"
+            onClick={onClose}
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl font-sans text-sm font-bold text-white transition-colors"
+            style={{ background: "linear-gradient(135deg, #C9748A 0%, #A85970 100%)" }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+            </svg>
+            Clothing ✨
+          </Link>
           
           <div className="pt-2 pb-1 px-3 text-xs font-semibold text-brand-slate uppercase tracking-wider">Categories</div>
           {categories.map((cat: any) => (
@@ -361,6 +372,22 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
 
             {/* Desktop nav */}
             <nav className="hidden lg:flex items-center gap-1 ml-4 relative">
+              {/* Clothing Hub Link */}
+              <Link
+                href="/clothing"
+                className="px-3 py-1.5 rounded-full text-sm font-sans font-semibold transition-all duration-150 inline-flex items-center gap-1.5 border"
+                style={{
+                  background: "linear-gradient(135deg, #C9748A 0%, #A85970 100%)",
+                  color: "white",
+                  borderColor: "transparent",
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                  <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+                </svg>
+                Clothing ✨
+              </Link>
+
               <div className="group">
                 <Link
                   href="/shop"
