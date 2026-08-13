@@ -396,7 +396,13 @@ export default function CheckoutPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to place order");
+      if (!res.ok) {
+        if (data.details) {
+          console.error("Validation failed details:", data.details);
+          throw new Error(data.error + ":\n" + JSON.stringify(data.details, null, 2));
+        }
+        throw new Error(data.error || "Failed to place order");
+      }
 
       const placedOrderId = data.orderId;
       setOrderId(placedOrderId);
