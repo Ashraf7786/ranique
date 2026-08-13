@@ -10,6 +10,7 @@ import { SkeletonGrid } from "@/components/ui/SkeletonCard";
 import { ReelsSection } from "@/components/shop/ReelsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { WhatsAppOrderBanner } from "@/components/home/WhatsAppOrderBanner";
+import { ClothingSection } from "@/components/home/ClothingSection";
 import { Sparkles, Gem, Disc3, ShoppingBag, Truck, RefreshCcw, Lock, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -230,6 +231,9 @@ export default async function HomePage() {
       <CategoryProductsSection title="Jewellery & Accessories" category="accessories" products={allProducts} />
       
       <CategoryProductsSection title="Purses & More" category="purses" products={allProducts} />
+
+      {/* ── Ranique Clothing Section ─────────────────────────────────────── */}
+      <ClothingSection />
 
       <WhatsAppOrderBanner />
       <ReelsSection />
