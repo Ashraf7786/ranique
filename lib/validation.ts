@@ -92,13 +92,13 @@ export const TestimonialUpdateSchema = TestimonialCreateSchema.partial();
 
 const ShippingAddressSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  phone: z.string().min(10, 'Valid phone is required'),
+  phone: z.string().regex(/^\d{10}$/, 'Valid 10-digit phone is required'),
   email: z.string().email('Valid email is required'),
   line1: z.string().min(1, 'Address line 1 is required'),
   line2: z.string().optional().nullable(),
   city: z.string().min(1, 'City is required'),
   state: z.string().min(1, 'State is required'),
-  zip: z.string().min(4, 'Valid ZIP code is required'),
+  zip: z.string().regex(/^\d{6}$/, 'Valid 6-digit PIN code is required'),
   country: z.string().optional().default('India'),
 });
 

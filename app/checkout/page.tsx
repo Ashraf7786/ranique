@@ -11,6 +11,7 @@ import {
   Check, Truck, Receipt, QrCode
 } from "lucide-react";
 import { OnlinePaymentModal } from "@/components/checkout/OnlinePaymentModal";
+import { INDIAN_STATES_DATA } from "@/lib/indian-locations";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -22,13 +23,7 @@ interface ShippingForm {
 
 type Step = "address" | "payment" | "success";
 
-const INDIAN_STATES = [
-  "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa",
-  "Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala",
-  "Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland",
-  "Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura",
-  "Uttar Pradesh","Uttarakhand","West Bengal","Delhi","Jammu & Kashmir","Ladakh",
-];
+
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
@@ -181,6 +176,7 @@ export default function CheckoutPage() {
   const [couponError, setCouponError] = useState<string | null>(null);
   const [isFirstOrder, setIsFirstOrder] = useState(false);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [isManualCity, setIsManualCity] = useState(false);
 
   // Derived values
   const subtotal = totalPrice;
@@ -351,12 +347,23 @@ export default function CheckoutPage() {
   const validateAddress = (): boolean => {
     const newErrors: Partial<ShippingForm> = {};
     if (!form.name?.trim()) newErrors.name = "Full name is required";
-    if (!form.phone?.trim() || !/^\+?[\d\s\-]{8,15}$/.test(form.phone)) newErrors.phone = "Valid phone number is required";
+    if (!form.phone?.trim() || !/^\d{10}$/.test(form.phone)) newErrors.phone = "10 digit phone number is required";
     if (!form.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Valid email is required";
     if (!form.line1?.trim()) newErrors.line1 = "Address is required";
     if (!form.city?.trim()) newErrors.city = "City is required";
     if (!form.state?.trim()) newErrors.state = "State is required";
-    if (!form.zip?.trim() || !/^\d{4,10}$/.test(form.zip)) newErrors.zip = "Valid PIN code is required";
+    
+    if (!form.zip?.trim() || !/^\d{6}$/.test(form.zip)) {
+      newErrors.zip = "PIN code must be exactly 6 digits";
+    } else if (form.state) {
+      const stateObj = INDIAN_STATES_DATA.find((s: any) => s.state === form.state);
+      if (stateObj && stateObj.pinPrefixes.length > 0) {
+        if (!stateObj.pinPrefixes.includes(form.zip[0])) {
+          newErrors.zip = `Invalid PIN code for ${form.state}`;
+        }
+      }
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -717,7 +724,7 @@ Please confirm this order and share payment details. Thank you! 💕`
                   {/* Name */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5">Full Name *</label>
-                    <input value={form.name} onChange={set("name")} className={inputClass("name")} placeholder="e.g. Mariyam Siddiqui" />
+                    <input value={form.name} onChange={set("name")} className={inputClass("name")} placeholder="Enter your name" />
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                   </div>
 
@@ -725,7 +732,21 @@ Please confirm this order and share payment details. Thank you! 💕`
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5">Phone Number *</label>
-                      <input value={form.phone} onChange={set("phone")} type="tel" className={inputClass("phone")} placeholder="+91 92884 67633" />
+                      <div className="relative flex">
+                        <span className="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-gray-200 bg-gray-50 text-gray-500 font-semibold text-sm">
+                          +91
+                        </span>
+                        <input 
+                          value={form.phone} 
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                            setForm(prev => ({ ...prev, phone: val }));
+                          }} 
+                          type="tel" 
+                          className={`flex-1 rounded-l-none ${inputClass("phone")}`} 
+                          placeholder="9288467633" 
+                        />
+                      </div>
                       {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                     </div>
                     <div>
@@ -751,17 +772,56 @@ Please confirm this order and share payment details. Thank you! 💕`
                   {/* City, State, ZIP */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5">City *</label>
-                      <input value={form.city} onChange={set("city")} className={inputClass("city")} placeholder="e.g. Mumbai" />
-                      {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
-                    </div>
-                    <div>
                       <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5">State *</label>
-                      <select value={form.state} onChange={set("state")} className={inputClass("state")}>
+                      <select 
+                        value={form.state} 
+                        onChange={(e) => {
+                          setForm(prev => ({ ...prev, state: e.target.value, city: "" }));
+                          setIsManualCity(false);
+                        }} 
+                        className={inputClass("state")}
+                      >
                         <option value="">Select State</option>
-                        {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                        {INDIAN_STATES_DATA.map((s: any) => <option key={s.state} value={s.state}>{s.state}</option>)}
                       </select>
                       {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5">City *</label>
+                      {(!isManualCity && form.state) ? (
+                        <select
+                          value={form.city}
+                          onChange={(e) => {
+                            if (e.target.value === "manual") {
+                              setIsManualCity(true);
+                              setForm(prev => ({ ...prev, city: "" }));
+                            } else {
+                              setForm(prev => ({ ...prev, city: e.target.value }));
+                            }
+                          }}
+                          className={inputClass("city")}
+                        >
+                          <option value="">Select City/District</option>
+                          {INDIAN_STATES_DATA.find((s: any) => s.state === form.state)?.districts.map((city: string) => (
+                            <option key={city} value={city}>{city}</option>
+                          ))}
+                          <option value="manual">+ Add Manual Village/City</option>
+                        </select>
+                      ) : (
+                        <div className="relative">
+                          <input value={form.city} onChange={set("city")} className={inputClass("city")} placeholder="e.g. Jaipur" />
+                          {form.state && (
+                            <button
+                              type="button"
+                              onClick={() => { setIsManualCity(false); setForm(prev => ({ ...prev, city: "" })); }}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-brand-rose hover:text-brand-rose-dark"
+                            >
+                              Select from List
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5">PIN Code *</label>
