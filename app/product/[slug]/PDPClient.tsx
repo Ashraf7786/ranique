@@ -216,7 +216,7 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
 
           {/* Short description */}
           <p className="text-sm text-brand-slate leading-relaxed">
-            {product.description.substring(0, 140)}…
+            {product.description?.substring(0, 140)}…
           </p>
 
           {/* Variant selector */}

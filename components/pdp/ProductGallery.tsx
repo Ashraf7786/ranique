@@ -81,8 +81,10 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             const zoomBox = document.getElementById('zoom-box');
             if (zoomBox) {
               zoomBox.style.display = 'block';
-              zoomBox.style.backgroundImage = `url(${images[activeIdx].src})`;
-              zoomBox.style.backgroundPosition = `${x}% ${y}%`;
+              if (images[activeIdx]?.src) {
+                zoomBox.style.backgroundImage = `url(${images[activeIdx].src})`;
+                zoomBox.style.backgroundPosition = `${x}% ${y}%`;
+              }
             }
           }}
           onMouseLeave={() => {
