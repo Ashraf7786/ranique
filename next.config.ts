@@ -34,11 +34,21 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  compress: true,
   headers: async () => [
     {
       // Apply security headers to all routes
       source: "/(.*)",
       headers: securityHeaders,
+    },
+    {
+      source: "/_next/static/(.*)",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=31536000, immutable",
+        },
+      ],
     },
   ],
   images: {
@@ -46,9 +56,6 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // Serve all static files unoptimized (SVG + PNG from /public)
-    // Real images can be optimized via a CDN in production
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

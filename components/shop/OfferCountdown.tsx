@@ -36,7 +36,7 @@ export function OfferCountdown({ endsAt, compact = false }: { endsAt: string, co
 
   if (compact) {
     return (
-      <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-brand-ink bg-white/80 backdrop-blur-md border border-white/40 px-3 py-1.5 rounded-full shadow-lg">
+      <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-brand-ink bg-white/95 border border-white/80 px-3 py-1.5 rounded-full shadow-lg">
         <Clock className="w-3.5 h-3.5 text-brand-rose animate-pulse-slow" />
         <span>Ends in <span className="text-brand-rose">{timeLeft.d}d {timeLeft.h}h {timeLeft.m}m</span></span>
       </div>

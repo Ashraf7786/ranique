@@ -290,7 +290,8 @@ export function Hero({ slides }: { slides: HeroBannerSlide[] }) {
                 alt={`${slide.title} ${slide.emphasis}`}
                 fill
                 priority
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 55vw, 50vw"
+                quality={85}
+                sizes="(max-width: 640px) 90vw, (max-width: 768px) 80vw, (max-width: 1024px) 55vw, 50vw"
                 className="object-cover object-center"
               />
               {/* Soft gradient at bottom */}

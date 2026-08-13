@@ -1,10 +1,22 @@
-import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans, Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-jakarta",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-serif",
   display: "swap",
 });
 import { CartProvider } from "@/components/providers/CartProvider";
@@ -13,6 +25,13 @@ import { GlobalLoader } from "@/components/ui/GlobalLoader";
 import { StorefrontUI } from "./StorefrontUI";
 // import { Chatbot } from "@/components/ui/Chatbot";
 import { getCategories, getAnnouncement } from "@/lib/api";
+
+export const viewport: Viewport = {
+  themeColor: "#C9748A",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: {
@@ -35,6 +54,11 @@ export const metadata: Metadata = {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     },
   }),
+  appleWebApp: {
+    capable: true,
+    title: "Ranique",
+    statusBarStyle: "default",
+  },
 };
 
 import { GoogleAnalytics } from '@next/third-parties/google';
@@ -53,7 +77,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={`antialiased ${jakarta.variable} overflow-x-hidden w-full`}>
+      <body className={`antialiased ${jakarta.variable} ${inter.variable} ${playfair.variable} overflow-x-hidden w-full`}>
         <GlobalLoader />
         <AuthProvider>
           <CartProvider>
