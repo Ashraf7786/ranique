@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/hooks/useCart";
 import { cn } from "@/lib/utils";
@@ -189,7 +189,7 @@ function SearchBar({ className }: { className?: string }) {
   );
 }
 
-function MobileMenu({ isOpen, onClose, categories = [] }: { isOpen: boolean; onClose: () => void; categories?: any[] }) {
+function MobileMenu({ isOpen, onClose, categories = [], isClothingContext }: { isOpen: boolean; onClose: () => void; categories?: any[], isClothingContext?: boolean }) {
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
@@ -229,17 +229,28 @@ function MobileMenu({ isOpen, onClose, categories = [] }: { isOpen: boolean; onC
           </div>
           <Link href="/" onClick={onClose} className="flex items-center px-3 py-2.5 rounded-xl font-sans text-sm text-brand-ink hover:bg-brand-blush hover:text-brand-rose transition-colors">Home</Link>
           <Link href="/shop" onClick={onClose} className="flex items-center px-3 py-2.5 rounded-xl font-sans text-sm font-semibold text-brand-rose bg-brand-blush">Shop All</Link>
-          <Link
-            href="/clothing"
-            onClick={onClose}
-            className="flex items-center gap-2 px-3 py-2.5 rounded-xl font-sans text-sm font-bold text-white transition-colors"
-            style={{ background: "linear-gradient(135deg, #C9748A 0%, #A85970 100%)" }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-              <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
-            </svg>
-            Clothing ✨
-          </Link>
+          {isClothingContext ? (
+            <Link
+              href="/shop"
+              onClick={onClose}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl font-sans text-sm font-bold text-white transition-colors bg-brand-ink hover:bg-brand-ink/90"
+            >
+              <ShoppingBagIcon className="w-4 h-4" />
+              Ranique Store 🛍️
+            </Link>
+          ) : (
+            <Link
+              href="/clothing"
+              onClick={onClose}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl font-sans text-sm font-bold text-white transition-colors"
+              style={{ background: "linear-gradient(135deg, #C9748A 0%, #A85970 100%)" }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+              </svg>
+              Clothing ✨
+            </Link>
+          )}
           
           <div className="pt-2 pb-1 px-3 text-xs font-semibold text-brand-slate uppercase tracking-wider">Categories</div>
           {categories.map((cat: any) => (
@@ -262,9 +273,31 @@ function MobileMenu({ isOpen, onClose, categories = [] }: { isOpen: boolean; onC
 }
 
 export function Header({ categories = [], announcement }: { categories?: any[], announcement?: any }) {
-  const { totalItems, openCart } = useCart();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentCategory = searchParams?.get('category');
+  
+  const CLOTHING_SLUGS = new Set([
+    'kurti','kurti-set','suit','salwar-kameez','sharara','gharara',
+    'lehenga','lehenga-choli','saree','readymade-saree','anarkali',
+    'palazzo-set','patiala-suit','churidar-suit','dupatta',
+    'top','dress','coord-set','jumpsuit','jeans-trousers','skirt',
+    'shorts','blazer-jacket','casual-wear','loungewear','night-suit',
+    'track-suit','sweater-cardigan','winter-suit',
+    'bridal-wear','party-wear','festive-wear','wedding-guest',
+    'womens-clothing'
+  ]);
+
+  const isClothingContext = pathname?.startsWith('/clothing') || (currentCategory && CLOTHING_SLUGS.has(currentCategory));
+
+  const storeCategories = categories.filter((c: any) => !CLOTHING_SLUGS.has(c.slug));
+  const clothingCategories = categories.filter((c: any) => CLOTHING_SLUGS.has(c.slug));
+
+  const displayCategories = isClothingContext ? clothingCategories : storeCategories;
+
+  const { items, openCart, totalItems } = useCart();
+  const { data: session, status } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { data: session } = useSession();
   const router = useRouter();
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -372,21 +405,30 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
 
             {/* Desktop nav */}
             <nav className="hidden lg:flex items-center gap-1 ml-4 relative">
-              {/* Clothing Hub Link */}
-              <Link
-                href="/clothing"
-                className="px-3 py-1.5 rounded-full text-sm font-sans font-semibold transition-all duration-150 inline-flex items-center gap-1.5 border"
-                style={{
-                  background: "linear-gradient(135deg, #C9748A 0%, #A85970 100%)",
-                  color: "white",
-                  borderColor: "transparent",
-                }}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                  <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
-                </svg>
-                Clothing ✨
-              </Link>
+              {/* Clothing Hub / Store Hub Link */}
+              {isClothingContext ? (
+                <Link
+                  href="/shop"
+                  className="px-3 py-1.5 rounded-full text-sm font-sans font-semibold transition-all duration-150 inline-flex items-center gap-1.5 border border-transparent bg-brand-ink text-white hover:bg-brand-ink/90"
+                >
+                  <ShoppingBagIcon className="w-3.5 h-3.5" />
+                  Ranique Store 🛍️
+                </Link>
+              ) : (
+                <Link
+                  href="/clothing"
+                  className="px-3 py-1.5 rounded-full text-sm font-sans font-semibold transition-all duration-150 inline-flex items-center gap-1.5 border border-transparent"
+                  style={{
+                    background: "linear-gradient(135deg, #C9748A 0%, #A85970 100%)",
+                    color: "white",
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                    <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+                  </svg>
+                  Clothing ✨
+                </Link>
+              )}
 
               <div className="group">
                 <Link
@@ -399,12 +441,12 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
                 
                 {/* Mega Menu Dropdown */}
                 <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="bg-white border border-brand-border shadow-xl rounded-2xl p-4 min-w-[320px]">
+                  <div className="bg-white border border-brand-border shadow-xl rounded-2xl p-4 min-w-[320px] max-w-[80vw] max-h-[70vh] overflow-y-auto custom-scrollbar">
                     <div className="mb-3 px-3">
-                      <p className="text-xs font-semibold text-brand-slate uppercase tracking-wider">All Categories</p>
+                      <p className="text-xs font-semibold text-brand-slate uppercase tracking-wider">{isClothingContext ? "Clothing Categories" : "Store Categories"}</p>
                     </div>
-                    <div className={cn("grid gap-1", categories.length > 5 ? "grid-cols-2 gap-x-4" : "grid-cols-1")}>
-                      {categories.map((cat: any) => {
+                    <div className={cn("grid gap-1", displayCategories.length > 10 ? "grid-cols-2 gap-x-4" : "grid-cols-1")}>
+                      {displayCategories.map((cat: any) => {
                         const isNew = Math.ceil(Math.abs(new Date().getTime() - new Date(cat.createdAt).getTime()) / (1000 * 60 * 60 * 24)) <= 14;
                         return (
                           <Link
@@ -424,7 +466,7 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
                 </div>
               </div>
 
-              {categories.slice(0, 4).map((cat: any) => (
+              {displayCategories.slice(0, 4).map((cat: any) => (
                 <Link
                   key={cat.id}
                   href={`/shop?category=${cat.slug}`}
@@ -474,10 +516,10 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
 
                 {/* Dropdown Menu */}
                 {userDropdownOpen && session && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
-                    <div className="px-4 py-2 border-b border-gray-50 mb-1">
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-brand-border rounded-2xl shadow-xl py-2 z-50">
+                    <div className="px-4 py-2 border-b border-brand-border mb-1">
                       <p className="text-sm font-semibold text-brand-ink truncate">{session.user?.name || (session.user as any)?.firstName || "User"}</p>
-                      <p className="text-xs text-gray-500 truncate">{session.user?.email}</p>
+                      <p className="text-xs text-brand-slate truncate">{session.user?.email}</p>
                     </div>
 
                     {(session.user as any)?.role === "ADMIN" ? (
@@ -485,7 +527,7 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
                         <Link
                           href="/admin"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-mist hover:text-brand-rose transition-colors"
+                          className="block px-4 py-2 text-sm text-brand-ink hover:bg-brand-mist transition-colors"
                         >
                           Admin Panel
                         </Link>
@@ -495,21 +537,21 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
                         <Link
                           href="/account"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-mist hover:text-brand-rose transition-colors"
+                          className="block px-4 py-2 text-sm text-brand-ink hover:bg-brand-mist transition-colors"
                         >
                           My Dashboard
                         </Link>
                         <Link
                           href="/account/orders"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-mist hover:text-brand-rose transition-colors"
+                          className="block px-4 py-2 text-sm text-brand-ink hover:bg-brand-mist transition-colors"
                         >
                           My Orders
                         </Link>
                         <Link
                           href="/wishlist"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-mist hover:text-brand-rose transition-colors"
+                          className="block px-4 py-2 text-sm text-brand-ink hover:bg-brand-mist transition-colors"
                         >
                           Wishlist
                         </Link>
@@ -521,7 +563,7 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
                         setUserDropdownOpen(false);
                         signOut({ callbackUrl: "/" });
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-gray-50 mt-1"
+                      className="block w-full text-left px-4 py-2 text-sm text-brand-rose hover:bg-brand-blush transition-colors border-t border-brand-border mt-1"
                     >
                       Sign Out
                     </button>
@@ -550,11 +592,7 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
       </header>
 
       {/* Mobile nav drawer */}
-      <MobileMenu
-        isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        categories={categories}
-      />
+      <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} categories={displayCategories} isClothingContext={!!isClothingContext} />
     </>
   );
 }

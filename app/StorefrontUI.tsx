@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -18,7 +19,9 @@ export function StorefrontUI({ children, categories, announcement }: { children:
 
   return (
     <>
-      <Header categories={categories} announcement={announcement} />
+      <React.Suspense fallback={<div className="h-16 w-full bg-white border-b border-brand-border" />}>
+        <Header categories={categories} announcement={announcement} />
+      </React.Suspense>
       <main id="main-content" className="min-h-screen pb-16 md:pb-0">
         {children}
       </main>
