@@ -34,20 +34,48 @@ function mapBackendProduct(dbProduct: any, siblings: any[] = []): Product {
     }
   }
 
-  // Inject Bangle Sizes
-  let sizes = undefined;
-  const isBangle = dbProduct.category?.slug === 'bangles' || 
-                   dbProduct.category?.name?.toLowerCase().includes('bangle') ||
+  // ── Category slug helpers ─────────────────────────────────────────────────
+  const categorySlug = dbProduct.category?.slug ?? '';
+  const categoryName = (dbProduct.category?.name ?? '').toLowerCase();
+
+  // All 33 clothing sub-category slugs (children of womens-clothing)
+  const CLOTHING_SLUGS = new Set([
+    'kurti','kurti-set','suit','salwar-kameez','sharara','gharara',
+    'lehenga','lehenga-choli','saree','readymade-saree','anarkali',
+    'palazzo-set','patiala-suit','churidar-suit','dupatta',
+    'top','dress','coord-set','jumpsuit','jeans-trousers','skirt',
+    'shorts','blazer-jacket','casual-wear','loungewear','night-suit',
+    'track-suit','sweater-cardigan','winter-suit',
+    'bridal-wear','party-wear','festive-wear','wedding-guest',
+    'womens-clothing', // parent itself
+  ]);
+
+  const isBangle = categorySlug === 'bangles' ||
+                   categoryName.includes('bangle') ||
                    dbProduct.title?.toLowerCase().includes('bangle');
 
+  const isClothing = CLOTHING_SLUGS.has(categorySlug) ||
+                     dbProduct.category?.parentId != null; // any child of womens-clothing
+
+  // ── Inject sizes based on product type ───────────────────────────────────
+  let sizes = undefined;
+
   if (isBangle) {
-    const bangleSizes = ['2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '2.10', 'Free Size'];
+    const bangleSizes = ['2.2','2.3','2.4','2.5','2.6','2.7','2.8','2.9','2.10','Free Size'];
     sizes = bangleSizes.map(size => ({
       id: size.toLowerCase().replace(/[^a-z0-9]/g, '-'),
       label: size,
-      stock: dbProduct.currentStock > 0 ? 10 : 0 // Fake some stock based on product stock
+      stock: dbProduct.currentStock > 0 ? 10 : 0,
+    }));
+  } else if (isClothing) {
+    const clothingSizes = ['XS','S','M','L','XL','XXL','Free Size'];
+    sizes = clothingSizes.map(size => ({
+      id: size.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      label: size,
+      stock: dbProduct.currentStock > 0 ? 10 : 0,
     }));
   }
+
 
   return {
     id: dbProduct.id,

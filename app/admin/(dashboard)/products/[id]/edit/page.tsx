@@ -417,12 +417,32 @@ export default function EditProductPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blush focus:border-brand-rose outline-none"
                 >
                   <option value="">Select Category...</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.parentId ? `— ${cat.name}` : cat.name}
-                    </option>
-                  ))}
+                  
+                  {/* ── Ranique Store (no parentId, not womens-clothing wrapper) */}
+                  {categories.filter(c => !c.parentId && c.slug !== 'womens-clothing').length > 0 && (
+                    <optgroup label="🛍️ Ranique Store">
+                      {categories
+                        .filter(c => !c.parentId && c.slug !== 'womens-clothing')
+                        .map(cat => (
+                          <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                    </optgroup>
+                  )}
+
+                  {/* ── Ranique Clothing (has parentId = womens-clothing) */}
+                  {categories.filter(c => !!c.parentId).length > 0 && (
+                    <optgroup label="👗 Ranique Clothing">
+                      {categories
+                        .filter(c => !!c.parentId)
+                        .map(cat => (
+                          <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                    </optgroup>
+                  )}
                 </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Clothing categories auto-apply S / M / L / XL sizing on the storefront.
+                </p>
               </div>
 
               <div>
