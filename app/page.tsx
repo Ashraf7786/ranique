@@ -11,81 +11,12 @@ import { ReelsSection } from "@/components/shop/ReelsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { WhatsAppOrderBanner } from "@/components/home/WhatsAppOrderBanner";
 import { ClothingSection } from "@/components/home/ClothingSection";
-import { Sparkles, Gem, Disc3, ShoppingBag, Truck, RefreshCcw, Lock, Package } from "lucide-react";
+import { CategoryTabs } from "@/components/home/CategoryTabs";
+import { Truck, Lock, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// ─── Category Grid ────────────────────────────────────────────────────────────
-
-const CATEGORY_STYLES: Record<string, { icon: React.ReactNode, bg: string }> = {
-  cosmetics: {
-    icon: <Sparkles className="w-8 h-8 text-brand-rose" strokeWidth={1.5} />,
-    bg: "from-[#F7E8E8] to-[#EEC5CF]",
-  },
-  accessories: {
-    icon: <Gem className="w-8 h-8 text-[#C9A96E]" strokeWidth={1.5} />,
-    bg: "from-[#F0DDB8] to-[#E8D5A3]",
-  },
-  bangles: {
-    icon: <Disc3 className="w-8 h-8 text-[#8B9DB8]" strokeWidth={1.5} />,
-    bg: "from-[#E8EEF7] to-[#C5D5EE]",
-  },
-  purses: {
-    icon: <ShoppingBag className="w-8 h-8 text-brand-slate" strokeWidth={1.5} />,
-    bg: "from-[#F0F0F0] to-[#E0E0D8]",
-  },
-};
-
-const DEFAULT_CATEGORY_STYLE = {
-  icon: <Package className="w-8 h-8 text-gray-400" strokeWidth={1.5} />,
-  bg: "from-[#F0F0F0] to-[#E0E0D8]",
-};
-
-function CategoryGrid({ categories }: { categories: any[] }) {
-  // Filter out any categories that might not be suitable for the grid, e.g. 'all'
-  const validCategories = categories.filter(c => c.slug !== 'all');
-
-  return (
-    <section aria-label="Shop by category" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex items-end justify-between mb-6">
-        <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-brand-ink">
-          Shop by Category
-        </h2>
-      </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {validCategories.map((cat) => {
-          const style = CATEGORY_STYLES[cat.slug] || DEFAULT_CATEGORY_STYLE;
-          return (
-            <Link
-              key={cat.id}
-              href={`/shop?category=${cat.slug}`}
-              id={`category-card-${cat.slug}`}
-              className={cn(
-                `bg-gradient-to-br ${style.bg}`,
-                "rounded-2xl p-5 sm:p-6 group hover:shadow-card-hover transition-all duration-300",
-                "flex flex-col gap-2 min-h-[140px] sm:min-h-[160px]"
-              )}
-            >
-              <div className="mb-2">{style.icon}</div>
-              <h3 className="font-serif text-base sm:text-lg font-semibold text-brand-ink group-hover:text-brand-rose transition-colors">
-                {cat.name}
-              </h3>
-              <p className="text-xs sm:text-sm text-brand-slate line-clamp-2">{cat.description || "Discover our collection"}</p>
-              <span className="mt-auto text-xs font-semibold text-brand-rose flex items-center gap-1">
-                Shop now
-                <svg className="w-3 h-3 group-hover:translate-x-1 transition-transform" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 8h10M9 4l4 4-4 4" />
-                </svg>
-              </span>
-            </Link>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-// ─── cn inline (avoid circular dep in RSC) ───────────────────────────────────
-// Removed inline cn function in favor of import
+// ─── cn helper used below ────────────────────────────────────────────────────
+// (CategoryGrid replaced by <CategoryTabs> client component)
 
 // ─── Featured Products ────────────────────────────────────────────────────────
 
@@ -214,7 +145,7 @@ export default async function HomePage() {
       <Hero slides={heroBanners as HeroBannerSlide[]} />
       <OfferProductsSection products={allProducts} />
       <TrustBar />
-      <CategoryGrid categories={categories} />
+      <CategoryTabs categories={categories} />
       
       <FeaturedProducts products={allProducts} />
       
