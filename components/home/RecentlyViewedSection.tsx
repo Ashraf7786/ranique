@@ -1,57 +1,38 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { ProductGrid } from "@/components/shop/ProductGrid";
+import { useSession } from "next-auth/react";
 
-export async function RecentlyViewedSection() {
-  let session = null;
-  try {
-    session = await getServerSession(authOptions);
-  } catch (error) {
-    console.error("NextAuth error:", error);
-  }
+export function RecentlyViewedSection() {
+  const { data: session } = useSession();
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!session?.user) {
-    return null;
-  }
+  useEffect(() => {
+    if (!session?.user) {
+      setLoading(false);
+      return;
+    }
 
-  let recentlyViewedProducts: any[] = [];
-  try {
-    const rv = await prisma.recentlyViewed.findMany({
-      where: { userId: (session.user as any).id },
-      orderBy: { viewedAt: 'desc' },
-      take: 4,
-      include: {
-        product: { include: { images: true } }
-      }
-    });
-
-    recentlyViewedProducts = rv.map(r => {
-      let parsedColors = [];
+    async function fetchRecentlyViewed() {
       try {
-        if (r.product.colors) parsedColors = JSON.parse(r.product.colors);
-      } catch (e) {}
+        const res = await fetch("/api/recently-viewed");
+        const data = await res.json();
+        if (data.products) {
+          setProducts(data.products);
+        }
+      } catch (error) {
+        console.error("Failed to fetch recently viewed:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-      return {
-        ...r.product,
-        name: r.product.title,
-        price: r.product.sellingPrice,
-        compareAtPrice: r.product.originalPrice,
-        images: r.product.images.map((img: any) => ({
-          src: img.url,
-          alt: img.altText || r.product.title,
-        })),
-        variants: {
-          colors: parsedColors.length > 0 ? parsedColors : undefined,
-        },
-      };
-    });
-  } catch (e) {
-    console.error("Recently viewed error:", e);
-    return null;
-  }
+    fetchRecentlyViewed();
+  }, [session]);
 
-  if (recentlyViewedProducts.length === 0) {
+  if (loading || products.length === 0) {
     return null;
   }
 
@@ -62,7 +43,7 @@ export async function RecentlyViewedSection() {
           Recently Viewed
         </h2>
       </div>
-      <ProductGrid products={recentlyViewedProducts} priorityCount={4} />
+      <ProductGrid products={products} priorityCount={4} />
     </section>
   );
 }
