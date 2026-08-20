@@ -107,11 +107,9 @@ export default function ContactUsPage() {
                     <MapPin className="w-5 h-5 text-brand-rose" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-brand-ink">Visit Us</p>
+                    <p className="text-sm font-semibold text-brand-ink">Locations (Coming Soon)</p>
                     <p className="text-brand-slate text-sm mt-1 leading-relaxed">
-                      Ranique Obra,<br />
-                      Aurangabad 824124,<br />
-                      Bihar
+                      Varanasi, Jaipur, Aurangabad
                     </p>
                   </div>
                 </div>

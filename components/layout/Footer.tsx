@@ -98,9 +98,8 @@ export function Footer() {
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-brand-rose shrink-0" />
                 <p>
-                  <strong className="text-white block mb-1">Store</strong>
-                  Rani Sringar Store, Obra<br />
-                  Aurangabad, Bihar, India
+                  <strong className="text-white block mb-1">Locations (Coming Soon)</strong>
+                  Varanasi, Jaipur, Aurangabad
                 </p>
               </div>
               <div className="flex items-center gap-3">
