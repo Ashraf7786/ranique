@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { generateInvoicePdf } from './invoice-generator';
 
 // Create a transporter using SMTP or a mock for development
 export const sendOTP = async (email: string, otp: string) => {
@@ -201,73 +202,16 @@ export const sendBeautifulOrderEmail = async (order: any) => {
 
   let invoiceAttachment = null;
   if (status === "DELIVERED") {
-    const invoiceHtml = `
-      <html>
-        <head>
-          <style>
-            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1f2937; margin: 0; padding: 40px; }
-            h1 { color: #b76e79; text-transform: uppercase; margin: 0 0 10px 0; }
-            .header { border-bottom: 2px solid #f3f4f6; padding-bottom: 20px; margin-bottom: 20px; }
-            .details { display: flex; justify-content: space-between; margin-bottom: 40px; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-            th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-            th { background-color: #f9fafb; font-size: 12px; text-transform: uppercase; color: #6b7280; }
-            .total-row { display: flex; justify-content: flex-end; font-size: 14px; margin-bottom: 8px; }
-            .total-row.grand { font-size: 18px; font-weight: bold; color: #b76e79; margin-top: 15px; border-top: 2px solid #e5e7eb; padding-top: 15px; }
-            .footer { text-align: center; color: #9ca3af; font-size: 12px; margin-top: 50px; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h1>Ranique</h1>
-            <p><strong>INVOICE</strong></p>
-          </div>
-          <div class="details">
-            <div>
-              <p><strong>Billed To:</strong><br/>${customerName}</p>
-              ${addressHtml}
-            </div>
-            <div style="text-align: right;">
-              <p><strong>Order ID:</strong> #${orderId}<br/>
-              <strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
-            </div>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Qty</th>
-                <th style="text-align: right;">Price</th>
-                <th style="text-align: right;">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${order.items?.map((item: any) => `
-                <tr>
-                  <td>${item.product?.title || 'Product'}</td>
-                  <td>${item.quantity}</td>
-                  <td style="text-align: right;">₹${(item.price || 0).toLocaleString()}</td>
-                  <td style="text-align: right;">₹${(item.price * item.quantity).toLocaleString()}</td>
-                </tr>
-              `).join('') || ''}
-            </tbody>
-          </table>
-          <div style="max-width: 300px; margin-left: auto;">
-            <div class="total-row"><span>Subtotal:</span> <span style="margin-left: auto;">₹${subtotal.toLocaleString()}</span></div>
-            ${couponDiscount > 0 ? `<div class="total-row" style="color: #10b981;"><span>Coupon Discount:</span> <span style="margin-left: auto;">-₹${couponDiscount.toLocaleString()}</span></div>` : ''}
-            ${firstOrderDiscount > 0 ? `<div class="total-row" style="color: #10b981;"><span>First Order Discount:</span> <span style="margin-left: auto;">-₹${firstOrderDiscount.toLocaleString()}</span></div>` : ''}
-            <div class="total-row"><span>Shipping:</span> <span style="margin-left: auto;">${shipping === 0 ? "FREE" : "₹" + shipping}</span></div>
-            <div class="total-row grand"><span>Grand Total:</span> <span style="margin-left: auto;">₹${finalTotal.toLocaleString()}</span></div>
-          </div>
-          <div class="footer">Thank you for your purchase from Ranique!</div>
-        </body>
-      </html>
-    `;
-    invoiceAttachment = {
-      filename: `Invoice_RAN-${orderId}.html`,
-      content: invoiceHtml,
-      contentType: 'text/html'
-    };
+    try {
+      const pdfBuffer = await generateInvoicePdf(order);
+      invoiceAttachment = {
+        filename: `Invoice_RAN-${orderId}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf'
+      };
+    } catch (pdfErr) {
+      console.error('[mailer] Failed to generate PDF invoice:', pdfErr);
+    }
   }
 
   const html = `
