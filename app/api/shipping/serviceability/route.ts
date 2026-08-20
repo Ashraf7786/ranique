@@ -99,12 +99,13 @@ export async function GET(request: Request): Promise<NextResponse> {
     // Delhivery returns { delivery_codes: [{ postal_code: { pin, inc_cod, district_name, state_code, ... } }] }
     const deliveryCodes: any[] = rawData?.delivery_codes ?? [];
     if (deliveryCodes.length === 0) {
-      // Pincode not found — not serviceable
+      // Pincode not found in Delhivery database — not serviceable
       const result: DelhiveryServiceabilityResult = {
         serviceable: false,
         codAvailable: false,
         state: '',
         district: '',
+        remark: null,
       };
       return NextResponse.json(result);
     }
