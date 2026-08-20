@@ -154,8 +154,52 @@ function OrderSummary({
     </div>
   );
 }
-// ─── Main checkout page ────────────────────────────────────────────────────
 
+const STATE_CODE_MAP: Record<string, string> = {
+  AP: "Andhra Pradesh",
+  AR: "Arunachal Pradesh",
+  AS: "Assam",
+  BR: "Bihar",
+  CG: "Chhattisgarh",
+  GA: "Goa",
+  GJ: "Gujarat",
+  HR: "Haryana",
+  HP: "Himachal Pradesh",
+  JH: "Jharkhand",
+  KA: "Karnataka",
+  KL: "Kerala",
+  MP: "Madhya Pradesh",
+  MH: "Maharashtra",
+  MN: "Manipur",
+  ML: "Meghalaya",
+  MZ: "Mizoram",
+  NL: "Nagaland",
+  OD: "Odisha",
+  OR: "Odisha",
+  PB: "Punjab",
+  RJ: "Rajasthan",
+  SK: "Sikkim",
+  TN: "Tamil Nadu",
+  TG: "Telangana",
+  TS: "Telangana",
+  TR: "Tripura",
+  UP: "Uttar Pradesh",
+  UT: "Uttarakhand",
+  UA: "Uttarakhand",
+  WB: "West Bengal",
+  AN: "Andaman and Nicobar Islands (UT)",
+  CH: "Chandigarh (UT)",
+  DH: "Dadra and Nagar Haveli (UT)",
+  DN: "Dadra and Nagar Haveli (UT)",
+  DD: "Daman and Diu (UT)",
+  DL: "Delhi (NCT)",
+  LD: "Lakshadweep (UT)",
+  PY: "Puducherry (UT)",
+  JK: "Jammu and Kashmir",
+  LA: "Ladakh (UT)"
+};
+
+// ─── Main checkout page ────────────────────────────────────────────────────
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -266,9 +310,19 @@ export default function CheckoutPage() {
   // Trigger Delhivery serviceability check when pincode is exactly 6 digits
   useEffect(() => {
     const pin = form.zip?.trim() ?? "";
+    const selectedState = (form.state || "").trim();
+    const selectedCity = (form.city || "").trim();
+
     if (pin.length !== 6) {
       setIsPincodeServiceable(null);
       setPincodeError(null);
+      setPincodeSuccess(null);
+      return;
+    }
+
+    if (!selectedState || !selectedCity) {
+      setIsPincodeServiceable(false);
+      setPincodeError("✗ Please select State and City to verify PIN Code");
       setPincodeSuccess(null);
       return;
     }
@@ -288,9 +342,39 @@ export default function CheckoutPage() {
         }
 
         if (data.serviceable) {
-          setIsPincodeServiceable(true);
-          const codMsg = data.codAvailable ? "COD Available" : "Prepaid Only";
-          setPincodeSuccess(`✓ Serviceable by Delhivery (${codMsg})`);
+          const delhiveryStateCode = (data.state || "").trim().toUpperCase();
+          const delhiveryStateName = STATE_CODE_MAP[delhiveryStateCode] || "";
+          const delhiveryDistrict = (data.district || "").trim();
+
+          const normalizedSelectedState = selectedState.toLowerCase();
+          const normalizedDelhiveryState = delhiveryStateName.toLowerCase();
+          
+          const isStateMatch = 
+            normalizedSelectedState === normalizedDelhiveryState ||
+            normalizedSelectedState.includes(normalizedDelhiveryState) ||
+            normalizedDelhiveryState.includes(normalizedSelectedState) ||
+            normalizedSelectedState === delhiveryStateCode.toLowerCase();
+
+          const normalizedSelectedCity = selectedCity.toLowerCase();
+          const normalizedDelhiveryDistrict = delhiveryDistrict.toLowerCase();
+
+          const isCityMatch = 
+            normalizedSelectedCity === normalizedDelhiveryDistrict ||
+            normalizedSelectedCity.includes(normalizedDelhiveryDistrict) ||
+            normalizedDelhiveryDistrict.includes(normalizedSelectedCity);
+
+          if (!isStateMatch) {
+            setIsPincodeServiceable(false);
+            const stateLabel = delhiveryStateName || delhiveryStateCode || "another state";
+            setPincodeError(`✗ PIN Code belongs to ${stateLabel}, not ${selectedState}`);
+          } else if (!isCityMatch) {
+            setIsPincodeServiceable(false);
+            setPincodeError(`✗ PIN Code belongs to ${delhiveryDistrict} district, not ${selectedCity}`);
+          } else {
+            setIsPincodeServiceable(true);
+            const codMsg = data.codAvailable ? "COD Available" : "Prepaid Only";
+            setPincodeSuccess(`✓ Serviceable by Delhivery (${codMsg})`);
+          }
         } else {
           setIsPincodeServiceable(false);
           if (data.remark && data.remark.toLowerCase().includes("embargo")) {
@@ -310,7 +394,7 @@ export default function CheckoutPage() {
     }
 
     checkServiceability();
-  }, [form.zip]);
+  }, [form.zip, form.state, form.city]);
 
   // Pre-fill from session or latest order
   useEffect(() => {
