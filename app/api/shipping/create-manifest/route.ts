@@ -23,7 +23,8 @@ interface DelhiveryCMUResponse {
 }
 
 // ── Default weight per item in grams (used when product has no weight field) ─
-const DEFAULT_ITEM_WEIGHT_GRAMS = 300;
+// Conservative fallback of 500g covers most cosmetics + packaging weight.
+const DEFAULT_ITEM_WEIGHT_GRAMS = 500;
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {

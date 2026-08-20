@@ -4,12 +4,29 @@ import { z } from 'zod';
 // ── Zod schema for query parameter validation ──────────────────────────────
 const PincodeSchema = z.string().regex(/^\d{6}$/, 'Pincode must be exactly 6 digits');
 
-// ── Shape of the data we extract from Delhivery's response ────────────────
+// ── Raw postal_code block returned inside each delivery_codes entry ────────
+interface DelhiveryPostalCode {
+  pin?: string;
+  inc_cod?: string;      // 'Y' | 'N'
+  district_name?: string;
+  state_code?: string;
+  remark?: string;       // e.g. 'Embargo' when area is under delivery restriction
+  pre_paid?: string;
+  cash?: string;
+  pickup?: string;
+  repl?: string;
+  cod?: string;
+  surface?: string;
+  air?: string;
+}
+
+// ── Shape of the data we return to the UI ──────────────────────────────────
 interface DelhiveryServiceabilityResult {
   serviceable: boolean;
   codAvailable: boolean;
   state: string;
   district: string;
+  remark: string | null; // Populated when Delhivery flags the area (e.g. 'Embargo')
 }
 
 export async function GET(request: Request): Promise<NextResponse> {
@@ -92,15 +109,34 @@ export async function GET(request: Request): Promise<NextResponse> {
       return NextResponse.json(result);
     }
 
-    const postalCode = deliveryCodes[0]?.postal_code ?? {};
+    const postalCode: DelhiveryPostalCode = deliveryCodes[0]?.postal_code ?? {};
+
+    // ── Embargo check ─────────────────────────────────────────────────────
+    // Delhivery sets postal_code.remark = "Embargo" when an area is under
+    // a temporary or permanent delivery restriction. Even though the pincode
+    // exists in their database, we must treat it as non-serviceable.
+    const remark: string | null = postalCode.remark?.trim() ?? null;
+    const isEmbargoed = remark !== null && remark.toLowerCase().includes('embargo');
+
+    if (isEmbargoed) {
+      console.warn(`[serviceability] Pincode ${pincode} is under Embargo. Remark: ${remark}`);
+      const embargoResult: DelhiveryServiceabilityResult = {
+        serviceable: false,
+        codAvailable: false,
+        state: postalCode.state_code ?? '',
+        district: postalCode.district_name ?? '',
+        remark,
+      };
+      return NextResponse.json(embargoResult);
+    }
 
     const result: DelhiveryServiceabilityResult = {
-      // If the pincode entry exists and is not pre-paid-only, it's serviceable
       serviceable: true,
-      // inc_cod: 'Y' means Cash on Delivery is available
-      codAvailable: (postalCode?.inc_cod ?? '') === 'Y',
-      state: (postalCode?.state_code as string | undefined) ?? '',
-      district: (postalCode?.district_name as string | undefined) ?? '',
+      // inc_cod: 'Y' means Cash on Delivery is available for this pincode
+      codAvailable: postalCode.inc_cod === 'Y',
+      state: postalCode.state_code ?? '',
+      district: postalCode.district_name ?? '',
+      remark,
     };
 
     return NextResponse.json(result);
