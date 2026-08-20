@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   ShoppingBag, Sparkles, Star, ChevronRight, Heart, 
-  ArrowRight, Truck, RotateCcw, Shield, Gem, Eye, Plus
+  ArrowRight, Truck, RotateCcw, Shield, Gem, Eye, Plus,
+  Scissors, Award, Leaf
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -720,29 +721,29 @@ function SizeGuideSection() {
 function WhyUsSection() {
   const points = [
     {
-      emoji: "🌸",
+      icon: <Scissors className="w-5 h-5 text-[#EEC5CF]" />,
       title: "Tailored For Indian Bodies",
       desc: "Silhouettes, waistlines, and sleeve cuts designed precisely to flatter the natural proportions of Indian women.",
     },
     {
-      emoji: "✨",
+      icon: <Award className="w-5 h-5 text-[#EEC5CF]" />,
       title: "Handpicked Premium Fabric",
       desc: "Pure cottons, breathable linens, and rich organic silks selected to keep you fresh and elegant all day long.",
     },
     {
-      emoji: "💎",
+      icon: <Gem className="w-5 h-5 text-[#EEC5CF]" />,
       title: "Limited Atelier Collections",
       desc: "We create in low-volume batches. Each dress has minor variations, making your look completely exclusive.",
     },
     {
-      emoji: "♻️",
+      icon: <Leaf className="w-5 h-5 text-[#EEC5CF]" />,
       title: "Sustainably Crafted",
       desc: "100% fair wages for our master artisans and weavers. Handloomed fabrics that preserve heritage craftsmanship.",
     },
   ];
 
   return (
-    <section className="py-20 bg-brand-ink text-white">
+    <section className="py-24 bg-brand-ink text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="text-center max-w-xl mx-auto mb-16 space-y-2">
@@ -757,11 +758,13 @@ function WhyUsSection() {
           {points.map((p, i) => (
             <div
               key={i}
-              className="rounded-3xl p-6 border border-white/10 hover:border-[#EEC5CF]/30 transition-all duration-300 bg-white/[0.02] flex flex-col justify-between"
+              className="rounded-3xl p-7 border border-white/10 hover:border-[#EEC5CF]/30 transition-all duration-300 bg-white/[0.02] flex flex-col justify-between hover:-translate-y-1 hover:shadow-lg"
             >
               <div>
-                <span className="text-3xl mb-4 block">{p.emoji}</span>
-                <h3 className="font-serif text-lg font-bold text-white mb-2">{p.title}</h3>
+                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                  {p.icon}
+                </div>
+                <h3 className="font-serif text-lg font-bold text-white mb-3">{p.title}</h3>
                 <p className="text-xs text-gray-300 leading-relaxed">{p.desc}</p>
               </div>
             </div>
@@ -786,12 +789,18 @@ function NewsletterBanner() {
   };
 
   return (
-    <section className="py-20 bg-[#FAF8F5] border-t border-gray-100">
-      <div className="max-w-2xl mx-auto px-4 text-center space-y-6">
-        <Sparkles className="w-6 h-6 text-[#b76e79] mx-auto" />
+    <section className="py-24 bg-[#FAF8F5] border-t border-gray-100 relative overflow-hidden">
+      {/* Abstract light graphic background elements */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full border border-[#b76e79]/10" />
+        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full border border-[#b76e79]/5" />
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 text-center space-y-6 relative z-10">
+        <Sparkles className="w-5 h-5 text-[#b76e79] mx-auto" />
         
-        <div className="space-y-2">
-          <h2 className="font-serif text-3xl font-bold text-[#1A1A2E]">
+        <div className="space-y-3">
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#1A1A2E] tracking-tight">
             Be the First to Know
           </h2>
           <p className="text-gray-500 text-sm max-w-md mx-auto leading-relaxed">
@@ -800,7 +809,7 @@ function NewsletterBanner() {
         </div>
 
         {!submitted ? (
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto pt-2">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2.5 max-w-md mx-auto pt-2">
             <input
               type="email"
               id="clothing-newsletter-email"
@@ -808,12 +817,12 @@ function NewsletterBanner() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              className="flex-1 px-5 py-3.5 rounded-full border border-gray-200 text-sm text-[#1A1A2E] placeholder:text-gray-400 outline-none focus:border-[#b76e79] focus:ring-1 focus:ring-[#b76e79] bg-white transition-all shadow-inner"
+              className="flex-1 px-6 py-4 rounded-full border border-gray-200 text-sm text-[#1A1A2E] placeholder:text-gray-400 outline-none focus:border-[#b76e79] focus:ring-1 focus:ring-[#b76e79]/30 bg-white transition-all shadow-sm"
             />
             <button
               type="submit"
               id="clothing-newsletter-submit"
-              className="px-8 py-3.5 rounded-full font-bold text-xs text-white bg-brand-ink hover:bg-gray-800 transition-all shadow-md uppercase tracking-wider"
+              className="px-8 py-4 rounded-full font-bold text-xs text-white bg-[#1A1A2E] hover:bg-[#b76e79] transition-all duration-300 shadow-md uppercase tracking-widest"
             >
               Subscribe
             </button>
@@ -845,23 +854,29 @@ export default function ClothingPage() {
       <NewsletterBanner />
 
       {/* Footer CTA */}
-      <section className="py-24 text-center bg-white border-t border-gray-100">
-        <div className="max-w-2xl mx-auto px-4 space-y-6">
-          <h2 className="font-serif text-4xl font-bold text-[#1A1A2E]">
+      <section className="py-24 text-center bg-white border-t border-gray-100 relative overflow-hidden">
+        {/* Soft elegant blur background */}
+        <div className="absolute inset-0 pointer-events-none opacity-30">
+          <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-96 h-96 rounded-full bg-[#FAF8F5] blur-3xl" />
+          <div className="absolute top-1/2 right-1/3 -translate-y-1/2 w-96 h-96 rounded-full bg-[#F7E8E8] blur-3xl" />
+        </div>
+
+        <div className="max-w-2xl mx-auto px-4 space-y-6 relative z-10">
+          <h2 className="font-serif text-4xl font-bold text-[#1A1A2E] tracking-tight">
             Your Style Awaits
           </h2>
           <p className="text-gray-500 text-sm leading-relaxed max-w-md mx-auto">
             Discover a curation of timeless premium drapes and ready-to-wear tailored for standard proportions.
           </p>
-          <div className="pt-2">
+          <div className="pt-4">
             <Link
               href="/shop?category=clothing"
               id="clothing-footer-cta"
-              className="group inline-flex items-center gap-3 px-10 py-4.5 rounded-full font-bold text-sm text-white bg-[#b76e79] hover:bg-[#a55f69] transition-all duration-300 shadow-xl active:scale-95 uppercase tracking-wider"
+              className="group inline-flex items-center gap-3 px-10 py-4.5 rounded-full font-bold text-xs text-white bg-[#1A1A2E] hover:bg-[#b76e79] transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95 uppercase tracking-widest"
             >
-              <ShoppingBag className="w-5.5 h-5.5" />
+              <ShoppingBag className="w-5 h-5" />
               Explore All Clothing
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4.5 h-4.5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
