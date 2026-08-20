@@ -207,9 +207,10 @@ export const BrandCreateSchema = z.object({
 // ─── OFFERS ──────────────────────────────────────────────────────────────────
 
 export const OfferCreateSchema = z.object({
-  productId: z.string().min(1, 'Product ID is required'),
+  productId: z.string().optional(),
+  categoryId: z.string().optional(),
   discount: z.number().min(0.01).max(100, 'Discount cannot exceed 100%'),
-  offerPrice: z.number().min(0),
+  offerPrice: z.number().min(0).optional(),
   endsAt: z.string().min(1, 'End date is required'),
   isActive: z.boolean().optional().default(true),
 });
