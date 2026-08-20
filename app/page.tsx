@@ -98,8 +98,8 @@ function OfferProductsSection({ products }: { products: any[] }) {
 function TrustBar() {
   const items = [
     { icon: <Truck className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Free Shipping", desc: "On orders over ₹999" },
-    { icon: <Lock className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Secure Payment", desc: "256-bit SSL encryption" },
-    { icon: <Gem className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Premium Quality", desc: "Curated premium products" },
+    { icon: <Lock className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Easy & Secure Payments", desc: "Multiple payment options" },
+    { icon: <Gem className="w-6 h-6 text-brand-rose" strokeWidth={1.5} />, title: "Premium Quality", desc: "Fashion, beauty & accessories" },
   ];
   return (
     <section aria-label="Trust signals" className="border-y border-brand-border bg-white">
