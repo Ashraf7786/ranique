@@ -34,7 +34,9 @@ export default async function DelhiveryShippingPage() {
     },
   });
 
-  // Map Prisma result → component-safe shape
+  // Map Prisma result → component-safe shape.
+  // Several fields are nullable in the DB schema (String?) so we coerce them
+  // to string | null explicitly to satisfy the strict ShipOrder interface.
   const shipOrders = orders.map((o) => ({
     id: o.id,
     status: o.status,
@@ -44,7 +46,7 @@ export default async function DelhiveryShippingPage() {
     shippingState: o.shippingState,
     shippingZip: o.shippingZip,
     totalAmount: o.totalAmount,
-    paymentMethod: o.paymentMethod,
+    paymentMethod: o.paymentMethod ?? 'UNKNOWN', // String? in schema → coerce null
     deliveryAwb: o.deliveryAwb,
     deliveryStatus: o.deliveryStatus,
     deliveryLabelUrl: o.deliveryLabelUrl,
