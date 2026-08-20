@@ -2,11 +2,41 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { 
   ShoppingBag, Sparkles, Star, ChevronRight, Heart, 
   ArrowRight, Truck, RotateCcw, Shield, Gem, Eye, Plus,
   Scissors, Award, Leaf
 } from "lucide-react";
+
+// ─── Clothing Category Slugs Set ──────────────────────────────────────────────
+
+const CLOTHING_SLUGS = new Set([
+  'kurti','kurti-set','suit','salwar-kameez','sharara','gharara',
+  'lehenga','lehenga-choli','saree','readymade-saree','anarkali',
+  'palazzo-set','patiala-suit','churidar-suit','dupatta',
+  'top','dress','coord-set','jumpsuit','jeans-trousers','skirt',
+  'shorts','blazer-jacket','casual-wear','loungewear','night-suit',
+  'track-suit','sweater-cardigan','winter-suit',
+  'bridal-wear','party-wear','festive-wear','wedding-guest',
+  'womens-clothing'
+]);
+
+// Helper to format DB products for the UI cards
+function formatDbProduct(p: any) {
+  const coverImage = p.images?.find((img: any) => img.isCover)?.url || p.images?.[0]?.url || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600";
+  return {
+    id: p.id,
+    slug: p.slug,
+    name: p.title,
+    category: p.category?.name || "Clothing",
+    price: p.sellingPrice,
+    originalPrice: p.originalPrice || p.sellingPrice * 1.5,
+    rating: p.rating || 4.8,
+    image: coverImage,
+    tag: p.badge || (p.isNewArrival ? "New" : undefined)
+  };
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -436,9 +466,76 @@ function CategoryGrid() {
   );
 }
 
+// ─── Product Card Item Component ──────────────────────────────────────────────
+
+function ProductItemCard({ prod }: { prod: any }) {
+  return (
+    <div className="group relative flex flex-col bg-white border border-gray-100 rounded-3xl p-3 hover:shadow-lg transition-all duration-300">
+      
+      {/* Image Frame */}
+      <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50">
+        <img 
+          src={prod.image} 
+          alt={prod.name} 
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+
+        {prod.tag && (
+          <span className="absolute top-3 left-3 text-[9px] font-bold bg-[#1A1A2E] text-white px-2.5 py-1 rounded-full uppercase tracking-wider">
+            {prod.tag}
+          </span>
+        )}
+
+        {/* Overlay actions */}
+        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+          <button className="p-3 bg-white rounded-full text-brand-ink hover:bg-[#b76e79] hover:text-white shadow-md transition-colors active:scale-95">
+            <Heart className="w-4 h-4" />
+          </button>
+          <Link href={`/product/${prod.slug || prod.id}`} className="p-3 bg-white rounded-full text-brand-ink hover:bg-[#b76e79] hover:text-white shadow-md transition-colors active:scale-95">
+            <Eye className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Text Meta Info */}
+      <div className="p-3 text-left flex-1 flex flex-col justify-between">
+        <div>
+          <p className="text-3xs uppercase tracking-wider text-gray-400 font-bold">{prod.category}</p>
+          <h3 className="text-sm font-semibold text-[#1A1A2E] mt-1 group-hover:text-[#b76e79] transition-colors line-clamp-1">
+            {prod.name}
+          </h3>
+          
+          {/* Rating */}
+          <div className="flex items-center gap-1 mt-1.5">
+            <Star className="w-3.5 h-3.5 fill-[#b76e79] stroke-[#b76e79]" />
+            <span className="text-xs text-gray-600 font-bold">{prod.rating}</span>
+          </div>
+        </div>
+
+        <div className="flex items-baseline gap-2 mt-3 pt-3 border-t border-gray-50">
+          <span className="text-sm font-bold text-[#1A1A2E]">₹{prod.price.toLocaleString()}</span>
+          {prod.originalPrice > prod.price && (
+            <span className="text-2xs text-gray-400 line-through">₹{prod.originalPrice.toLocaleString()}</span>
+          )}
+          
+          <Link 
+            href={`/product/${prod.slug || prod.id}`}
+            className="ml-auto w-7 h-7 rounded-full bg-gray-50 hover:bg-[#b76e79] hover:text-white flex items-center justify-center text-gray-500 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
 // ─── Trending / Featured Products Section ──────────────────────────────────────
 
-function TrendingSection() {
+function TrendingSection({ products }: { products: any[] }) {
+  const displayProducts = products.length > 0 ? products.slice(0, 4) : MOCK_PRODUCTS;
+
   return (
     <section className="bg-white py-20 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -458,63 +555,108 @@ function TrendingSection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {MOCK_PRODUCTS.map((prod) => (
-            <div key={prod.id} className="group relative flex flex-col bg-white border border-gray-100 rounded-3xl p-3 hover:shadow-lg transition-shadow duration-300">
-              
-              {/* Image Frame */}
-              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50">
-                <img 
-                  src={prod.image} 
-                  alt={prod.name} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+          {displayProducts.map((prod) => (
+            <ProductItemCard key={prod.id} prod={prod} />
+          ))}
+        </div>
 
-                {prod.tag && (
-                  <span className="absolute top-3 left-3 text-[9px] font-bold bg-[#1A1A2E] text-white px-2.5 py-1 rounded-full uppercase tracking-wider">
-                    {prod.tag}
-                  </span>
-                )}
+      </div>
+    </section>
+  );
+}
 
-                {/* Overlay actions */}
-                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
-                  <button className="p-3 bg-white rounded-full text-brand-ink hover:bg-[#b76e79] hover:text-white shadow-md transition-colors active:scale-95">
-                    <Heart className="w-4 h-4" />
-                  </button>
-                  <Link href={`/shop?category=clothing`} className="p-3 bg-white rounded-full text-brand-ink hover:bg-[#b76e79] hover:text-white shadow-md transition-colors active:scale-95">
-                    <Eye className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
+// ─── New Arrivals Section ─────────────────────────────────────────────────────
 
-              {/* Text Meta Info */}
-              <div className="p-3 text-left flex-1 flex flex-col justify-between">
-                <div>
-                  <p className="text-3xs uppercase tracking-wider text-gray-400 font-bold">{prod.category}</p>
-                  <h3 className="text-sm font-semibold text-[#1A1A2E] mt-1 group-hover:text-[#b76e79] transition-colors line-clamp-1">
-                    {prod.name}
-                  </h3>
-                  
-                  {/* Rating */}
-                  <div className="flex items-center gap-1 mt-1.5">
-                    <Star className="w-3.5 h-3.5 fill-[#b76e79] stroke-[#b76e79]" />
-                    <span className="text-xs text-gray-600 font-bold">{prod.rating}</span>
-                  </div>
-                </div>
+function NewArrivalsSection({ products }: { products: any[] }) {
+  // Filter where isNewArrival or newest, take top 4
+  const displayProducts = products.length > 0 
+    ? products.filter((p: any) => p.tag === 'New' || p.isNewArrival).slice(0, 4)
+    : MOCK_PRODUCTS.slice(0, 4);
 
-                <div className="flex items-baseline gap-2 mt-3 pt-3 border-t border-gray-50">
-                  <span className="text-sm font-bold text-[#1A1A2E]">₹{prod.price.toLocaleString()}</span>
-                  <span className="text-2xs text-gray-400 line-through">₹{prod.originalPrice.toLocaleString()}</span>
-                  
-                  <Link 
-                    href={`/shop?category=clothing`}
-                    className="ml-auto w-7 h-7 rounded-full bg-gray-50 hover:bg-[#b76e79] hover:text-white flex items-center justify-center text-gray-500 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
+  return (
+    <section className="bg-[#FAF8F5] py-20 border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div className="flex flex-col sm:flex-row items-baseline justify-between gap-4 mb-12">
+          <div className="text-left space-y-1">
+            <p className="text-xs font-bold tracking-widest uppercase text-[#b76e79]">JUST IN</p>
+            <h2 className="font-serif text-3xl font-bold text-[#1A1A2E]">New Arrivals</h2>
+          </div>
+          <Link 
+            href="/shop?category=clothing"
+            className="text-sm font-bold text-[#b76e79] hover:text-[#1A1A2E] flex items-center gap-1 group"
+          >
+            See what's new
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
 
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {displayProducts.map((prod) => (
+            <ProductItemCard key={prod.id} prod={prod} />
+          ))}
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+// ─── Recently Viewed Section (Clothes Only) ───────────────────────────────────
+
+function RecentlyViewedSection() {
+  const { data: session } = useSession();
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!session?.user) {
+      setLoading(false);
+      return;
+    }
+
+    async function fetchRecentlyViewed() {
+      try {
+        const res = await fetch("/api/recently-viewed");
+        const data = await res.json();
+        if (data.products) {
+          // Filter to only include clothing products
+          const clothes = data.products
+            .filter((p: any) => {
+              const catSlug = p.category || '';
+              return CLOTHING_SLUGS.has(catSlug) || p.categoryId === 'womens-clothing';
+            })
+            .map((p: any) => formatDbProduct(p));
+          setProducts(clothes);
+        }
+      } catch (error) {
+        console.error("Failed to fetch recently viewed clothes:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchRecentlyViewed();
+  }, [session]);
+
+  if (loading || products.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="bg-white py-20 border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div className="flex flex-col sm:flex-row items-baseline justify-between gap-4 mb-12">
+          <div className="text-left space-y-1">
+            <p className="text-xs font-bold tracking-widest uppercase text-[#b76e79]">YOUR HISTORY</p>
+            <h2 className="font-serif text-3xl font-bold text-[#1A1A2E]">Recently Viewed</h2>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {products.map((prod) => (
+            <ProductItemCard key={prod.id} prod={prod} />
           ))}
         </div>
 
@@ -841,12 +983,38 @@ function NewsletterBanner() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ClothingPage() {
+  const [clothingProducts, setClothingProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchClothingProducts() {
+      try {
+        const res = await fetch("/api/products?status=PUBLISHED");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          // Filter to select clothing categories only
+          const clothes = data
+            .filter((p: any) => {
+              const catSlug = p.category?.slug || '';
+              return CLOTHING_SLUGS.has(catSlug) || p.category?.parentId != null;
+            })
+            .map((p: any) => formatDbProduct(p));
+          setClothingProducts(clothes);
+        }
+      } catch (err) {
+        console.error("Failed to load clothing products:", err);
+      }
+    }
+    fetchClothingProducts();
+  }, []);
+
   return (
     <main className="bg-[#FAF8F5]">
       <HeroSection />
       <TrustBar />
       <CategoryGrid />
-      <TrendingSection />
+      <TrendingSection products={clothingProducts} />
+      <NewArrivalsSection products={clothingProducts} />
+      <RecentlyViewedSection />
       <LookbookSection />
       <StyleFilterSection />
       <WhyUsSection />
