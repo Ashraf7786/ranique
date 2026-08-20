@@ -233,22 +233,21 @@ function MobileMenu({ isOpen, onClose, categories = [], isClothingContext }: { i
             <Link
               href="/shop"
               onClick={onClose}
-              className="flex items-center gap-2 px-3 py-2.5 rounded-xl font-sans text-sm font-bold text-white transition-colors bg-brand-ink hover:bg-brand-ink/90"
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-full font-sans text-xs font-bold uppercase tracking-wider border border-gray-200 text-gray-700 hover:border-[#b76e79] hover:text-[#b76e79] transition-all"
             >
               <ShoppingBagIcon className="w-4 h-4" />
-              Ranique Store 🛍️
+              Ranique Store
             </Link>
           ) : (
             <Link
               href="/clothing"
               onClick={onClose}
-              className="flex items-center gap-2 px-3 py-2.5 rounded-xl font-sans text-sm font-bold text-white transition-colors"
-              style={{ background: "linear-gradient(135deg, #C9748A 0%, #A85970 100%)" }}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-full font-sans text-xs font-bold uppercase tracking-wider border border-gray-200 text-gray-700 hover:border-[#b76e79] hover:text-[#b76e79] transition-all"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                 <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
               </svg>
-              Clothing ✨
+              Clothing Hub
             </Link>
           )}
           
@@ -393,7 +392,7 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
 
               {/* Logo */}
               <Link
-                href="/"
+                href={isClothingContext ? "/clothing" : "/"}
                 className="shrink-0 flex items-center group transition-colors"
                 aria-label="Ranique Home"
               >
@@ -404,39 +403,35 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
             </div>
 
             {/* Desktop nav */}
-            <nav className="hidden lg:flex items-center gap-1 ml-4 relative">
+            <nav className="hidden lg:flex items-center gap-2 ml-6 relative">
               {/* Clothing Hub / Store Hub Link */}
               {isClothingContext ? (
                 <Link
                   href="/shop"
-                  className="px-3 py-1.5 rounded-full text-sm font-sans font-semibold transition-all duration-150 inline-flex items-center gap-1.5 border border-transparent bg-brand-ink text-white hover:bg-brand-ink/90"
+                  className="px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-150 inline-flex items-center gap-1.5 border border-gray-200 text-gray-700 hover:border-[#b76e79] hover:text-[#b76e79]"
                 >
                   <ShoppingBagIcon className="w-3.5 h-3.5" />
-                  Ranique Store 🛍️
+                  Ranique Store
                 </Link>
               ) : (
                 <Link
                   href="/clothing"
-                  className="px-3 py-1.5 rounded-full text-sm font-sans font-semibold transition-all duration-150 inline-flex items-center gap-1.5 border border-transparent"
-                  style={{
-                    background: "linear-gradient(135deg, #C9748A 0%, #A85970 100%)",
-                    color: "white",
-                  }}
+                  className="px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-150 inline-flex items-center gap-1.5 border border-gray-200 text-gray-700 hover:border-[#b76e79] hover:text-[#b76e79]"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
                     <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
                   </svg>
-                  Clothing ✨
+                  Clothing Hub
                 </Link>
               )}
 
-              <div className="group">
+              <div className="group relative">
                 <Link
                   href="/shop"
-                  className="px-3 py-1.5 rounded-full text-sm font-sans font-medium text-brand-rose bg-brand-blush hover:opacity-90 transition-all duration-150 inline-flex items-center gap-1"
+                  className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-gray-700 hover:text-[#b76e79] hover:bg-gray-50 transition-all duration-150 inline-flex items-center gap-1"
                 >
                   Shop All
-                  <svg className="w-3.5 h-3.5 text-brand-rose opacity-70 group-hover:rotate-180 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                  <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
                 </Link>
                 
                 {/* Mega Menu Dropdown */}
@@ -466,11 +461,11 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
                 </div>
               </div>
 
-              {displayCategories.slice(0, 4).map((cat: any) => (
+              {displayCategories.slice(0, 5).map((cat: any) => (
                 <Link
                   key={cat.id}
                   href={`/shop?category=${cat.slug}`}
-                  className="px-3 py-1.5 rounded-full text-sm font-sans text-brand-slate hover:text-brand-rose hover:bg-brand-blush transition-all duration-150 capitalize"
+                  className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-[#b76e79] transition-all duration-150 capitalize"
                 >
                   {cat.name}
                 </Link>
