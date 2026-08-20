@@ -337,8 +337,13 @@ model Order {
   // Manual Online Payment Fields
   paymentProofUrl   String? // Stored as JSON string array
   utrNumber         String?
-  
-  
+
+  // Delhivery Logistics Fields
+  deliveryAwb       String?  @unique  // Air Waybill number assigned by Delhivery
+  deliveryStatus    String   @default("PENDING") // PENDING, MANIFESTED, IN_TRANSIT, DELIVERED, RTO
+  deliveryLabelUrl  String?  // URL to the Delhivery-generated shipping label PDF
+  pickupLocation    String   @default("Primary_Warehouse") // Pickup location name registered on Delhivery dashboard
+
   // Shipping Address
   shippingName    String?
   shippingPhone   String?
