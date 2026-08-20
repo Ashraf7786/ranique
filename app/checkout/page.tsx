@@ -8,7 +8,7 @@ import { useCart } from "@/hooks/useCart";
 import {
   ChevronRight, Package, MapPin, CreditCard,
   CheckCircle, ShoppingBag, Phone, Loader2,
-  Check, Truck, Receipt, QrCode
+  Check, Truck, Receipt, QrCode, X
 } from "lucide-react";
 import { OnlinePaymentModal } from "@/components/checkout/OnlinePaymentModal";
 import { INDIAN_STATES_DATA } from "@/lib/indian-locations";
@@ -178,6 +178,14 @@ export default function CheckoutPage() {
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [isManualCity, setIsManualCity] = useState(false);
 
+  // Delhivery Pincode Serviceability States
+  const [checkingPincode, setCheckingPincode] = useState(false);
+  const [pincodeError, setPincodeError] = useState<string | null>(null);
+  const [pincodeSuccess, setPincodeSuccess] = useState<string | null>(null);
+  const [isPincodeServiceable, setIsPincodeServiceable] = useState<boolean | null>(null);
+
+
+
   // Derived values
   const subtotal = totalPrice;
   const shipping = subtotal > 999 ? 0 : 99;
@@ -254,6 +262,55 @@ export default function CheckoutPage() {
     name: "", phone: "", email: "", line1: "", line2: "",
     city: "", state: "", zip: "", country: "India",
   });
+
+  // Trigger Delhivery serviceability check when pincode is exactly 6 digits
+  useEffect(() => {
+    const pin = form.zip?.trim() ?? "";
+    if (pin.length !== 6) {
+      setIsPincodeServiceable(null);
+      setPincodeError(null);
+      setPincodeSuccess(null);
+      return;
+    }
+
+    async function checkServiceability() {
+      setCheckingPincode(true);
+      setPincodeError(null);
+      setPincodeSuccess(null);
+      setIsPincodeServiceable(null);
+
+      try {
+        const res = await fetch(`/api/shipping/serviceability?pincode=${pin}`);
+        const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to check serviceability");
+        }
+
+        if (data.serviceable) {
+          setIsPincodeServiceable(true);
+          const codMsg = data.codAvailable ? "COD Available" : "Prepaid Only";
+          setPincodeSuccess(`✓ Serviceable by Delhivery (${codMsg})`);
+        } else {
+          setIsPincodeServiceable(false);
+          if (data.remark && data.remark.toLowerCase().includes("embargo")) {
+            setPincodeError("✗ Delivery suspended due to Embargo");
+          } else {
+            setPincodeError("✗ Seller does not ship to this address / pincode");
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        // Fallback: do not completely block order placing if API is down, but warn
+        setIsPincodeServiceable(true);
+        setPincodeSuccess("⚠️ Unable to verify with Delhivery (allowing order)");
+      } finally {
+        setCheckingPincode(false);
+      }
+    }
+
+    checkServiceability();
+  }, [form.zip]);
 
   // Pre-fill from session or latest order
   useEffect(() => {
@@ -355,6 +412,10 @@ export default function CheckoutPage() {
     
     if (!form.zip?.trim() || !/^\d{6}$/.test(form.zip)) {
       newErrors.zip = "PIN code must be exactly 6 digits";
+    } else if (isPincodeServiceable === false) {
+      newErrors.zip = pincodeError || "Seller does not ship to this address / pincode";
+    } else if (checkingPincode) {
+      newErrors.zip = "Pincode is still being verified. Please wait...";
     } else if (form.state) {
       const stateObj = INDIAN_STATES_DATA.find((s: any) => s.state === form.state);
       if (stateObj && stateObj.pinPrefixes.length > 0) {
@@ -825,8 +886,27 @@ Please confirm this order and share payment details. Thank you! 💕`
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5">PIN Code *</label>
-                      <input value={form.zip} onChange={set("zip")} type="text" inputMode="numeric" maxLength={6} className={inputClass("zip")} placeholder="824124" />
-                      {errors.zip && <p className="text-red-500 text-xs mt-1">{errors.zip}</p>}
+                      <div className="relative">
+                        <input value={form.zip} onChange={set("zip")} type="text" inputMode="numeric" maxLength={6} className={inputClass("zip")} placeholder="824124" />
+                        {checkingPincode && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+                            <Loader2 className="w-4 h-4 animate-spin text-brand-rose" />
+                          </div>
+                        )}
+                      </div>
+                      {pincodeSuccess && (
+                        <p className="text-green-600 text-xs font-semibold mt-1.5 flex items-center gap-1">
+                          <Check className="w-3.5 h-3.5" />
+                          {pincodeSuccess}
+                        </p>
+                      )}
+                      {pincodeError && (
+                        <p className="text-red-500 text-xs font-semibold mt-1.5 flex items-center gap-1">
+                          <X className="w-3.5 h-3.5" />
+                          {pincodeError}
+                        </p>
+                      )}
+                      {errors.zip && !pincodeError && <p className="text-red-500 text-xs mt-1">{errors.zip}</p>}
                     </div>
                   </div>
 

@@ -20,14 +20,33 @@ export function PinCodeChecker() {
     }
 
     setStatus("checking");
-    
-    // Simulate API call for checking delivery availability
-    await new Promise(resolve => setTimeout(resolve, 600)); // fast check
-
-    // In a real scenario, this would query a database of serviceable pincodes
-    // Here we'll just simulate success for any valid 6-digit number
-    setStatus("success");
-    setMessage("Delivery available to your location!");
+    try {
+      const res = await fetch(`/api/shipping/serviceability?pincode=${pincode}`);
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || "Pincode check failed.");
+      }
+      
+      if (data.serviceable) {
+        setStatus("success");
+        const codMsg = data.codAvailable 
+          ? "Cash on Delivery (COD) is available." 
+          : "Prepaid payment modes only (COD unavailable).";
+        setMessage(`Delivery available to your location! ${codMsg}`);
+      } else {
+        setStatus("error");
+        if (data.remark && data.remark.toLowerCase().includes("embargo")) {
+          setMessage("Delivery is temporarily suspended to this location (Embargo).");
+        } else {
+          setMessage("Seller does not ship to this address / pincode.");
+        }
+      }
+    } catch (err: any) {
+      console.error(err);
+      setStatus("error");
+      setMessage("Failed to verify pincode. Please try again.");
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
