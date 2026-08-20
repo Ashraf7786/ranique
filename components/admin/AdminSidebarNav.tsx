@@ -20,6 +20,7 @@ import {
   ClipboardList,
   Megaphone,
   SlidersHorizontal,
+  Truck,
   X,
   ArrowLeft,
 } from "lucide-react";
@@ -28,6 +29,7 @@ import { twMerge } from "tailwind-merge";
 const NAV_LINKS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/admin/shipping", label: "Delhivery Shipping", icon: Truck },
   { href: "/admin/transactions", label: "Transactions", icon: CreditCard },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/offers", label: "Offers", icon: Gift },
