@@ -210,7 +210,7 @@ function ShippingModal({
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error ?? `HTTP ${res.status}`);
+        throw new Error(data.remarks || data.error || `HTTP ${res.status}`);
       }
       setAwb(data.awb);
       setStep1({
