@@ -117,12 +117,15 @@ export const sendBeautifulOrderEmail = async (order: any) => {
 
   const getStepColor = (idx: number) => idx <= currentIndex ? "#b76e79" : "#e5e7eb";
   const getTextColor = (idx: number) => idx <= currentIndex ? "#1f2937" : "#9ca3af";
-  const isBlinking = (idx: number) => idx === currentIndex ? "animation: blink 1.5s infinite;" : "";
 
   let itemsHtml = "";
   if (order.items && order.items.length > 0) {
     itemsHtml = order.items.map((item: any) => {
-      const img = item.product?.images?.[0]?.url || "https://via.placeholder.com/80";
+      // Ensure image is an absolute URL, else fallback to Unsplash premium placeholder
+      let img = item.product?.images?.[0]?.url || "";
+      if (!img || (!img.startsWith("http://") && !img.startsWith("https://"))) {
+        img = "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=150&auto=format&fit=crop&q=60";
+      }
       
       // Extended details if delivered
       const extendedDetails = status === "DELIVERED" ? `
@@ -157,6 +160,45 @@ export const sendBeautifulOrderEmail = async (order: any) => {
     </p>
   ` : `<p style="margin: 0; font-size: 14px; color: #4b5563;">Digital/No address provided</p>`;
 
+  // ── Calculate payment breakdown details ──────────────────────────────────
+  const subtotal = order.items?.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0) ?? 0;
+  const couponDiscount = order.couponDiscount || 0;
+  const firstOrderDiscount = order.firstOrderDiscount || 0;
+  const discountTotal = couponDiscount + firstOrderDiscount;
+  const shipping = subtotal > 999 ? 0 : 99;
+  const finalTotal = order.totalAmount;
+
+  // Custom banner and tracker layout for SHIPPED status (Delhivery Logistics)
+  let shippingBannerHtml = "";
+  if (status === "SHIPPED") {
+    const awb = order.deliveryAwb || order.trackingNumber || "N/A";
+    const trackingUrl = `https://www.delhivery.com/track/package/${awb}`;
+
+    shippingBannerHtml = `
+      <div style="background-color: #fdf2f4; border: 1px solid #fcd5dc; padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: left;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="vertical-align: middle; padding-right: 15px; width: 60px;">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Delhivery_Logo.png" alt="Delhivery" style="width: 60px; height: auto;" />
+            </td>
+            <td style="vertical-align: middle; text-align: left;">
+              <h4 style="margin: 0; font-size: 15px; color: #b76e79; font-weight: bold;">Shipped via Delhivery Logistics</h4>
+              <p style="margin: 4px 0 0; font-size: 13px; color: #4b5563;">Air Waybill (AWB): <strong style="font-family: monospace; color: #1f2937;">${awb}</strong></p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin: 15px 0; font-size: 13px; color: #4b5563; line-height: 1.6;">
+          We are trying to deliver your order in fast shipping. Thank you for your patience! You can track your shipment live using the button below.
+        </p>
+        <div style="text-align: left; margin-top: 10px;">
+          <a href="${trackingUrl}" target="_blank" style="background-color: #b76e79; color: #ffffff; padding: 12px 24px; font-size: 13px; font-weight: bold; text-decoration: none; border-radius: 8px; display: inline-block;">
+            Track Your Package Live
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
   let invoiceAttachment = null;
   if (status === "DELIVERED") {
     const invoiceHtml = `
@@ -170,7 +212,8 @@ export const sendBeautifulOrderEmail = async (order: any) => {
             table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
             th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
             th { background-color: #f9fafb; font-size: 12px; text-transform: uppercase; color: #6b7280; }
-            .total { text-align: right; font-size: 18px; font-weight: bold; color: #b76e79; padding-top: 20px; border-top: 2px solid #e5e7eb; }
+            .total-row { display: flex; justify-content: flex-end; font-size: 14px; margin-bottom: 8px; }
+            .total-row.grand { font-size: 18px; font-weight: bold; color: #b76e79; margin-top: 15px; border-top: 2px solid #e5e7eb; padding-top: 15px; }
             .footer { text-align: center; color: #9ca3af; font-size: 12px; margin-top: 50px; }
           </style>
         </head>
@@ -209,7 +252,13 @@ export const sendBeautifulOrderEmail = async (order: any) => {
               `).join('') || ''}
             </tbody>
           </table>
-          <div class="total">Grand Total: ₹${(order.totalAmount || 0).toLocaleString()}</div>
+          <div style="max-width: 300px; margin-left: auto;">
+            <div class="total-row"><span>Subtotal:</span> <span style="margin-left: auto;">₹${subtotal.toLocaleString()}</span></div>
+            ${couponDiscount > 0 ? `<div class="total-row" style="color: #10b981;"><span>Coupon Discount:</span> <span style="margin-left: auto;">-₹${couponDiscount.toLocaleString()}</span></div>` : ''}
+            ${firstOrderDiscount > 0 ? `<div class="total-row" style="color: #10b981;"><span>First Order Discount:</span> <span style="margin-left: auto;">-₹${firstOrderDiscount.toLocaleString()}</span></div>` : ''}
+            <div class="total-row"><span>Shipping:</span> <span style="margin-left: auto;">${shipping === 0 ? "FREE" : "₹" + shipping}</span></div>
+            <div class="total-row grand"><span>Grand Total:</span> <span style="margin-left: auto;">₹${finalTotal.toLocaleString()}</span></div>
+          </div>
           <div class="footer">Thank you for your purchase from Ranique!</div>
         </body>
       </html>
@@ -225,20 +274,28 @@ export const sendBeautifulOrderEmail = async (order: any) => {
     <!DOCTYPE html>
     <html>
     <head>
-      <style>
-        @keyframes blink {
-          0% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(1.1); box-shadow: 0 0 10px #b76e79; }
-          100% { opacity: 1; transform: scale(1); }
-        }
-      </style>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Order Update - Ranique</title>
     </head>
     <body style="margin: 0; padding: 0; background-color: #f9fafb;">
     <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 0; border: 1px solid #e5e7eb;">
       
-      <!-- Header -->
+      <!-- Header (Side-by-side Logos for Shipped updates) -->
       <div style="text-align: center; padding: 40px 20px; background-color: #fcf9f9;">
-        <h1 style="margin: 0; font-size: 32px; font-weight: bold; letter-spacing: 2px; color: #b76e79; text-transform: uppercase;">Ranique</h1>
+        <table align="center" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+          <tr>
+            <td style="vertical-align: middle;">
+              <span style="font-size: 32px; font-weight: bold; letter-spacing: 2px; color: #b76e79; text-transform: uppercase; line-height: 1;">Ranique</span>
+            </td>
+            ${status === "SHIPPED" ? `
+            <td style="vertical-align: middle; padding: 0 12px; font-size: 24px; color: #cbd5e1; font-weight: 300;">&times;</td>
+            <td style="vertical-align: middle;">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Delhivery_Logo.png" alt="Delhivery" style="height: 24px; width: auto; display: block; max-height: 24px;" />
+            </td>
+            ` : ''}
+          </tr>
+        </table>
       </div>
 
       <!-- Main Content -->
@@ -250,45 +307,67 @@ export const sendBeautifulOrderEmail = async (order: any) => {
           ${status === "DELIVERED" ? "<br/><br/><strong>Good news!</strong> Your order has been delivered. We have attached your invoice to this email for your records." : ""}
         </p>
 
-        <!-- Connected Timeline -->
-        <div style="margin: 40px 0; padding: 20px 0; border-top: 1px solid #f3f4f6; border-bottom: 1px solid #f3f4f6;">
-          <div style="position: relative; max-width: 100%; margin: 0 auto; display: table; width: 100%;">
-            <!-- Connecting Line -->
-            <div style="position: absolute; top: 12px; left: 12.5%; right: 12.5%; height: 2px; background-color: #e5e7eb; z-index: 0;">
-              <div style="height: 100%; background-color: #b76e79; width: ${currentIndex * 33.33}%; transition: width 0.5s ease;"></div>
-            </div>
-            
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="position: relative; z-index: 1;">
-              <tr>
-                <td align="center" style="width: 25%; vertical-align: top;">
-                  <div style="width: 24px; height: 24px; border-radius: 50%; background-color: ${getStepColor(0)}; margin: 0 auto 10px; ${isBlinking(0)}"></div>
-                  <div style="font-size: 11px; font-weight: 600; color: ${getTextColor(0)}; text-transform: uppercase;">Pending</div>
-                </td>
-                <td align="center" style="width: 25%; vertical-align: top;">
-                  <div style="width: 24px; height: 24px; border-radius: 50%; background-color: ${getStepColor(1)}; margin: 0 auto 10px; ${isBlinking(1)}"></div>
-                  <div style="font-size: 11px; font-weight: 600; color: ${getTextColor(1)}; text-transform: uppercase;">Confirmed</div>
-                </td>
-                <td align="center" style="width: 25%; vertical-align: top;">
-                  <div style="width: 24px; height: 24px; border-radius: 50%; background-color: ${getStepColor(2)}; margin: 0 auto 10px; ${isBlinking(2)}"></div>
-                  <div style="font-size: 11px; font-weight: 600; color: ${getTextColor(2)}; text-transform: uppercase;">Shipped</div>
-                </td>
-                <td align="center" style="width: 25%; vertical-align: top;">
-                  <div style="width: 24px; height: 24px; border-radius: 50%; background-color: ${getStepColor(3)}; margin: 0 auto 10px; ${isBlinking(3)}"></div>
-                  <div style="font-size: 11px; font-weight: 600; color: ${getTextColor(3)}; text-transform: uppercase;">Delivered</div>
-                </td>
-              </tr>
-            </table>
-          </div>
+        <!-- Delhivery Shipping tracking Banner (only visible during Shipped) -->
+        ${shippingBannerHtml}
+
+        <!-- Connected Table-based Timeline (Gmail and Outlook compatible) -->
+        <div style="margin: 30px 0; padding: 15px 0; border-top: 1px solid #f3f4f6; border-bottom: 1px solid #f3f4f6;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+            <tr>
+              <!-- Step 1 -->
+              <td align="center" style="width: 25%; padding-bottom: 8px; border-bottom: 4px solid ${getStepColor(0)};">
+                <span style="font-size: 11px; font-weight: bold; color: ${getTextColor(0)}; text-transform: uppercase;">1. Pending</span>
+              </td>
+              <!-- Step 2 -->
+              <td align="center" style="width: 25%; padding-bottom: 8px; border-bottom: 4px solid ${getStepColor(1)};">
+                <span style="font-size: 11px; font-weight: bold; color: ${getTextColor(1)}; text-transform: uppercase;">2. Confirmed</span>
+              </td>
+              <!-- Step 3 -->
+              <td align="center" style="width: 25%; padding-bottom: 8px; border-bottom: 4px solid ${getStepColor(2)};">
+                <span style="font-size: 11px; font-weight: bold; color: ${getTextColor(2)}; text-transform: uppercase;">3. Shipped</span>
+              </td>
+              <!-- Step 4 -->
+              <td align="center" style="width: 25%; padding-bottom: 8px; border-bottom: 4px solid ${getStepColor(3)};">
+                <span style="font-size: 11px; font-weight: bold; color: ${getTextColor(3)}; text-transform: uppercase;">4. Delivered</span>
+              </td>
+            </tr>
+          </table>
         </div>
 
         <!-- Order Summary -->
         <h3 style="margin: 0 0 20px; font-size: 18px; color: #1f2937;">Order Summary</h3>
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 30px;">
           ${itemsHtml}
+        </table>
+
+        <!-- Detailed Invoice/Payment breakdown -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 35px; border-top: 1px solid #f3f4f6; padding-top: 15px;">
           <tr>
-            <td colspan="2" style="padding: 15px 0; text-align: right; font-size: 16px; color: #4b5563;">Total</td>
-            <td style="padding: 15px 0; text-align: right; font-size: 18px; font-weight: bold; color: #b76e79;">
-              ₹${(order.totalAmount || 0).toLocaleString()}
+            <td style="padding: 6px 0; font-size: 14px; color: #4b5563;">Subtotal</td>
+            <td style="padding: 6px 0; text-align: right; font-size: 14px; color: #1f2937;">₹${subtotal.toLocaleString()}</td>
+          </tr>
+          ${couponDiscount > 0 ? `
+          <tr>
+            <td style="padding: 6px 0; font-size: 14px; color: #10b981;">Coupon Discount (${order.couponCode || 'Promo'})</td>
+            <td style="padding: 6px 0; text-align: right; font-size: 14px; color: #10b981; font-weight: 600;">-₹${couponDiscount.toLocaleString()}</td>
+          </tr>
+          ` : ''}
+          ${firstOrderDiscount > 0 ? `
+          <tr>
+            <td style="padding: 6px 0; font-size: 14px; color: #10b981;">First Order Discount</td>
+            <td style="padding: 6px 0; text-align: right; font-size: 14px; color: #10b981; font-weight: 600;">-₹${firstOrderDiscount.toLocaleString()}</td>
+          </tr>
+          ` : ''}
+          <tr>
+            <td style="padding: 6px 0; font-size: 14px; color: #4b5563;">Shipping</td>
+            <td style="padding: 6px 0; text-align: right; font-size: 14px; color: #1f2937;">
+              ${shipping === 0 ? '<span style="color: #10b981; font-weight: 600;">FREE</span>' : `₹${shipping}`}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 15px 0 0; font-size: 16px; font-weight: bold; color: #1f2937; border-top: 2px solid #e5e7eb;">Total Paid</td>
+            <td style="padding: 15px 0 0; text-align: right; font-size: 18px; font-weight: bold; color: #b76e79; border-top: 2px solid #e5e7eb;">
+              ₹${finalTotal.toLocaleString()}
             </td>
           </tr>
         </table>
