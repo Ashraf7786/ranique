@@ -334,8 +334,9 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
           {/* Social Proof */}
           {product.boughtLastWeek > 0 && (
             <div className="flex items-center gap-2 mt-1">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-orange-50 text-orange-600 text-xs font-semibold">
-                <Flame className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
+              <span className="relative overflow-hidden inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-orange-50 text-orange-600 text-xs font-semibold border border-orange-100/60 shadow-sm">
+                <span className="absolute inset-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/70 to-transparent -translate-x-full -skew-x-12 animate-shine" />
+                <Flame className="w-3.5 h-3.5 fill-orange-500 text-orange-500 animate-pulse" />
                 {product.boughtLastWeek} bought last week
               </span>
             </div>
