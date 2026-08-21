@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowLeft, Package, MapPin, Truck, CheckCircle, ShoppingBag, Receipt, Calendar } from "lucide-react";
+import { ArrowLeft, Package, MapPin, Truck, CheckCircle, ShoppingBag, Receipt, Calendar, Phone } from "lucide-react";
 import InvoiceButton from "./InvoiceButton";
 import { formatDateIST } from "@/lib/utils";
 
@@ -167,7 +167,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
               <p>{order.shippingCity}, {order.shippingState} - {order.shippingZip}</p>
               <p>{order.shippingCountry}</p>
               <p className="pt-2 text-brand-rose font-semibold flex items-center gap-2">
-                <span>📞</span>
+                <Phone className="w-3.5 h-3.5 text-brand-rose shrink-0" />
                 <a href={`tel:${order.shippingPhone}`} className="hover:underline">{order.shippingPhone}</a>
               </p>
             </div>
