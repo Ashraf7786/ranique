@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowLeft, Package, MapPin, Truck, CheckCircle, ShoppingBag, Receipt, Calendar, Phone } from "lucide-react";
+import { ArrowLeft, Package, MapPin, Truck, CheckCircle, ShoppingBag, IndianRupee, Calendar, Phone } from "lucide-react";
 import InvoiceButton from "./InvoiceButton";
 import { formatDateIST } from "@/lib/utils";
 
@@ -176,7 +176,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
           {/* Payment & Price Summary Card */}
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <h3 className="font-serif text-lg font-bold text-brand-ink mb-4 flex items-center gap-2">
-              <Receipt className="w-4.5 h-4.5 text-brand-rose" /> Payment Summary
+              <IndianRupee className="w-4 h-4 text-brand-rose shrink-0" /> Payment Summary
             </h3>
             
             <div className="space-y-3 text-sm text-gray-600 border-t border-gray-50 pt-3">
