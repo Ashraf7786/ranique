@@ -572,61 +572,58 @@ export default function CheckoutPage() {
 
       // If WhatsApp, open WA after success with rich message
       if (method === "WHATSAPP") {
-        // Build per-product lines with image, title, description, variant
+        // Build per-product lines with variant and image preview link
         const productLines = items.map((item, idx) => {
           const i = item as any; // Bypass TS
           const p = i.product;
           const name = p.name || p.title || "Product";
-          const desc = p.shortDescription || p.description || "";
           const price = (p.price || p.sellingPrice || 0);
           const lineTotal = (price * i.quantity).toLocaleString("en-IN");
-          const color = i.selectedColor?.name ? `🎨 Colour: ${i.selectedColor.name}` : "";
-          const size  = i.selectedSize?.name  ? `📐 Size: ${i.selectedSize.name}`   : "";
+          
+          const color = i.selectedColor?.label || i.selectedColor?.name || "";
+          const size  = i.selectedSize?.label || i.selectedSize?.name || "";
+          const variantParts = [];
+          if (color) variantParts.push(`Colour: ${color}`);
+          if (size) variantParts.push(`Size: ${size}`);
+          const variantText = variantParts.join(" | ");
+
           const imgUrl = p.images?.[0]?.src || p.images?.[0]?.url || "";
-          const imgLine = imgUrl ? `🖼️ Image: ${imgUrl}` : "";
 
-          const lines = [
-            `━━━━━━━━━━━━━━━━━━`,
-            `📦 Item ${idx + 1}: *${name}*`,
-            desc ? `📝 ${desc.slice(0, 120)}${desc.length > 120 ? "…" : ""}` : "",
-            color,
-            size,
-            `🔢 Quantity: ${i.quantity}`,
-            `💰 Price: ₹${price.toLocaleString("en-IN")} × ${i.quantity} = *₹${lineTotal}*`,
-            imgLine,
+          return [
+            `• *${name}*`,
+            variantText ? `  _${variantText}_` : "",
+            `  Qty: ${i.quantity} × ₹${price.toLocaleString("en-IN")} = *₹${lineTotal}*`,
+            imgUrl ? `  Preview: ${imgUrl}` : ""
           ].filter(Boolean).join("\n");
-
-          return lines;
-        }).join("\n");
+        }).join("\n\n");
 
         const msg = encodeURIComponent(
-`🌸 *New Order — Ranique*
-━━━━━━━━━━━━━━━━━━
+`🌸 *RANIQUE CLOTHING — ORDER REQUEST*
+──────────────────
 🆔 Order ID: *#${placedOrderId.slice(-10).toUpperCase()}*
 📅 Date: ${new Date().toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })}
 
-*🛍️ ORDER ITEMS*
+*🛒 ORDER ITEMS:*
 ${productLines}
-━━━━━━━━━━━━━━━━━━
-💳 *Payment Summary*
-   Subtotal : ₹${subtotal.toLocaleString("en-IN")}
-   Discount : -₹${discount.toLocaleString("en-IN")} (${discountLabel})
-   Shipping : ${shipping === 0 ? "FREE 🎁" : `₹${shipping}`}
-   *TOTAL   : ₹${finalTotal.toLocaleString("en-IN")}*
 
-━━━━━━━━━━━━━━━━━━
-📍 *SHIPPING ADDRESS*
-   👤 Name    : ${form.name}
-   📞 Phone   : ${form.phone}
-   📧 Email   : ${form.email}
-   🏠 Address : ${form.line1}${form.line2 ? ", " + form.line2 : ""}
-   🏙️ City    : ${form.city}
-   🗺️ State   : ${form.state} — ${form.zip}
-   🌏 Country : ${form.country}
+──────────────────
+*💳 PAYMENT SUMMARY:*
+• Subtotal: ₹${subtotal.toLocaleString("en-IN")}
+• Discount: -₹${discount.toLocaleString("en-IN")}${discountLabel ? ` (${discountLabel})` : ""}
+• Shipping: ${shipping === 0 ? "FREE" : `₹${shipping}`}
+• *TOTAL AMOUNT: ₹${finalTotal.toLocaleString("en-IN")}*
 
-━━━━━━━━━━━━━━━━━━
-💬 *Payment via WhatsApp*
-Please confirm this order and share payment details. Thank you! 💕`
+──────────────────
+*📍 SHIPPING DETAILS:*
+• Name: ${form.name}
+• Phone: ${form.phone}
+• Email: ${form.email}
+• Address: ${form.line1}${form.line2 ? ", " + form.line2 : ""}
+• City/State: ${form.city}, ${form.state} — ${form.zip}
+• Country: ${form.country}
+
+──────────────────
+💬 Hello Ranique team, please confirm availability and share payment details for my order. Thank you! 💕`
         );
 
         setTimeout(() => {
