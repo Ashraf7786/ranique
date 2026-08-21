@@ -96,13 +96,13 @@ const FAMILY_CATEGORIES = [
   {
     id: "sarees",
     label: "Sarees",
-    image: "https://images.unsplash.com/photo-1610030469668-93535c17b6b3?w=300&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300&auto=format&fit=crop&q=80",
     href: "/shop?category=saree",
   },
   {
     id: "kurtis",
     label: "Kurtis",
-    image: "https://images.unsplash.com/photo-1608963539825-acb28a99ee91?w=300&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=300&auto=format&fit=crop&q=80",
     href: "/shop?category=kurti",
   },
   {

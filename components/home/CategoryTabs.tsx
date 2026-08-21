@@ -2,126 +2,71 @@
 
 import React from "react";
 import Link from "next/link";
-import { Sparkles, Gem, Disc3, ShoppingBag, Package, Flower2, ChevronRight } from "lucide-react";
 
-// ─── Store Category Config ─────────────────────────────────────────────────────
-
-const STORE_CATEGORY_STYLES: Record<string, { icon: React.ReactNode; bg: string; iconColor: string }> = {
-  cosmetics:   { icon: <Sparkles className="w-7 h-7" />, bg: "from-[#F7E8E8] to-[#EEC5CF]", iconColor: "#C9748A" },
-  skincare:    { icon: <Flower2 className="w-7 h-7" />,  bg: "from-[#FFF0F5] to-[#FFD6E7]", iconColor: "#C9748A" },
-  accessories: { icon: <Gem className="w-7 h-7" />,      bg: "from-[#F0DDB8] to-[#E8D5A3]", iconColor: "#C9A96E" },
-  bangles:     { icon: <Disc3 className="w-7 h-7" />,    bg: "from-[#E8EEF7] to-[#C5D5EE]", iconColor: "#5B7BB8" },
-  purses:      { icon: <ShoppingBag className="w-7 h-7" />, bg: "from-[#F0F0F0] to-[#E0E0D8]", iconColor: "#6B7280" },
+// Curated high-end Unsplash images for store categories
+const STORE_CATEGORY_IMAGES: Record<string, string> = {
+  cosmetics:   "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&auto=format&fit=crop&q=80",
+  skincare:    "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&auto=format&fit=crop&q=80",
+  accessories: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&auto=format&fit=crop&q=80",
+  bangles:     "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400&auto=format&fit=crop&q=80",
+  purses:      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&auto=format&fit=crop&q=80",
+  earings:     "https://images.unsplash.com/photo-1630019852942-f89202989a59?w=400&auto=format&fit=crop&q=80",
+  rakhi:       "https://images.unsplash.com/photo-1624314138470-5a2f24623f10?w=400&auto=format&fit=crop&q=80",
 };
 
-const DEFAULT_STORE_STYLE = {
-  icon: <Package className="w-7 h-7" />,
-  bg: "from-[#F5F5F7] to-[#E8E5E0]",
-  iconColor: "#6B7280",
-};
-
-// ─── Category Card ─────────────────────────────────────────────────────────────
-
-function CategoryCard({
-  cat,
-  icon,
-  bg,
-  iconColor,
-  accent,
-}: {
-  cat: any;
-  icon: React.ReactNode;
-  bg: string;
-  iconColor: string;
-  accent?: string;
-}) {
-  return (
-    <Link
-      href={`/shop?category=${cat.slug}`}
-      id={`category-card-${cat.slug}`}
-      className={`group relative bg-gradient-to-br ${bg} rounded-2xl p-5 sm:p-6 flex flex-col gap-2 min-h-[160px] sm:min-h-[175px] overflow-hidden transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(201,116,138,0.18)] hover:-translate-y-1`}
-    >
-      {/* Accent top bar */}
-      <span
-        className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{ background: accent || iconColor }}
-      />
-
-      {/* Icon */}
-      <div
-        className="w-11 h-11 rounded-xl flex items-center justify-center mb-1 transition-transform duration-300 group-hover:scale-110"
-        style={{ background: `${iconColor}18`, color: iconColor }}
-      >
-        {icon}
-      </div>
-
-      {/* Name */}
-      <h3 className="font-serif text-base sm:text-lg font-bold text-[#1A1A2E] leading-tight group-hover:text-[#C9748A] transition-colors duration-200">
-        {cat.name}
-      </h3>
-
-      {/* Description */}
-      <p className="text-xs text-[#6B7280] leading-relaxed line-clamp-2">
-        {cat.description || "Discover our collection"}
-      </p>
-
-      {/* CTA */}
-      <span
-        className="mt-auto text-xs font-bold flex items-center gap-1 transition-all duration-200 group-hover:gap-2"
-        style={{ color: iconColor }}
-      >
-        Shop now
-        <ChevronRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
-      </span>
-    </Link>
-  );
-}
-
-// ─── Main Component ────────────────────────────────────────────────────────────
+const DEFAULT_CATEGORY_IMAGE = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&auto=format&fit=crop&q=80";
 
 interface CategoryTabsProps {
   categories: any[];
 }
 
 export function CategoryTabs({ categories }: CategoryTabsProps) {
-  // Store: no parentId, exclude the 'womens-clothing' parent wrapper itself
+  // Store categories: no parentId, exclude the 'womens-clothing' parent wrapper
   const storeCategories = categories.filter(
     (c) => !c.parentId && c.slug !== "womens-clothing"
   );
 
   return (
     <section aria-label="Shop by category" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
-      {/* ── Section header ───────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-7">
-        <div>
-          <p className="text-xs font-bold tracking-widest uppercase text-[#C9748A] mb-1">Browse</p>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#1A1A2E]">
-            Shop by Category
-          </h2>
-        </div>
+      
+      {/* Section Header */}
+      <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
+        <p className="text-xs font-bold tracking-widest uppercase text-[#b76e79]">Browse</p>
+        <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#1A1A2E]">Shop by Category</h2>
+        <div className="h-0.5 w-12 bg-[#b76e79] mx-auto my-3" />
       </div>
 
-      {/* ── Store Categories Content ─────────────────────────────────────────────── */}
-      <div
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 animate-in fade-in slide-in-from-bottom-3 duration-300"
-      >
+      {/* Horizontal Scrollable Row of Circular Categories */}
+      <div className="flex items-center justify-start md:justify-center gap-6 sm:gap-8 lg:gap-10 overflow-x-auto pb-6 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
         {storeCategories.length === 0 ? (
-          <p className="col-span-4 text-center text-[#6B7280] py-10 text-sm">
+          <p className="w-full text-center text-[#6B7280] py-10 text-sm">
             No store categories found.
           </p>
         ) : (
           storeCategories.map((cat) => {
-            const style = STORE_CATEGORY_STYLES[cat.slug] || DEFAULT_STORE_STYLE;
+            const imageSrc = STORE_CATEGORY_IMAGES[cat.slug] || DEFAULT_CATEGORY_IMAGE;
+            
             return (
-              <CategoryCard
+              <Link
                 key={cat.id}
-                cat={cat}
-                icon={style.icon}
-                bg={style.bg}
-                iconColor={style.iconColor}
-                accent={style.iconColor}
-              />
+                href={`/shop?category=${cat.slug}`}
+                className="flex flex-col items-center min-w-[100px] sm:min-w-[120px] group text-center shrink-0 cursor-pointer"
+              >
+                {/* Circular Avatar Container (Larger size) */}
+                <div className="relative w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#b76e79] group-hover:scale-105 transition-all duration-300 shadow-md group-hover:shadow-lg">
+                  <img
+                    src={imageSrc}
+                    alt={cat.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
+                </div>
+                
+                {/* Label */}
+                <span className="mt-3 text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-[#b76e79] transition-colors duration-200 uppercase tracking-wider">
+                  {cat.name}
+                </span>
+              </Link>
             );
           })
         )}
