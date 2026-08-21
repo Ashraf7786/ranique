@@ -13,7 +13,120 @@ import { PinCodeChecker } from "@/components/pdp/PinCodeChecker";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { formatPrice } from "@/lib/utils";
 import Link from "next/link";
-import { BadgeCheck, Flame } from "lucide-react";
+import { BadgeCheck, Flame, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const CLOTHING_SLUGS = new Set([
+  'kurti', 'kurti-set', 'suit', 'salwar-kameez', 'sharara', 'gharara',
+  'lehenga', 'lehenga-choli', 'saree', 'readymade-saree', 'anarkali',
+  'palazzo-set', 'patiala-suit', 'churidar-suit', 'dupatta',
+  'top', 'dress', 'coord-set', 'jumpsuit', 'jeans-trousers', 'skirt',
+  'shorts', 'blazer-jacket', 'casual-wear', 'loungewear', 'night-suit',
+  'track-suit', 'sweater-cardigan', 'winter-suit',
+  'bridal-wear', 'party-wear', 'festive-wear', 'wedding-guest',
+  'womens-clothing'
+]);
+
+function parseClothingSpecs(product: any, selectedColor?: any) {
+  const title = (product.name || "").toLowerCase();
+  const desc = (product.description || "").toLowerCase();
+  const material = (product.material || "").toLowerCase();
+
+  // 1. FABRIC
+  let fabric = "Premium Fabric Blend";
+  if (title.includes("chiffon") || desc.includes("chiffon")) fabric = "Chiffon";
+  else if (title.includes("silk") || desc.includes("silk")) fabric = "Silk";
+  else if (title.includes("cotton") || desc.includes("cotton")) fabric = "Cotton";
+  else if (title.includes("linen") || desc.includes("linen")) fabric = "Linen";
+  else if (title.includes("georgette") || desc.includes("georgette")) fabric = "Georgette";
+  else if (title.includes("velvet") || desc.includes("velvet")) fabric = "Velvet";
+  else if (title.includes("rayon") || desc.includes("rayon")) fabric = "Rayon";
+  else if (title.includes("satin") || desc.includes("satin")) fabric = "Satin";
+  else if (material) fabric = product.material;
+
+  // 2. STYLE
+  let style = "Designer Wear";
+  if (title.includes("printed") || desc.includes("print") || title.includes("floral") || desc.includes("floral")) style = "Printed";
+  else if (title.includes("embroidered") || desc.includes("embroidery") || desc.includes("embroidered") || desc.includes("zari") || desc.includes("kundan")) style = "Embroidered";
+  else if (title.includes("solid") || title.includes("plain")) style = "Solid";
+  else if (title.includes("woven") || desc.includes("handwoven")) style = "Woven / Handloom";
+  else if (title.includes("anarkali")) style = "Anarkali Silhouette";
+  else if (title.includes("sharara")) style = "Sharara Flare";
+  else if (title.includes("saree")) style = "Classic Drape";
+
+  // 3. COLOUR
+  let color = selectedColor?.label || "Multicolor";
+  if (color === "Multicolor") {
+    try {
+      if (product.variants?.colors?.[0]?.label) {
+        color = product.variants.colors[0].label;
+      } else {
+        const matches = ["pink", "orange", "blue", "red", "yellow", "green", "black", "white", "peach", "gold", "mint", "silver"];
+        const found = matches.find(m => title.includes(m) || desc.includes(m));
+        if (found) color = found.charAt(0).toUpperCase() + found.slice(1);
+      }
+    } catch (e) {}
+  }
+
+  // 4. OCCASION
+  let occasion = "Festive / Celebration";
+  if (title.includes("festive") || desc.includes("festival") || title.includes("saree") || title.includes("lehenga") || desc.includes("diwali") || desc.includes("eid")) occasion = "Festival / Wedding";
+  else if (title.includes("casual") || title.includes("lounge") || desc.includes("daily") || desc.includes("loungewear") || desc.includes("sleep")) occasion = "Casual Wear";
+  else if (title.includes("formal") || title.includes("office") || title.includes("trousers")) occasion = "Formal / Work Wear";
+
+  // 5. WASH CARE
+  let washCare = "Gentle Machine Wash";
+  if (fabric === "Silk" || fabric === "Chiffon" || fabric === "Georgette" || style === "Embroidered" || title.includes("saree") || title.includes("lehenga")) {
+    washCare = "Dry Clean Only";
+  }
+
+  return {
+    style,
+    fabric,
+    color,
+    occasion,
+    washCare,
+    origin: "India",
+  };
+}
+
+interface AccordionItemProps {
+  title: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}
+
+function AccordionItem({ title, isOpen, onToggle, children }: AccordionItemProps) {
+  return (
+    <div className="border-b border-brand-border py-4">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between font-sans text-sm font-semibold text-brand-ink hover:text-brand-rose transition-colors py-2 text-left"
+      >
+        <span>{title}</span>
+        <ChevronDown
+          className={cn(
+            "w-4 h-4 text-brand-slate transition-transform duration-300",
+            isOpen && "transform rotate-180"
+          )}
+        />
+      </button>
+      <div
+        className={cn(
+          "grid transition-all duration-300 ease-in-out overflow-hidden",
+          isOpen ? "grid-rows-[1fr] opacity-100 mt-3" : "grid-rows-[0fr] opacity-0"
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="text-sm text-brand-slate leading-relaxed pb-2">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function PDPClient({ product, related }: { product: any, related: any[] }) {
   if (!product) notFound();
@@ -24,6 +137,20 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
   const [selectedSize, setSelectedSize] = useState<SizeVariant | undefined>(
     product.variants.sizes?.[0]
   );
+
+  const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
+    description: true,
+    shipping: false,
+    manufacturing: false,
+    returns: false,
+  });
+
+  const toggleAccordion = (key: string) => {
+    setOpenAccordions((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
 
   const hasActiveOffer = product.offer && product.offer.isActive && new Date(product.offer.endsAt) > new Date();
   const basePrice = hasActiveOffer ? product.offer.offerPrice : product.price;
@@ -252,9 +379,82 @@ export function PDPClient({ product, related }: { product: any, related: any[] }
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* Tabs / Accordions */}
       <div className="mb-16">
-        <ProductTabs tabs={tabs} />
+        {CLOTHING_SLUGS.has(product.category) ? (
+          <div className="border-t border-brand-border">
+            <AccordionItem
+              title="Product Description"
+              isOpen={openAccordions.description}
+              onToggle={() => toggleAccordion("description")}
+            >
+              <p className="mb-4">{product.description}</p>
+              {(() => {
+                const specs = parseClothingSpecs(product, selectedColor);
+                return (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-8 pt-6 border-t border-brand-border mt-4">
+                    <div>
+                      <span className="block text-[10px] font-bold uppercase tracking-widest text-brand-slate">Style</span>
+                      <span className="block text-sm font-medium text-brand-ink mt-1">{specs.style}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold uppercase tracking-widest text-brand-slate">Fabric</span>
+                      <span className="block text-sm font-medium text-brand-ink mt-1">{specs.fabric}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold uppercase tracking-widest text-brand-slate">Colour</span>
+                      <span className="block text-sm font-medium text-brand-ink mt-1">{specs.color}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold uppercase tracking-widest text-brand-slate">Occasion</span>
+                      <span className="block text-sm font-medium text-brand-ink mt-1">{specs.occasion}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold uppercase tracking-widest text-brand-slate">Wash Care</span>
+                      <span className="block text-sm font-medium text-brand-ink mt-1">{specs.washCare}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold uppercase tracking-widest text-brand-slate">Country of Origin</span>
+                      <span className="block text-sm font-medium text-brand-ink mt-1">{specs.origin}</span>
+                    </div>
+                  </div>
+                );
+              })()}
+            </AccordionItem>
+
+            <AccordionItem
+              title="Shipping Policy"
+              isOpen={openAccordions.shipping}
+              onToggle={() => toggleAccordion("shipping")}
+            >
+              <p>
+                Free shipping on orders above ₹999. Since our clothing collection consists of premium, custom-tailored designs, orders are dispatched within 2-3 business days and delivered within 4-7 business days across India. Tracking link is sent via Email/WhatsApp as soon as shipped.
+              </p>
+            </AccordionItem>
+
+            <AccordionItem
+              title="Manufacturing Details"
+              isOpen={openAccordions.manufacturing}
+              onToggle={() => toggleAccordion("manufacturing")}
+            >
+              <p>
+                Proudly Designed & Tailored in India by Ranique Atelier. Fabric sourced from traditional Indian weavers. Marketed by: Ranique Official, New Delhi, India. Custom sizing requests can be shared via WhatsApp support.
+              </p>
+            </AccordionItem>
+
+            <AccordionItem
+              title="Returns & Exchange"
+              isOpen={openAccordions.returns}
+              onToggle={() => toggleAccordion("returns")}
+            >
+              <p>
+                We support exchanges and returns within 7 days of delivery for clothing. Items must be unworn, unwashed, and with all brand tags intact. Please note that custom-tailored or altered garments are not eligible for returns.
+              </p>
+            </AccordionItem>
+          </div>
+        ) : (
+          <ProductTabs tabs={tabs} />
+        )}
       </div>
 
       {/* Related products */}
