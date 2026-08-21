@@ -80,6 +80,57 @@ interface SizeGuideEntry {
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
+const FAMILY_CATEGORIES = [
+  {
+    id: "salwar-suits",
+    label: "Salwar Suits",
+    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300&auto=format&fit=crop&q=80",
+    href: "/shop?category=salwar-kameez",
+  },
+  {
+    id: "lehenga-choli",
+    label: "Lehenga choli",
+    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=300&auto=format&fit=crop&q=80",
+    href: "/shop?category=lehenga-choli",
+  },
+  {
+    id: "sarees",
+    label: "Sarees",
+    image: "https://images.unsplash.com/photo-1610030469668-93535c17b6b3?w=300&auto=format&fit=crop&q=80",
+    href: "/shop?category=saree",
+  },
+  {
+    id: "kurtis",
+    label: "Kurtis",
+    image: "https://images.unsplash.com/photo-1608963539825-acb28a99ee91?w=300&auto=format&fit=crop&q=80",
+    href: "/shop?category=kurti",
+  },
+  {
+    id: "gowns-dresses",
+    label: "Gowns & Dresses",
+    image: "https://images.unsplash.com/photo-1596783074918-c84cb06531ca?w=300&auto=format&fit=crop&q=80",
+    href: "/shop?category=dress",
+  },
+  {
+    id: "coord-sets",
+    label: "Co-ord Sets",
+    image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=300&auto=format&fit=crop&q=80",
+    href: "/shop?category=coord-set",
+  },
+  {
+    id: "teen-girls",
+    label: "Teen Girls",
+    image: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=300&auto=format&fit=crop&q=80",
+    href: "/shop?category=girls-clothing",
+  },
+  {
+    id: "little-girls",
+    label: "Little Girls",
+    image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=300&auto=format&fit=crop&q=80",
+    href: "/shop?category=girls-clothing",
+  },
+];
+
 const CLOTHING_CATEGORIES: ClothingCategory[] = [
   {
     id: "kurtas",
@@ -396,6 +447,52 @@ function TrustBar() {
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Family Categories Section ─────────────────────────────────────────────────
+
+function FamilyCategoriesSection() {
+  return (
+    <section className="bg-white py-12 border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Horizontal scrollable row of categories */}
+        <div className="flex items-center justify-start md:justify-center gap-6 overflow-x-auto pb-4 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
+          {FAMILY_CATEGORIES.map((cat) => (
+            <Link
+              key={cat.id}
+              href={cat.href}
+              className="flex flex-col items-center min-w-[90px] group text-center shrink-0 cursor-pointer"
+            >
+              {/* Circular Avatar Container */}
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#b76e79] group-hover:scale-105 transition-all duration-300 shadow-sm group-hover:shadow-md">
+                <img
+                  src={cat.image}
+                  alt={cat.label}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
+              </div>
+              
+              {/* Label */}
+              <span className="mt-3 text-xs sm:text-sm font-medium text-gray-700 group-hover:text-[#b76e79] group-hover:font-semibold transition-colors duration-200">
+                {cat.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+
+        {/* Section title below the categories */}
+        <div className="text-center mt-8">
+          <h2 className="font-sans text-base sm:text-lg font-bold tracking-[0.2em] text-[#1A1A2E] uppercase">
+            FOR EVERY MEMBER OF THE FAMILY
+          </h2>
+          <div className="h-[2px] w-12 bg-[#b76e79] mx-auto mt-3" />
+        </div>
+
       </div>
     </section>
   );
@@ -1011,6 +1108,7 @@ export default function ClothingPage() {
     <main className="bg-[#FAF8F5]">
       <HeroSection />
       <TrustBar />
+      <FamilyCategoriesSection />
       <CategoryGrid />
       <TrendingSection products={clothingProducts} />
       <NewArrivalsSection products={clothingProducts} />
