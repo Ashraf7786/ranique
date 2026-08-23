@@ -96,7 +96,9 @@ export function CategoryTabs({ categories }: CategoryTabsProps) {
         {/* Horizontal Scrollable Row of Circular Categories */}
         <div
           ref={scrollContainerRef}
-          className="w-full flex items-center justify-start md:justify-center gap-6 sm:gap-8 overflow-x-auto pb-6 scrollbar-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+          className={`w-full flex items-center gap-6 sm:gap-8 overflow-x-auto pb-6 scrollbar-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 ${
+            storeCategories.length > 7 ? "justify-start" : "justify-start md:justify-center"
+          }`}
         >
           {storeCategories.length === 0 ? (
             <p className="w-full text-center text-[#6B7280] py-10 text-sm">

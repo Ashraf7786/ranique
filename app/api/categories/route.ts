@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 
 const CategoryCreateSchema = z.object({
   name:        z.string().min(1),
@@ -62,6 +63,7 @@ export async function POST(request: Request) {
         isVisible:   data.isVisible,
       },
     });
+    revalidatePath('/', 'layout');
     return NextResponse.json(category, { status: 201 });
   } catch (error: any) {
     if (error.code === 'P2002') {

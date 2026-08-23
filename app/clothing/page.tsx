@@ -518,7 +518,9 @@ function FamilyCategoriesSection({ categories }: FamilyCategoriesSectionProps) {
           ref={scrollContainerRef}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="flex items-center justify-start md:justify-center gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+          className={`flex items-center gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 ${
+            categories.length > 7 ? "justify-start" : "justify-start md:justify-center"
+          }`}
         >
           {categories.length === 0 ? (
             <p className="w-full text-center text-gray-500 py-4 text-xs font-medium">No family categories available</p>

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 
 const CategoryUpdateSchema = z.object({
   name:        z.string().min(1).optional(),
@@ -37,6 +38,7 @@ export async function PUT(
       where: { id },
       data: parsed.data,
     });
+    revalidatePath('/', 'layout');
     return NextResponse.json(category);
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -58,6 +60,7 @@ export async function DELETE(
 
     const { id } = await params;
     await prisma.category.delete({ where: { id } });
+    revalidatePath('/', 'layout');
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 });
