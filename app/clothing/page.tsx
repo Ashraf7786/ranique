@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { 
@@ -454,36 +454,117 @@ function TrustBar() {
 
 // ─── Family Categories Section ─────────────────────────────────────────────────
 
-function FamilyCategoriesSection() {
+// ─── Family Categories Section ─────────────────────────────────────────────────
+
+interface FamilyCategoriesSectionProps {
+  categories: any[];
+}
+
+function FamilyCategoriesSection({ categories }: FamilyCategoriesSectionProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Auto-slide effect when there are > 7 categories
+  useEffect(() => {
+    if (categories.length <= 7 || isHovered) return;
+
+    const interval = setInterval(() => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      const itemWidth = 114; // width (90px) + gap (24px)
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
+      if (container.scrollLeft >= maxScrollLeft - 10) {
+        container.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        container.scrollBy({ left: itemWidth, behavior: "smooth" });
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [categories.length, isHovered]);
+
+  const scroll = (direction: "left" | "right") => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const scrollAmount = 240;
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <section className="bg-white py-12 border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="bg-white py-12 border-b border-gray-100 relative group/family-section">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         
+        {/* Left Scroll Button */}
+        {categories.length > 7 && (
+          <button
+            onClick={() => scroll("left")}
+            className="absolute left-2 top-12 z-10 p-1.5 rounded-full bg-white/90 shadow-md border border-gray-150 text-gray-700 hover:text-[#b76e79] opacity-0 group-hover/family-section:opacity-100 transition-opacity hidden md:flex items-center justify-center focus:outline-none"
+            aria-label="Scroll left"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
+
         {/* Horizontal scrollable row of categories */}
-        <div className="flex items-center justify-start md:justify-center gap-6 overflow-x-auto pb-4 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-          {FAMILY_CATEGORIES.map((cat) => (
-            <Link
-              key={cat.id}
-              href={cat.href}
-              className="flex flex-col items-center min-w-[90px] group text-center shrink-0 cursor-pointer"
-            >
-              {/* Circular Avatar Container */}
-              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#b76e79] group-hover:scale-105 transition-all duration-300 shadow-sm group-hover:shadow-md">
-                <img
-                  src={cat.image}
-                  alt={cat.label}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
-              </div>
-              
-              {/* Label */}
-              <span className="mt-3 text-xs sm:text-sm font-medium text-gray-700 group-hover:text-[#b76e79] group-hover:font-semibold transition-colors duration-200">
-                {cat.label}
-              </span>
-            </Link>
-          ))}
+        <div
+          ref={scrollContainerRef}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="flex items-center justify-start md:justify-center gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+        >
+          {categories.length === 0 ? (
+            <p className="w-full text-center text-gray-500 py-4 text-xs font-medium">No family categories available</p>
+          ) : (
+            categories.map((cat) => {
+              const linkHref = cat.href || `/shop?category=${cat.slug}`;
+              const imageSrc = cat.image || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300";
+
+              return (
+                <Link
+                  key={cat.id}
+                  href={linkHref}
+                  className="flex flex-col items-center min-w-[90px] group text-center shrink-0 cursor-pointer"
+                >
+                  {/* Circular Avatar Container */}
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#b76e79] group-hover:scale-105 transition-all duration-300 shadow-sm group-hover:shadow-md">
+                    <img
+                      src={imageSrc}
+                      alt={cat.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
+                  </div>
+                  
+                  {/* Label */}
+                  <span className="mt-3 text-xs sm:text-sm font-medium text-gray-700 group-hover:text-[#b76e79] group-hover:font-semibold transition-colors duration-200">
+                    {cat.name}
+                  </span>
+                </Link>
+              );
+            })
+          )}
         </div>
+
+        {/* Right Scroll Button */}
+        {categories.length > 7 && (
+          <button
+            onClick={() => scroll("right")}
+            className="absolute right-2 top-12 z-10 p-1.5 rounded-full bg-white/90 shadow-md border border-gray-150 text-gray-700 hover:text-[#b76e79] opacity-0 group-hover/family-section:opacity-100 transition-opacity hidden md:flex items-center justify-center focus:outline-none"
+            aria-label="Scroll right"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
 
         {/* Section title below the categories */}
         <div className="text-center mt-8">
@@ -498,9 +579,17 @@ function FamilyCategoriesSection() {
   );
 }
 
+
 // ─── Category Grid ────────────────────────────────────────────────────────────
 
-function CategoryGrid() {
+interface CategoryGridProps {
+  categories: any[];
+}
+
+function CategoryGrid({ categories }: CategoryGridProps) {
+  // Show up to the first 4 visible categories for the grid
+  const displayCategories = categories.slice(0, 4);
+
   return (
     <section id="categories" className="bg-[#FAF8F5] py-20 scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -514,50 +603,61 @@ function CategoryGrid() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {CLOTHING_CATEGORIES.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/shop?category=${cat.id}`}
-              id={`clothing-cat-${cat.id}`}
-              className="group relative h-[360px] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
-            >
-              {/* Image background */}
-              <img 
-                src={cat.image} 
-                alt={cat.label} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
+        {displayCategories.length === 0 ? (
+          <p className="text-center text-gray-500 py-10 text-sm font-medium">No collections available at the moment.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {displayCategories.map((cat, idx) => {
+              const linkHref = cat.href || `/shop?category=${cat.slug}`;
+              const imageSrc = cat.image || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600";
+              const tagText = `${cat.name.toUpperCase()} EDIT`;
+              const badgeText = idx === 0 ? "New" : idx === 1 ? "Hot" : undefined;
 
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              return (
+                <Link
+                  key={cat.id}
+                  href={linkHref}
+                  id={`clothing-cat-${cat.slug}`}
+                  className="group relative h-[360px] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+                >
+                  {/* Image background */}
+                  <img 
+                    src={imageSrc} 
+                    alt={cat.name} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
 
-              {/* Badge */}
-              {cat.badge && (
-                <span className="absolute top-4 right-4 text-[9px] font-bold bg-[#FAF8F5] text-[#1A1A2E] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
-                  {cat.badge}
-                </span>
-              )}
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-              {/* Text content card on top of image */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col h-1/2 justify-end text-left">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#EEC5CF] mb-1">
-                  {cat.tag}
-                </span>
-                <h3 className="font-serif text-xl font-bold text-white mb-2 leading-tight">
-                  {cat.label}
-                </h3>
-                <p className="text-xs text-white/80 leading-relaxed line-clamp-2 mb-4">
-                  {cat.description}
-                </p>
-                <span className="text-xs font-bold text-white flex items-center gap-1 group-hover:underline">
-                  Shop collection
-                  <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
+                  {/* Badge */}
+                  {badgeText && (
+                    <span className="absolute top-4 right-4 text-[9px] font-bold bg-[#FAF8F5] text-[#1A1A2E] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                      {badgeText}
+                    </span>
+                  )}
+
+                  {/* Text content card on top of image */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col h-1/2 justify-end text-left">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#EEC5CF] mb-1">
+                      {tagText}
+                    </span>
+                    <h3 className="font-serif text-xl font-bold text-white mb-2 leading-tight">
+                      {cat.name}
+                    </h3>
+                    <p className="text-xs text-white/80 leading-relaxed line-clamp-2 mb-4">
+                      {cat.description || "Explore curated styling collections created for special events and everyday premium luxury."}
+                    </p>
+                    <span className="text-xs font-bold text-white flex items-center gap-1 group-hover:underline">
+                      Shop collection
+                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -1081,35 +1181,49 @@ function NewsletterBanner() {
 
 export default function ClothingPage() {
   const [clothingProducts, setClothingProducts] = useState<any[]>([]);
+  const [clothingCategories, setClothingCategories] = useState<any[]>([]);
 
   useEffect(() => {
-    async function fetchClothingProducts() {
+    async function fetchClothingData() {
       try {
-        const res = await fetch("/api/products?status=PUBLISHED");
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          // Filter to select clothing categories only
-          const clothes = data
-            .filter((p: any) => {
-              const catSlug = p.category?.slug || '';
-              return CLOTHING_SLUGS.has(catSlug) || p.category?.parentId != null;
-            })
-            .map((p: any) => formatDbProduct(p));
-          setClothingProducts(clothes);
+        const [prodRes, catRes] = await Promise.all([
+          fetch("/api/products?status=PUBLISHED"),
+          fetch("/api/categories?storeType=CLOTHING&visible=true")
+        ]);
+
+        if (prodRes.ok) {
+          const data = await prodRes.json();
+          if (Array.isArray(data)) {
+            // Filter to select clothing categories only
+            const clothes = data
+              .filter((p: any) => {
+                const catSlug = p.category?.slug || '';
+                return CLOTHING_SLUGS.has(catSlug) || p.category?.parentId != null;
+              })
+              .map((p: any) => formatDbProduct(p));
+            setClothingProducts(clothes);
+          }
+        }
+
+        if (catRes.ok) {
+          const catData = await catRes.json();
+          if (Array.isArray(catData)) {
+            setClothingCategories(catData.sort((a: any, b: any) => a.sortOrder - b.sortOrder));
+          }
         }
       } catch (err) {
-        console.error("Failed to load clothing products:", err);
+        console.error("Failed to load clothing page data:", err);
       }
     }
-    fetchClothingProducts();
+    fetchClothingData();
   }, []);
 
   return (
     <main className="bg-[#FAF8F5]">
       <HeroSection />
       <TrustBar />
-      <FamilyCategoriesSection />
-      <CategoryGrid />
+      <FamilyCategoriesSection categories={clothingCategories} />
+      <CategoryGrid categories={clothingCategories} />
       <TrendingSection products={clothingProducts} />
       <NewArrivalsSection products={clothingProducts} />
       <RecentlyViewedSection />

@@ -160,7 +160,11 @@ model Category {
   slug        String     @unique
   description String?
   image       String?
+  href        String?    // Custom link override; if null, auto-generates /shop?category={slug}
   parentId    String?
+  storeType   String     @default("STORE") // "STORE" = main storefront, "CLOTHING" = /clothing hub
+  sortOrder   Int        @default(0)
+  isVisible   Boolean    @default(true)
   parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryHierarchy")
   createdAt   DateTime   @default(now())
