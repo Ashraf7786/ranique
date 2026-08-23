@@ -26,9 +26,13 @@ export default function NewCategoryPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => {
+      let val = value;
+      if (name === "slug") {
+        val = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }
       const updated = {
         ...prev,
-        [name]: name === "isVisible" ? (value === "true") : value
+        [name]: name === "isVisible" ? (value === "true") : val
       };
       if (name === "name" && !prev.slug) {
         updated.slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');

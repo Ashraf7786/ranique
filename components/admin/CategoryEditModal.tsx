@@ -42,7 +42,11 @@ export function CategoryEditModal({ category, onClose, onSuccess }: CategoryEdit
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => {
-      const updated = { ...prev, [name]: name === "isVisible" ? (value === "true") : name === "sortOrder" ? Number(value) : value };
+      let val = value;
+      if (name === "slug") {
+        val = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }
+      const updated = { ...prev, [name]: name === "isVisible" ? (value === "true") : name === "sortOrder" ? Number(value) : val };
       // Auto-generate slug from name ONLY if the user hasn't touched/modified the slug manually from the original
       if (name === "name" && prev.slug === category.slug) {
         updated.slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
