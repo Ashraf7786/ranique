@@ -405,3 +405,87 @@ body {
 .animate-ticker-in {
   animation: ticker-in 0.4s ease forwards;
 }
+
+/* ─── Admin Dark Mode ───────────────────────────────────────────── */
+/*
+ * Scoped to .admin-dark so it NEVER leaks to the storefront.
+ * The wrapper div in AdminLayoutClient carries this class when dark.
+ */
+
+/* Base backgrounds */
+.admin-dark { color-scheme: dark; }
+
+.admin-dark .bg-white           { background-color: #111827 !important; }   /* gray-900 */
+.admin-dark .bg-gray-50         { background-color: #0f172a !important; }   /* slate-900 */
+.admin-dark .bg-gray-50\/50     { background-color: rgba(15,23,42,0.5) !important; }
+.admin-dark .bg-gray-100        { background-color: #1e293b !important; }   /* slate-800 */
+.admin-dark .bg-gray-200        { background-color: #334155 !important; }
+
+/* Text colors */
+.admin-dark .text-gray-900      { color: #f1f5f9 !important; }  /* slate-100 */
+.admin-dark .text-gray-800      { color: #e2e8f0 !important; }
+.admin-dark .text-gray-700      { color: #cbd5e1 !important; }
+.admin-dark .text-gray-600      { color: #94a3b8 !important; }
+.admin-dark .text-gray-500      { color: #64748b !important; }
+.admin-dark .text-gray-400      { color: #475569 !important; }
+
+/* Borders */
+.admin-dark .border-gray-200    { border-color: #1e293b !important; }
+.admin-dark .border-gray-100    { border-color: #1e293b !important; }
+.admin-dark .divide-gray-100 > * + * { border-color: #1e293b !important; }
+.admin-dark .divide-y > * + *   { border-color: #1e293b !important; }
+
+/* Hover states */
+.admin-dark .hover\:bg-gray-50\/50:hover  { background-color: rgba(30,41,59,0.5) !important; }
+.admin-dark .hover\:bg-gray-50:hover      { background-color: #1e293b !important; }
+.admin-dark .hover\:bg-gray-100:hover     { background-color: #1e293b !important; }
+.admin-dark .hover\:text-gray-700:hover   { color: #cbd5e1 !important; }
+.admin-dark .hover\:text-gray-900:hover   { color: #f1f5f9 !important; }
+
+/* Inputs & form elements */
+.admin-dark input:not([type="range"]),
+.admin-dark textarea,
+.admin-dark select {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+.admin-dark input::placeholder,
+.admin-dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Table rows */
+.admin-dark tr.hover\:bg-gray-50\/50:hover { background-color: rgba(30,41,59,0.5) !important; }
+.admin-dark thead tr                        { background-color: #111827 !important; }
+.admin-dark tbody tr                        { background-color: #111827 !important; }
+
+/* Cards / panels */
+.admin-dark .rounded-xl.bg-white,
+.admin-dark .rounded-lg.bg-white,
+.admin-dark .rounded-2xl.bg-white {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+/* Shadows — tone down in dark mode */
+.admin-dark .shadow-sm          { box-shadow: 0 1px 3px 0 rgba(0,0,0,0.4) !important; }
+.admin-dark .shadow             { box-shadow: 0 2px 8px 0 rgba(0,0,0,0.5) !important; }
+
+/* Scrollbar in dark mode */
+.admin-dark ::-webkit-scrollbar-track { background: #0f172a; }
+.admin-dark ::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+
+/* Status badges keep their colors — readable on dark bg */
+.admin-dark .bg-yellow-100  { background-color: rgba(234,179,8,0.15)  !important; }
+.admin-dark .bg-blue-100    { background-color: rgba(59,130,246,0.15) !important; }
+.admin-dark .bg-green-100   { background-color: rgba(34,197,94,0.15)  !important; }
+.admin-dark .bg-red-100     { background-color: rgba(239,68,68,0.15)  !important; }
+.admin-dark .bg-purple-100  { background-color: rgba(168,85,247,0.15) !important; }
+.admin-dark .bg-orange-100  { background-color: rgba(249,115,22,0.15) !important; }
+.admin-dark .text-yellow-800 { color: #fbbf24 !important; }
+.admin-dark .text-blue-800   { color: #60a5fa !important; }
+.admin-dark .text-green-800  { color: #4ade80 !important; }
+.admin-dark .text-red-800    { color: #f87171 !important; }
+.admin-dark .text-purple-800 { color: #c084fc !important; }
+.admin-dark .text-orange-800 { color: #fb923c !important; }

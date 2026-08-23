@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import { AdminSidebarNav } from "@/components/admin/AdminSidebarNav";
+import { AdminThemeProvider, useAdminTheme } from "@/components/admin/AdminThemeContext";
+import { AdminThemeToggle } from "@/components/admin/AdminThemeToggle";
 
 interface AdminLayoutClientProps {
   children: React.ReactNode;
@@ -10,8 +12,9 @@ interface AdminLayoutClientProps {
   userInitial: string;
 }
 
-export function AdminLayoutClient({ children, userName, userInitial }: AdminLayoutClientProps) {
+function AdminLayoutInner({ children, userName, userInitial }: AdminLayoutClientProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isDark } = useAdminTheme();
 
   // Close sidebar on outside scroll (iOS momentum scroll UX)
   useEffect(() => {
@@ -26,7 +29,7 @@ export function AdminLayoutClient({ children, userName, userInitial }: AdminLayo
   }, [sidebarOpen]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className={`min-h-screen flex transition-colors duration-300 ${isDark ? "admin-dark bg-gray-950" : "bg-gray-50"}`}>
       {/* ── Mobile Overlay ── */}
       {sidebarOpen && (
         <div
@@ -39,10 +42,13 @@ export function AdminLayoutClient({ children, userName, userInitial }: AdminLayo
       {/* ── Sidebar ── */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-72 bg-white border-r border-gray-200
-          flex flex-col z-40 transition-transform duration-300 ease-in-out
+          fixed top-0 left-0 h-full w-72 flex flex-col z-40 transition-all duration-300 ease-in-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0 lg:w-64 lg:z-10
+          ${isDark
+            ? "bg-gray-900 border-r border-gray-800"
+            : "bg-white border-r border-gray-200"
+          }
         `}
       >
         <AdminSidebarNav onClose={() => setSidebarOpen(false)} />
@@ -51,37 +57,57 @@ export function AdminLayoutClient({ children, userName, userInitial }: AdminLayo
       {/* ── Main Content ── */}
       <main className="flex-1 lg:ml-64 min-h-screen flex flex-col">
         {/* Header */}
-        <header className="h-14 lg:h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-20 shadow-sm">
+        <header
+          className={`
+            h-14 lg:h-16 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-20 shadow-sm
+            transition-colors duration-300
+            ${isDark
+              ? "bg-gray-900 border-b border-gray-800"
+              : "bg-white border-b border-gray-200"
+            }
+          `}
+        >
           {/* Hamburger — mobile only */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors mr-2"
+            className={`lg:hidden p-2 rounded-lg transition-colors mr-2 ${isDark ? "text-gray-300 hover:bg-gray-800" : "text-gray-600 hover:bg-gray-100"}`}
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5" />
           </button>
 
           {/* Brand name — visible on mobile when sidebar closed */}
-          <span className="font-serif text-base font-bold text-brand-ink lg:hidden">
+          <span className={`font-serif text-base font-bold lg:hidden ${isDark ? "text-white" : "text-brand-ink"}`}>
             Ranique Admin
           </span>
 
           {/* Welcome text — desktop */}
-          <div className="hidden lg:block font-sans text-sm text-gray-500">
+          <div className={`hidden lg:block font-sans text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
             Welcome, {userName}
           </div>
 
-          {/* Avatar */}
-          <div className="ml-auto w-8 h-8 rounded-full bg-brand-rose text-white flex items-center justify-center font-bold text-sm shrink-0">
-            {userInitial}
+          {/* Right controls: Theme toggle + Avatar */}
+          <div className="ml-auto flex items-center gap-3">
+            <AdminThemeToggle />
+            <div className="w-8 h-8 rounded-full bg-brand-rose text-white flex items-center justify-center font-bold text-sm shrink-0">
+              {userInitial}
+            </div>
           </div>
         </header>
 
         {/* Page content */}
-        <div className="flex-1 p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
+        <div className={`flex-1 p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden transition-colors duration-300 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
           {children}
         </div>
       </main>
     </div>
+  );
+}
+
+export function AdminLayoutClient(props: AdminLayoutClientProps) {
+  return (
+    <AdminThemeProvider>
+      <AdminLayoutInner {...props} />
+    </AdminThemeProvider>
   );
 }

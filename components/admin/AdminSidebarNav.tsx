@@ -25,6 +25,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
+import { useAdminTheme } from "@/components/admin/AdminThemeContext";
 
 const NAV_LINKS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -53,16 +54,31 @@ interface AdminSidebarNavProps {
 
 export function AdminSidebarNav({ onClose }: AdminSidebarNavProps) {
   const pathname = usePathname();
+  const { isDark } = useAdminTheme();
 
   return (
     <>
       {/* Sidebar header — brand + close button */}
-      <div className="flex items-center justify-between h-14 lg:h-16 px-5 border-b border-gray-200 shrink-0">
-        <span className="font-serif text-lg lg:text-xl font-bold text-brand-ink">Ranique Admin</span>
+      <div
+        className={`flex items-center justify-between h-14 lg:h-16 px-5 shrink-0 border-b transition-colors duration-300 ${
+          isDark ? "border-gray-800" : "border-gray-200"
+        }`}
+      >
+        <span
+          className={`font-serif text-lg lg:text-xl font-bold transition-colors duration-300 ${
+            isDark ? "text-white" : "text-brand-ink"
+          }`}
+        >
+          Ranique Admin
+        </span>
         {onClose && (
           <button
             onClick={onClose}
-            className="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+            className={`lg:hidden p-1.5 rounded-lg transition-colors ${
+              isDark
+                ? "text-gray-400 hover:bg-gray-800"
+                : "text-gray-500 hover:bg-gray-100"
+            }`}
             aria-label="Close menu"
           >
             <X className="w-5 h-5" />
@@ -87,14 +103,18 @@ export function AdminSidebarNav({ onClose }: AdminSidebarNavProps) {
               className={twMerge(
                 "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 active:scale-[0.97]",
                 isActive
-                  ? "bg-[#FDF2F4] text-brand-rose border border-brand-rose/20 shadow-sm"
+                  ? isDark
+                    ? "bg-brand-rose/20 text-brand-rose border border-brand-rose/30 shadow-sm"
+                    : "bg-[#FDF2F4] text-brand-rose border border-brand-rose/20 shadow-sm"
+                  : isDark
+                  ? "text-gray-400 hover:bg-gray-800 hover:text-gray-100"
                   : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               )}
             >
               <Icon
                 className={twMerge(
                   "w-5 h-5 shrink-0 transition-colors",
-                  isActive ? "text-brand-rose" : "text-gray-400"
+                  isActive ? "text-brand-rose" : isDark ? "text-gray-500" : "text-gray-400"
                 )}
               />
               <span className="truncate">{link.label}</span>
@@ -104,11 +124,19 @@ export function AdminSidebarNav({ onClose }: AdminSidebarNavProps) {
       </nav>
 
       {/* Back to store */}
-      <div className="p-4 border-t border-gray-200 shrink-0">
+      <div
+        className={`p-4 border-t shrink-0 transition-colors duration-300 ${
+          isDark ? "border-gray-800" : "border-gray-200"
+        }`}
+      >
         <Link
           href="/"
           onClick={onClose}
-          className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+          className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+            isDark
+              ? "text-gray-500 hover:text-gray-300"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Store
