@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Trash2, Plus } from "lucide-react";
+import { Loader2, Trash2, Plus } from "@/components/admin/AdminIcons";
 import { AddTestimonialModal } from "./AddTestimonialModal";
 
 export function TestimonialsDataTable() {

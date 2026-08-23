@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { Trash2 } from "@/components/admin/AdminIcons";
 
 export function DeleteOrderButton({ orderId }: { orderId: string }) {
   const router = useRouter();

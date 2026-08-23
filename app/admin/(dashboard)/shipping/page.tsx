@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { DelhiveryPanel } from "@/components/admin/DelhiveryPanel";
-import { Truck } from "lucide-react";
+import { Truck } from "@/components/admin/AdminIcons";
 
 export const metadata = {
   title: "Delhivery Shipping | Admin",

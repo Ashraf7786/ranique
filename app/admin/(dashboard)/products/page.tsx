@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus } from "@/components/admin/AdminIcons";
 import { prisma } from "@/lib/prisma";
 import { ProductDataTable } from "@/components/admin/ProductDataTable";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Edit2, Trash2, Ticket, Plus, X } from "lucide-react";
+import { Search, Edit2, Trash2, Ticket, Plus, X } from "@/components/admin/AdminIcons";
 import { formatDateIST } from "@/lib/utils";
 
 export function CouponDataTable({ initialCoupons, products }: { initialCoupons: any[], products: any[] }) {

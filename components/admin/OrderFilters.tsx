@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
-import { Search } from "lucide-react";
+import { Search } from "@/components/admin/AdminIcons";
 
 export function OrderFilters() {
   const router = useRouter();

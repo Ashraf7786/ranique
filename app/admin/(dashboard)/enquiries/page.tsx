@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Bug, MessageSquare, ExternalLink } from "lucide-react";
+import { Bug, MessageSquare, ExternalLink } from "@/components/admin/AdminIcons";
 
 export const metadata = {
   title: "Enquiries & Bug Reports | Admin",

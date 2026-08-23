@@ -1,7 +1,7 @@
 "use client";
 
 import { useAdminTheme } from "@/components/admin/AdminThemeContext";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon } from "@/components/admin/AdminIcons";
 
 export function AdminThemeToggle() {
   const { isDark, toggleTheme, theme } = useAdminTheme();

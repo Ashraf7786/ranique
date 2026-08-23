@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2 } from "@/components/admin/AdminIcons";
 import { API_URL } from "@/lib/config";
 
 export default function BrandsPage() {

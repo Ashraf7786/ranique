@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Trash2, Search, Edit2, Package, Save, CheckCircle, RotateCcw, Zap, ExternalLink, Eye, ChevronRight, Check, ChevronLeft, X, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Trash2, Search, Edit2, Package, Save, CheckCircle, RotateCcw, Zap, ExternalLink, Eye, ChevronRight, Check, ChevronLeft, X, AlertTriangle, CheckCircle2 } from "@/components/admin/AdminIcons";
 
 export function ProductDataTable({ initialProducts, isTrashMode = false }: { initialProducts: any[], isTrashMode?: boolean }) {
   const [products, setProducts] = useState(initialProducts);

@@ -3,27 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  Package,
-  Tags,
-  Box,
-  Settings,
-  Users,
-  ShoppingCart,
-  MessageSquare,
-  Inbox,
-  Gift,
-  Ticket,
-  CreditCard,
-  Star,
-  UserCog,
-  ClipboardList,
-  Megaphone,
-  SlidersHorizontal,
-  Truck,
-  X,
-  ArrowLeft,
-} from "lucide-react";
+  LayoutDashboard, Package, Tags, Box, Settings, Users,
+  ShoppingCart, MessageSquare, Inbox, Gift, Ticket,
+  CreditCard, Star, UserCog, ClipboardList, Megaphone,
+  SlidersHorizontal, Truck, X, ArrowLeft,
+} from "@/components/admin/AdminIcons";
 import { twMerge } from "tailwind-merge";
 import { useAdminTheme } from "@/components/admin/AdminThemeContext";
 

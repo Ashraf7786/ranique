@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Star, Trash2, CheckCircle2, ShieldCheck, Plus, X } from "lucide-react";
+import { Star, Trash2, CheckCircle2, ShieldCheck, Plus, X } from "@/components/admin/AdminIcons";
 import { useRouter } from "next/navigation";
 
 export function ReviewsDataTable({ initialReviews, products }: { initialReviews: any[], products: any[] }) {

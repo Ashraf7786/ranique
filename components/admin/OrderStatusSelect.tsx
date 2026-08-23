@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle } from "@/components/admin/AdminIcons";
 
 export function OrderStatusSelect({ orderId, currentStatus }: { orderId: string, currentStatus: string }) {
   const [status, setStatus] = useState(currentStatus);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu } from "lucide-react";
+import { Menu } from "@/components/admin/AdminIcons";
 import { AdminSidebarNav } from "@/components/admin/AdminSidebarNav";
 import { AdminThemeProvider, useAdminTheme } from "@/components/admin/AdminThemeContext";
 import { AdminThemeToggle } from "@/components/admin/AdminThemeToggle";

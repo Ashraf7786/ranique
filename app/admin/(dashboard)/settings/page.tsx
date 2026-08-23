@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Save } from "lucide-react";
+import { Save } from "@/components/admin/AdminIcons";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false);

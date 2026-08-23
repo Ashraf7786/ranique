@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save } from "@/components/admin/AdminIcons";
 import { useRouter } from "next/navigation";
 import { API_URL } from "@/lib/config";
 

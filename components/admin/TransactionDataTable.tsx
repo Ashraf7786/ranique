@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Loader2, DollarSign, Activity, CheckCircle, ExternalLink } from "lucide-react";
+import { Search, Loader2, DollarSign, Activity, CheckCircle, ExternalLink } from "@/components/admin/AdminIcons";
 import Link from "next/link";
 
 export function TransactionDataTable() {

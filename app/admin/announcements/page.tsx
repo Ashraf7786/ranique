@@ -1,6 +1,6 @@
 import { AnnouncementForm } from "@/components/admin/AnnouncementForm";
 import { prisma } from "@/lib/prisma";
-import { Megaphone } from "lucide-react";
+import { Megaphone } from "@/components/admin/AdminIcons";
 
 export default async function AnnouncementPage() {
   const announcement = await prisma.announcement.findFirst({

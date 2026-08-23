@@ -1,4 +1,4 @@
-import { Package, IndianRupee, Users, ShoppingCart } from "lucide-react";
+import { Package, IndianRupee, Users, ShoppingCart } from "@/components/admin/AdminIcons";
 import { prisma } from "@/lib/prisma";
 import { DashboardCharts } from "@/components/admin/DashboardCharts";
 

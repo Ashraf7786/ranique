@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, Edit2, Trash2, Eye, X, Package } from "lucide-react";
+import { Search, Edit2, Trash2, Eye, X, Package } from "@/components/admin/AdminIcons";
 import { formatDateIST } from "@/lib/utils";
 
 export function OfferDataTable({ initialOffers }: { initialOffers: any[] }) {

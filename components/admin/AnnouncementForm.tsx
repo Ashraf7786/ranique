@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Save, Bold, Italic, Underline, Sparkles } from "lucide-react";
+import { Loader2, Save, Bold, Italic, Underline, Sparkles } from "@/components/admin/AdminIcons";
 
 export function AnnouncementForm({ initialData }: { initialData: any }) {
   const router = useRouter();

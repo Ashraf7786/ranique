@@ -3,18 +3,9 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Truck,
-  MapPin,
-  FileText,
-  CheckCircle2,
-  AlertCircle,
-  Loader2,
-  PackageCheck,
-  Download,
-  RefreshCw,
-  ChevronRight,
-  Info,
-} from "lucide-react";
+  Truck, MapPin, FileText, CheckCircle2, AlertCircle,
+  Loader2, PackageCheck, Download, RefreshCw, ChevronRight, Info,
+} from "@/components/admin/AdminIcons";
 import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

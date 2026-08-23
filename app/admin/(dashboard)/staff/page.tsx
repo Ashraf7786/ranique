@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Loader2, Shield, ShieldOff, Copy, CheckCheck, UserCog } from "lucide-react";
+import { Plus, Trash2, Loader2, Shield, ShieldOff, Copy, CheckCheck, UserCog } from "@/components/admin/AdminIcons";
 
 interface StaffMember {
   id: string;

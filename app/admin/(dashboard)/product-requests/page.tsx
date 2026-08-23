@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, CheckCircle, XCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, ChevronDown, ChevronUp } from "@/components/admin/AdminIcons";
 import Image from "next/image";
 
 interface EditRequest {

@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import {
-  Plus, Pencil, Trash2, Eye, EyeOff, Zap, Star, Gift,
+import { Plus, Pencil, Trash2, Eye, EyeOff, Zap, Star, Gift,
   GripVertical, ChevronUp, ChevronDown, Image as ImageIcon,
   Loader2, X, Check, AlertTriangle, Sparkles
-} from "lucide-react";
+} from "@/components/admin/AdminIcons";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

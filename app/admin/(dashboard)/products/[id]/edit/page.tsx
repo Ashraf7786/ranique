@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save, Image as ImageIcon, IndianRupee } from "lucide-react";
+import { ArrowLeft, Save, Image as ImageIcon, IndianRupee } from "@/components/admin/AdminIcons";
 import { useRouter, useParams } from "next/navigation";
 import { CldUploadWidget } from "next-cloudinary";
 import { API_URL } from "@/lib/config";

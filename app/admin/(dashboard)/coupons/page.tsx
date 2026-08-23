@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { CouponDataTable } from "@/components/admin/CouponDataTable";
-import { Ticket } from "lucide-react";
+import { Ticket } from "@/components/admin/AdminIcons";
 import Link from "next/link";
 
 export const metadata: Metadata = {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Eye } from "lucide-react";
+import { X, Eye } from "@/components/admin/AdminIcons";
 
 export function OrderDetailsModal({ order }: { order: any }) {
   const [isOpen, setIsOpen] = useState(false);
