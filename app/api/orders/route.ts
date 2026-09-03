@@ -62,6 +62,7 @@ export async function POST(req: Request) {
         sku: product.sku,
         quantity: item.quantity,
         price: product.sellingPrice,
+        size: item.size || null,
       };
     });
 
@@ -149,6 +150,50 @@ export async function POST(req: Request) {
       },
       include: { items: true },
     });
+
+    // ─── Decrement stock for each ordered product ─────────────────────────────
+    for (const item of items as any[]) {
+      const product = productMap.get(item.productId);
+      if (!product) continue;
+
+      const orderedSize = item.size || null;
+      let sizeVariants: Array<{ id: string; label: string; stock: number }> | null = null;
+
+      try {
+        if ((product as any).sizeVariants) {
+          sizeVariants = JSON.parse((product as any).sizeVariants);
+        }
+      } catch (_) {}
+
+      if (sizeVariants && sizeVariants.length > 0 && orderedSize) {
+        // Decrement the specific size's stock
+        const updatedVariants = sizeVariants.map((sv) =>
+          sv.label === orderedSize
+            ? { ...sv, stock: Math.max(0, sv.stock - item.quantity) }
+            : sv
+        );
+        const newTotal = updatedVariants.reduce((sum, sv) => sum + sv.stock, 0);
+
+        await prisma.product.update({
+          where: { id: item.productId },
+          data: {
+            sizeVariants: JSON.stringify(updatedVariants),
+            currentStock: newTotal,
+            stockStatus: newTotal <= 0 ? 'OUT_OF_STOCK' : 'IN_STOCK',
+          },
+        });
+      } else {
+        // No size variants — just decrement total stock
+        const newStock = Math.max(0, (product as any).currentStock - item.quantity);
+        await prisma.product.update({
+          where: { id: item.productId },
+          data: {
+            currentStock: newStock,
+            stockStatus: newStock <= 0 ? 'OUT_OF_STOCK' : 'IN_STOCK',
+          },
+        });
+      }
+    }
 
     return NextResponse.json({ success: true, orderId: order.id, order });
   } catch (error: any) {

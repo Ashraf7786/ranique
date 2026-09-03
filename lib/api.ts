@@ -60,20 +60,35 @@ function mapBackendProduct(dbProduct: any, siblings: any[] = []): Product {
   // ── Inject sizes based on product type ───────────────────────────────────
   let sizes = undefined;
 
-  if (isBangle) {
-    const bangleSizes = ['2.2','2.3','2.4','2.5','2.6','2.7','2.8','2.9','2.10','Free Size'];
-    sizes = bangleSizes.map(size => ({
-      id: size.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-      label: size,
-      stock: dbProduct.currentStock > 0 ? 10 : 0,
-    }));
-  } else if (isClothing) {
-    const clothingSizes = ['XS','S','M','L','XL','XXL','Free Size'];
-    sizes = clothingSizes.map(size => ({
-      id: size.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-      label: size,
-      stock: dbProduct.currentStock > 0 ? 10 : 0,
-    }));
+  // 1. Prefer explicit sizeVariants stored in the DB
+  if (dbProduct.sizeVariants) {
+    try {
+      const parsed = JSON.parse(dbProduct.sizeVariants);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        sizes = parsed; // Already in { id, label, stock } format
+      }
+    } catch (e) {
+      console.error('Failed to parse sizeVariants for product', dbProduct.slug);
+    }
+  }
+
+  // 2. Fallback: generate default sizes based on category (no per-size stock info)
+  if (!sizes) {
+    if (isBangle) {
+      const bangleSizes = ['2.2','2.3','2.4','2.5','2.6','2.7','2.8','2.9','2.10','Free Size'];
+      sizes = bangleSizes.map(size => ({
+        id: size.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+        label: size,
+        stock: dbProduct.currentStock > 0 ? 10 : 0,
+      }));
+    } else if (isClothing) {
+      const clothingSizes = ['XS','S','M','L','XL','XXL','Free Size'];
+      sizes = clothingSizes.map(size => ({
+        id: size.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+        label: size,
+        stock: dbProduct.currentStock > 0 ? 10 : 0,
+      }));
+    }
   }
 
 

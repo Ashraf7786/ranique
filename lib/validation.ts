@@ -50,6 +50,16 @@ export const ProductCreateSchema = z.object({
   categoryId: z.string().optional().nullable(),
   brandId: z.string().optional().nullable(),
   colors: z.string().optional().nullable(),
+  sizeVariants: z
+    .array(
+      z.object({
+        id: z.string(),
+        label: z.string(),
+        stock: z.number().int().min(0),
+      })
+    )
+    .optional()
+    .nullable(),
   variantGroupId: z.string().optional().nullable(),
   boughtLastWeek: z.number().int().min(0).optional().nullable(),
   isFeatured: z.boolean().optional(),
@@ -105,6 +115,7 @@ const ShippingAddressSchema = z.object({
 const OrderItemSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
   quantity: z.number().int().min(1, 'Quantity must be at least 1'),
+  size: z.string().optional().nullable(),
 });
 
 export const OrderCreateSchema = z.object({

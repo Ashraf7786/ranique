@@ -52,11 +52,21 @@ export async function POST(request: Request) {
     // Zod validation
     const parsed = ProductCreateSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
-    const { images, ...productData } = parsed.data;
+    const { images, sizeVariants, ...productData } = parsed.data;
+
+    // If size variants provided, recalculate currentStock as sum of all size stocks
+    const sizeVariantsJson = sizeVariants && sizeVariants.length > 0
+      ? JSON.stringify(sizeVariants)
+      : null;
+    const totalStock = sizeVariants && sizeVariants.length > 0
+      ? sizeVariants.reduce((sum, sv) => sum + sv.stock, 0)
+      : productData.currentStock;
 
     const product = await prisma.product.create({
       data: {
         ...productData,
+        currentStock: totalStock,
+        sizeVariants: sizeVariantsJson,
         // If staff is adding, attach their userId as staffId
         staffId: role === 'STAFF' ? (session.user as any).id : undefined,
         // Staff-added products go PENDING_APPROVAL directly

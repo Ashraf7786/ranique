@@ -98,12 +98,22 @@ export async function PATCH(
     const parsed = ProductUpdateSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error);
 
-    const { images, ...productData } = parsed.data;
+    const { images, sizeVariants, ...productData } = parsed.data;
+
+    // If size variants provided, recalculate currentStock
+    const sizeVariantsJson = sizeVariants !== undefined
+      ? (sizeVariants && sizeVariants.length > 0 ? JSON.stringify(sizeVariants) : null)
+      : undefined;
+    const totalStock = sizeVariants && sizeVariants.length > 0
+      ? sizeVariants.reduce((sum: number, sv: any) => sum + sv.stock, 0)
+      : productData.currentStock;
     
     const product = await prisma.product.update({
       where: { id },
       data: {
         ...productData,
+        ...(sizeVariants !== undefined ? { sizeVariants: sizeVariantsJson } : {}),
+        ...(totalStock !== undefined ? { currentStock: totalStock } : {}),
         images: images ? {
           deleteMany: {},
           create: images

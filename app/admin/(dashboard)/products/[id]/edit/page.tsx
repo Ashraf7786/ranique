@@ -7,6 +7,7 @@ import { useRouter, useParams } from "next/navigation";
 import { CldUploadWidget } from "next-cloudinary";
 import { API_URL } from "@/lib/config";
 import { ALL_COLORS, POPULAR_COLORS } from "@/lib/colors";
+import { SizeVariantsInput, SizeVariant } from "@/components/admin/SizeVariantsInput";
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function EditProductPage() {
   const [selectedColor, setSelectedColor] = useState<{label: string, hex: string} | null>(null);
   const [searchColor, setSearchColor] = useState("");
   const [variantGroupId, setVariantGroupId] = useState("");
+  const [sizeVariants, setSizeVariants] = useState<SizeVariant[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [images, setImages] = useState<string[]>([]);
   const [tempUrl, setTempUrl] = useState("");
@@ -80,6 +82,16 @@ export default function EditProductPage() {
               console.warn("Failed to parse colors", e);
             }
           }
+          
+          // Load size variants
+          if (data.sizeVariants) {
+            try {
+              const parsedSizes = JSON.parse(data.sizeVariants);
+              if (Array.isArray(parsedSizes)) setSizeVariants(parsedSizes);
+            } catch (e) {
+              console.warn("Failed to parse sizeVariants", e);
+            }
+          }
         })
         .catch(err => {
           console.error(err);
@@ -112,7 +124,10 @@ export default function EditProductPage() {
         sku: formData.sku,
         sellingPrice: Number(formData.sellingPrice),
         originalPrice: formData.originalPrice ? Number(formData.originalPrice) : null,
-        currentStock: Number(formData.currentStock),
+        currentStock: sizeVariants.length > 0
+          ? sizeVariants.reduce((sum, sv) => sum + sv.stock, 0)
+          : (formData.currentStock ? Number(formData.currentStock) : 0),
+        sizeVariants: sizeVariants.length > 0 ? sizeVariants : null,
         status: formData.status,
         categoryId: formData.categoryId ? formData.categoryId : null,
         images: images.map((img, index) => ({ url: img, isCover: index === 0 })),
@@ -470,16 +485,30 @@ export default function EditProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Current Stock *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Current Stock
+                  {sizeVariants.length > 0 && <span className="ml-1 text-xs text-gray-400">(auto-calculated from sizes)</span>}
+                </label>
                 <input 
-                  required
                   type="number" 
                   name="currentStock"
-                  value={formData.currentStock}
+                  value={
+                    sizeVariants.length > 0
+                      ? sizeVariants.reduce((sum, sv) => sum + sv.stock, 0)
+                      : formData.currentStock
+                  }
                   onChange={handleChange}
                   min="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blush focus:border-brand-rose outline-none"
+                  readOnly={sizeVariants.length > 0}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blush focus:border-brand-rose outline-none ${
+                    sizeVariants.length > 0 ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''
+                  }`}
                 />
+              </div>
+
+              {/* Size Variants */}
+              <div className="pt-2 border-t border-gray-100">
+                <label className="block text-sm font-medium text-gray-700 mb-3">Size Variants &amp; Stock</label>
+                <SizeVariantsInput value={sizeVariants} onChange={setSizeVariants} />
               </div>
             </div>
           </div>

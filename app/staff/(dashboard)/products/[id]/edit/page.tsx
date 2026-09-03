@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Send, Loader2, AlertTriangle } from "lucide-react";
+import { SizeVariantsInput, SizeVariant } from "@/components/admin/SizeVariantsInput";
 
 export default function StaffEditProductPage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function StaffEditProductPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [sizeVariants, setSizeVariants] = useState<SizeVariant[]>([]);
   const [form, setForm] = useState({
     title: "", slug: "", shortDescription: "",
     sellingPrice: "", originalPrice: "", currentStock: "",
@@ -29,6 +31,14 @@ export default function StaffEditProductPage() {
         originalPrice: String(data.originalPrice || ""),
         currentStock: String(data.currentStock || ""),
       });
+      if (data.sizeVariants) {
+        try {
+          const parsedSizes = JSON.parse(data.sizeVariants);
+          if (Array.isArray(parsedSizes)) setSizeVariants(parsedSizes);
+        } catch (e) {
+          console.warn("Failed to parse sizeVariants", e);
+        }
+      }
       setLoading(false);
     });
   }, [id]);
@@ -42,7 +52,8 @@ export default function StaffEditProductPage() {
         ...form,
         sellingPrice: Number(form.sellingPrice),
         originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined,
-        currentStock: Number(form.currentStock),
+        currentStock: sizeVariants.length > 0 ? sizeVariants.reduce((sum, sv) => sum + sv.stock, 0) : Number(form.currentStock),
+        sizeVariants: JSON.stringify(sizeVariants),
       };
 
       const res = await fetch(`/api/products/${id}`, {
@@ -53,7 +64,6 @@ export default function StaffEditProductPage() {
 
       const data = await res.json();
       if (res.status === 202) {
-        // Edit request submitted
         setSuccess(true);
         setTimeout(() => router.push("/staff/products"), 2500);
         return;
@@ -133,7 +143,7 @@ export default function StaffEditProductPage() {
 
           <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
             <h2 className="text-base font-semibold text-gray-900">Pricing & Inventory</h2>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">Selling Price (₹)</label>
                 <input type="number" min={0} value={form.sellingPrice}
@@ -146,12 +156,25 @@ export default function StaffEditProductPage() {
                   onChange={e => setForm({ ...form, originalPrice: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-gold" />
               </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">Stock Quantity</label>
-                <input type="number" min={0} value={form.currentStock}
-                  onChange={e => setForm({ ...form, currentStock: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-gold" />
-              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">Current Stock
+                {sizeVariants.length > 0 && <span className="ml-1 text-xs text-gray-400">(auto-calculated from sizes)</span>}
+              </label>
+              <input 
+                type="number" 
+                value={sizeVariants.length > 0 ? sizeVariants.reduce((sum, sv) => sum + sv.stock, 0) : form.currentStock}
+                onChange={e => setForm({ ...form, currentStock: e.target.value })}
+                min="0"
+                readOnly={sizeVariants.length > 0}
+                className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-gold ${sizeVariants.length > 0 ? 'bg-gray-50 text-gray-500' : ''}`}
+              />
+            </div>
+
+            <div className="pt-2 border-t border-gray-100">
+              <label className="block text-sm font-medium text-gray-700 mb-3">Size Variants & Stock</label>
+              <SizeVariantsInput value={sizeVariants} onChange={setSizeVariants} />
             </div>
           </div>
 

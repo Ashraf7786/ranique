@@ -531,6 +531,7 @@ export default function CheckoutPage() {
     const orderItems = items.map(item => ({
       productId: item.product.id,
       quantity: item.quantity,
+      size: item.selectedSize?.label || null,
     }));
 
     try {
