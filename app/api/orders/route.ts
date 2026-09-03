@@ -50,11 +50,11 @@ export async function POST(req: Request) {
            throw new Error(`Invalid size selected for product: ${product.title}`);
         }
         if (validSize.stock < item.quantity) {
-           throw new Error(`Insufficient stock for size ${item.size} of product: ${product.title}`);
+           throw new Error(`Sorry, we have only ${validSize.stock} in stock for size ${item.size} of ${product.title}.`);
         }
       } else {
         if ((product as any).currentStock < item.quantity) {
-           throw new Error(`Insufficient stock for product: ${product.title}`);
+           throw new Error(`Sorry, we have only ${(product as any).currentStock} in stock for ${product.title}.`);
         }
       }
 

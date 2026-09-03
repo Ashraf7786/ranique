@@ -49,12 +49,15 @@ function StepBadge({ label, icon: Icon, active, done, onClick }: { label: string
 function OrderSummary({ 
   items, subtotal, shipping, discount, finalTotal, 
   couponCode, setCouponCode, applyCoupon, removeCoupon, 
-  appliedCoupon, validatingCoupon, discountLabel, couponError
+  appliedCoupon, validatingCoupon, discountLabel, couponError,
+  updateQuantity, removeItem
 }: { 
   items: any[]; subtotal: number; shipping: number; discount: number; finalTotal: number;
   couponCode: string; setCouponCode: (c: string) => void; applyCoupon: () => void; 
   removeCoupon: () => void; appliedCoupon: any; validatingCoupon: boolean;
   discountLabel: string; couponError: string | null;
+  updateQuantity?: (cartItemId: string, qty: number) => void;
+  removeItem?: (cartItemId: string) => void;
 }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-24">
@@ -77,7 +80,37 @@ function OrderSummary({
               <p className="text-sm font-medium text-brand-ink line-clamp-1">{item.product?.name || item.product?.title}</p>
               {item.selectedColor && <p className="text-xs text-gray-400">{item.selectedColor.label || item.selectedColor.name}</p>}
               {item.selectedSize && <p className="text-xs text-gray-400">{item.selectedSize.label}</p>}
-              <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+              
+              {(() => {
+                let stock = item.product?.currentStock;
+                if (item.selectedSize && item.product?.sizeVariants) {
+                  try {
+                    const parsed = JSON.parse(item.product.sizeVariants);
+                    const sv = parsed.find((v: any) => v.label === item.selectedSize.label);
+                    if (sv) stock = sv.stock;
+                  } catch(e) {}
+                }
+                if (stock !== undefined && stock < 5 && stock > 0) {
+                  return <p className="text-xs text-orange-600 font-semibold mt-0.5">Only {stock} left in stock!</p>
+                }
+                return null;
+              })()}
+
+              <div className="flex items-center gap-3 mt-1.5">
+                {updateQuantity && removeItem ? (
+                  <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg w-max">
+                    <button onClick={() => item.quantity <= 1 ? removeItem(item.cartItemId) : updateQuantity(item.cartItemId, item.quantity - 1)} className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-brand-ink transition-colors">-</button>
+                    <span className="text-xs font-semibold w-6 text-center text-brand-ink">{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)} className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-brand-ink transition-colors">+</button>
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                )}
+                
+                {removeItem && (
+                  <button onClick={() => removeItem(item.cartItemId)} className="text-xs text-red-500 hover:text-red-700">Remove</button>
+                )}
+              </div>
             </div>
             <p className="text-sm font-bold text-brand-ink shrink-0">
               ₹{(() => {
@@ -203,10 +236,11 @@ const STATE_CODE_MAP: Record<string, string> = {
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { items, totalPrice, clearCart, openCart } = useCart();
+  const { items, totalPrice, clearCart, openCart, updateQuantity, removeItem } = useCart();
 
   const [step, setStep] = useState<Step>("address");
   const [loading, setLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Partial<ShippingForm>>({});
   const [orderId, setOrderId] = useState<string | null>(null);
   const [placedOrderData, setPlacedOrderData] = useState<any>(null);
@@ -632,7 +666,7 @@ ${productLines}
         }, 1800);
       }
     } catch (err: any) {
-      alert(err.message || "Something went wrong");
+      setCheckoutError(err.message || "Something went wrong. Please adjust your cart and try again.");
     } finally {
       setLoading(false);
     }
@@ -1025,6 +1059,18 @@ ${productLines}
                   <p className="text-sm text-gray-500">{form.phone} | {form.email}</p>
                 </div>
 
+                {checkoutError && (
+                  <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6 flex items-start justify-between animate-in fade-in slide-in-from-top-2">
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
+                        <X className="w-3 h-3 text-red-600" />
+                      </div>
+                      <p className="text-sm font-medium text-red-800 leading-relaxed">{checkoutError}</p>
+                    </div>
+                    <button onClick={() => setCheckoutError(null)} className="text-red-500 hover:text-red-700 p-1"><X className="w-4 h-4" /></button>
+                  </div>
+                )}
+
                 {/* Payment Options */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
                   <h2 className="font-serif text-2xl font-bold text-brand-ink mb-6 flex items-center gap-3">
@@ -1146,6 +1192,8 @@ ${productLines}
               validatingCoupon={validatingCoupon}
               discountLabel={discountLabel}
               couponError={couponError}
+              updateQuantity={updateQuantity}
+              removeItem={removeItem}
             />
           </div>
         </div>
