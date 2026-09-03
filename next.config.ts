@@ -40,16 +40,7 @@ const nextConfig: NextConfig = {
       // Apply security headers to all routes
       source: "/(.*)",
       headers: securityHeaders,
-    },
-    {
-      source: "/_next/static/(.*)",
-      headers: [
-        {
-          key: "Cache-Control",
-          value: "public, max-age=31536000, immutable",
-        },
-      ],
-    },
+    }
   ],
   images: {
     // Allow SVG files to be served (used for styled placeholder images)
@@ -59,8 +50,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "res.cloudinary.com",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      }
     ],
   },
 };

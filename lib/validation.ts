@@ -114,7 +114,7 @@ const ShippingAddressSchema = z.object({
 
 const OrderItemSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
-  quantity: z.number().int().min(1, 'Quantity must be at least 1'),
+  quantity: z.number().int().min(1, 'Quantity must be at least 1').max(3, 'Quantity cannot exceed 3'),
   size: z.string().optional().nullable(),
 });
 
@@ -162,7 +162,7 @@ export const ProfileUpdateSchema = z.object({
 
 export const CartItemSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
-  quantity: z.number().int().min(1, 'Quantity must be at least 1'),
+  quantity: z.number().int().min(1, 'Quantity must be at least 1').max(3, 'Quantity cannot exceed 3'),
   variantSku: z.string().optional().nullable(),
 });
 

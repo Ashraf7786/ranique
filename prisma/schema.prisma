@@ -103,6 +103,8 @@ model WishlistItem {
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([wishlistId, productId])
+  @@index([wishlistId])
+  @@index([productId])
 }
 
 model Cart {
@@ -126,6 +128,9 @@ model CartItem {
 
   cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([cartId])
+  @@index([productId])
 }
 
 model RecentlyViewed {
@@ -171,6 +176,8 @@ model Category {
   updatedAt   DateTime   @updatedAt
 
   products    Product[]
+
+  @@index([parentId])
 }
 
 model Brand {
@@ -288,6 +295,8 @@ model ProductImage {
   createdAt  DateTime @default(now())
 
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
 }
 
 model ProductOffer {
@@ -383,6 +392,9 @@ model OrderItem {
 
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 // ─── CRM & MARKETING ─────────────────────────────────────────────────────────
