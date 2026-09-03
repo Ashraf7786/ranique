@@ -19,17 +19,21 @@ export function StorefrontUI({ children, categories, announcement }: { children:
 
   return (
     <>
-      <React.Suspense fallback={<div className="h-16 w-full bg-white border-b border-brand-border" />}>
-        <Header categories={categories} announcement={announcement} />
-      </React.Suspense>
+      <div className="print:hidden">
+        <React.Suspense fallback={<div className="h-16 w-full bg-white border-b border-brand-border" />}>
+          <Header categories={categories} announcement={announcement} />
+        </React.Suspense>
+      </div>
       <main id="main-content" className="min-h-screen pb-16 md:pb-0">
         {children}
       </main>
-      <Footer />
-      <CartDrawer />
-      <WhatsAppButton />
-      <MobileBottomNav />
-      <WelcomePopup />
+      <div className="print:hidden">
+        <Footer />
+        <CartDrawer />
+        <WhatsAppButton />
+        <MobileBottomNav />
+        <WelcomePopup />
+      </div>
     </>
   );
 }
