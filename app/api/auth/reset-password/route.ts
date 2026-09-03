@@ -2,9 +2,16 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { ResetPasswordSchema, validationError } from '@/lib/validation';
+import { otpRateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
   try {
+    // Rate limit: 5 requests per 15 minutes per IP (strict) to prevent brute force
+    const limit = otpRateLimit(req);
+    if (!limit.success) {
+      return NextResponse.json({ error: limit.error }, { status: 429 });
+    }
+
     const body = await req.json();
 
     // Zod validation

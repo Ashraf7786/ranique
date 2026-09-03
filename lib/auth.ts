@@ -4,8 +4,15 @@ import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
+const getAuthSecret = () => {
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
+    throw new Error('NEXTAUTH_SECRET is not set in production. This is a critical security risk.');
+  }
+  return process.env.NEXTAUTH_SECRET || "ranique_super_secret_fallback_key_2026_do_not_use_in_prod";
+};
+
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET || "ranique_super_secret_fallback_key_2026_do_not_use_in_prod",
+  secret: getAuthSecret(),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "mock-client-id",

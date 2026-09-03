@@ -20,32 +20,7 @@ export async function POST(req: Request) {
     const { items, shippingAddress, paymentMethod, couponCode,
       razorpayOrderId, razorpayPaymentId, razorpaySignature, paymentProofUrl, utrNumber } = parsed.data;
 
-    let initialStatus = 'CONFIRMED';
-
-    if (paymentMethod === 'ONLINE') {
-      if (razorpayOrderId && razorpayPaymentId && razorpaySignature) {
-        // Razorpay Verification
-        const crypto = require('crypto');
-        const secret = process.env.RAZORPAY_KEY_SECRET;
-        
-        const generatedSignature = crypto
-          .createHmac('sha256', secret)
-          .update(razorpayOrderId + '|' + razorpayPaymentId)
-          .digest('hex');
-          
-        if (generatedSignature !== razorpaySignature) {
-          return NextResponse.json({ error: 'Invalid payment signature' }, { status: 400 });
-        }
-      } else {
-        // Manual QR Code Payment Verification
-        if (!paymentProofUrl || !utrNumber) {
-          return NextResponse.json({ error: 'Payment proof and UTR number are required' }, { status: 400 });
-        }
-        initialStatus = 'PENDING'; // Requires admin verification
-      }
-    } else if (paymentMethod === 'COD' || paymentMethod === 'WHATSAPP') {
-      initialStatus = 'PENDING';
-    }
+    // Payment validation moved below finalTotal calculation for Razorpay amount verification
 
     // Fetch product data to get current prices
     const productIds = items.map((i: any) => i.productId);
@@ -57,6 +32,32 @@ export async function POST(req: Request) {
     const orderItems = items.map((item: any) => {
       const product = productMap.get(item.productId);
       if (!product) throw new Error(`Product not found: ${item.productId}`);
+      
+      // Strict size validation
+      let sizeVariants: any[] = [];
+      try {
+        if ((product as any).sizeVariants) {
+          sizeVariants = JSON.parse((product as any).sizeVariants);
+        }
+      } catch (e) {}
+
+      if (sizeVariants.length > 0) {
+        if (!item.size) {
+           throw new Error(`Size is required for product: ${product.title}`);
+        }
+        const validSize = sizeVariants.find((sv: any) => sv.label === item.size);
+        if (!validSize) {
+           throw new Error(`Invalid size selected for product: ${product.title}`);
+        }
+        if (validSize.stock < item.quantity) {
+           throw new Error(`Insufficient stock for size ${item.size} of product: ${product.title}`);
+        }
+      } else {
+        if ((product as any).currentStock < item.quantity) {
+           throw new Error(`Insufficient stock for product: ${product.title}`);
+        }
+      }
+
       return {
         productId: product.id,
         sku: product.sku,
@@ -116,6 +117,51 @@ export async function POST(req: Request) {
 
     const totalDiscount = appliedCouponDiscount + appliedFirstOrderDiscount;
     const finalTotal = subtotal + shipping - totalDiscount;
+
+    let initialStatus = 'CONFIRMED';
+
+    if (paymentMethod === 'ONLINE') {
+      if (razorpayOrderId && razorpayPaymentId && razorpaySignature) {
+        // Razorpay Verification
+        const crypto = require('crypto');
+        const secret = process.env.RAZORPAY_KEY_SECRET;
+        
+        const generatedSignature = crypto
+          .createHmac('sha256', secret)
+          .update(razorpayOrderId + '|' + razorpayPaymentId)
+          .digest('hex');
+          
+        if (generatedSignature !== razorpaySignature) {
+          return NextResponse.json({ error: 'Invalid payment signature' }, { status: 400 });
+        }
+
+        // Verify the payment amount against the actual calculated order total
+        try {
+          const Razorpay = require('razorpay');
+          const rzp = new Razorpay({
+            key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+            key_secret: process.env.RAZORPAY_KEY_SECRET!,
+          });
+
+          const payment = await rzp.payments.fetch(razorpayPaymentId);
+          // Razorpay returns amount in subunits (paise)
+          if (payment.amount !== Math.round(finalTotal * 100)) {
+            return NextResponse.json({ error: 'Payment amount mismatch. Order rejected.' }, { status: 400 });
+          }
+        } catch (rzpErr) {
+          console.error("Razorpay verify error:", rzpErr);
+          return NextResponse.json({ error: 'Failed to verify payment amount with Razorpay' }, { status: 500 });
+        }
+      } else {
+        // Manual QR Code Payment Verification
+        if (!paymentProofUrl || !utrNumber) {
+          return NextResponse.json({ error: 'Payment proof and UTR number are required' }, { status: 400 });
+        }
+        initialStatus = 'PENDING'; // Requires admin verification
+      }
+    } else if (paymentMethod === 'COD' || paymentMethod === 'WHATSAPP') {
+      initialStatus = 'PENDING';
+    }
 
     const { name, phone, email, line1, line2, city, state, zip, country } = shippingAddress;
 
