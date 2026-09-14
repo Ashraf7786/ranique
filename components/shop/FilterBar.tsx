@@ -562,8 +562,11 @@ export function FilterSidebar({
     setDraftState(filters);
   }, [filters]);
 
-  const setDraft = (next: Partial<ActiveFilters>) =>
-    setDraftState((prev) => ({ ...prev, ...next }));
+  const setDraft = (next: Partial<ActiveFilters>) => {
+    const nextState = { ...draft, ...next };
+    setDraftState(nextState);
+    onChange(nextState); // Auto-apply on desktop
+  };
 
   const draftActiveCount = useMemo(() => computeActiveCount(draft), [draft]);
 
@@ -571,10 +574,6 @@ export function FilterSidebar({
     const reset = { ...draft, ...FILTER_DEFAULTS };
     setDraftState(reset);
     onClearAll();                // also clear applied immediately
-  };
-
-  const handleApply = () => {
-    onChange(draft);              // apply draft → parent
   };
 
   return (
@@ -589,24 +588,6 @@ export function FilterSidebar({
             draftActiveCount={draftActiveCount}
             onClearDraft={handleClearDraft}
           />
-        </div>
-
-        {/* ── Apply Filters button — desktop ── */}
-        <div className="shrink-0 pt-3 pb-1 border-t border-brand-border">
-          <button
-            id="sidebar-apply-filters-btn"
-            type="button"
-            onClick={handleApply}
-            className={cn(
-              "w-full h-10 rounded-full font-sans text-sm font-semibold",
-              "transition-all duration-200 active:scale-[0.98]",
-              draftActiveCount > 0
-                ? "bg-brand-rose text-white hover:bg-brand-rose-dark"
-                : "bg-brand-mist text-brand-slate border border-brand-border"
-            )}
-          >
-            {draftActiveCount > 0 ? `Apply ${draftActiveCount} Filter${draftActiveCount > 1 ? "s" : ""}` : "Apply Filters"}
-          </button>
         </div>
       </div>
     </aside>
