@@ -14,24 +14,21 @@ const NAV_ITEMS = [
 const MEMBERSHIP_CONFIG = {
   standard: {
     label: "Member",
-    color: "text-gray-500",
+    color: "text-gray-600",
     bg: "bg-gray-50",
     border: "border-gray-200",
-    accent: "#9ca3af",
   },
   elite: {
     label: "Elite Pass",
     color: "text-violet-700",
     bg: "bg-violet-50",
     border: "border-violet-200",
-    accent: "#7c3aed",
   },
   gold: {
     label: "Gold Elite",
     color: "text-amber-700",
     bg: "bg-amber-50",
     border: "border-amber-200",
-    accent: "#d97706",
   },
 };
 
@@ -48,26 +45,23 @@ interface AccountSidebarProps {
   totalOrders: number;
 }
 
-// Instagram-style blue verified tick
-function BlueTick() {
+/* Instagram-style blue verified badge — exact replica */
+function VerifiedBadge() {
   return (
     <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
+      viewBox="0 0 40 40"
+      width="16"
+      height="16"
       className="shrink-0"
+      aria-label="Verified"
     >
       <path
-        d="M9.37 5.51A7.35 7.35 0 0 1 12 4.8c.95 0 1.86.25 2.63.71.5-.72 1.2-1.28 2.02-1.59a4.12 4.12 0 0 1 2.55-.12c.85.23 1.6.72 2.17 1.4.57.69.93 1.53 1.03 2.42.1.89-.07 1.8-.48 2.6.72.5 1.28 1.2 1.59 2.02.31.82.36 1.72.12 2.55-.23.85-.72 1.6-1.4 2.17-.69.57-1.53.93-2.42 1.03-.89.1-1.8-.07-2.6-.48-.5.72-1.2 1.28-2.02 1.59-.82.31-1.72.36-2.55.12a4.12 4.12 0 0 1-2.17-1.4 4.12 4.12 0 0 1-1.03-2.42c-.1-.89.07-1.8.48-2.6a4.12 4.12 0 0 1-1.59-2.02 4.12 4.12 0 0 1-.12-2.55c.23-.85.72-1.6 1.4-2.17.69-.57 1.53-.93 2.42-1.03z"
+        d="M19.998 3.094L14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v6.354h6.234L14.638 40l5.36-3.094L25.358 40l2.972-5.15h6.234v-6.354L40 25.359 36.905 20 40 14.641l-5.436-3.137V5.15h-6.234L25.358 0l-5.36 3.094z"
         fill="#1D9BF0"
       />
       <path
-        d="M9 12l2 2 4-4"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M17.204 27.377l-6.548-6.36 3.145-3.056 3.403 3.305 8.74-8.482 3.146 3.055-11.886 11.538z"
+        fill="white"
       />
     </svg>
   );
@@ -92,14 +86,11 @@ export function AccountSidebar({
 
   return (
     <aside className="w-full lg:w-72 shrink-0 space-y-4">
-      {/* Profile Card */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        {/* Clean minimal gradient header */}
-        <div className="h-16 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 relative" />
-
-        <div className="px-6 pb-6 -mt-8 flex flex-col items-center text-center">
+      {/* Profile Card — no overflow hidden so nothing clips */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="px-6 py-6 flex flex-col items-center text-center">
           {/* Avatar */}
-          <div className="w-16 h-16 rounded-full border-[3px] border-white shadow-lg bg-gray-900 text-white flex items-center justify-center text-xl font-serif font-bold overflow-hidden">
+          <div className="w-[72px] h-[72px] rounded-full bg-gray-900 text-white flex items-center justify-center text-2xl font-serif font-bold overflow-hidden shadow-md">
             {user.image ? (
               <img
                 src={user.image}
@@ -112,33 +103,21 @@ export function AccountSidebar({
           </div>
 
           {/* Name + Blue Tick */}
-          <div className="flex items-center gap-1 mt-3">
+          <div className="flex items-center gap-1 mt-4">
             <h2 className="font-serif font-bold text-base text-gray-900">
               {user.firstName} {user.lastName}
             </h2>
-            {user.isEmailVerified && <BlueTick />}
+            {user.isEmailVerified && <VerifiedBadge />}
           </div>
 
-          <p className="text-xs text-gray-400 mt-0.5 truncate max-w-full">
+          <p className="text-xs text-gray-400 mt-1 truncate max-w-full">
             {user.email}
           </p>
 
           {/* Membership Badge */}
           <div
-            className={`mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider border ${tier.bg} ${tier.color} ${tier.border}`}
+            className={`mt-4 inline-flex items-center px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider border ${tier.bg} ${tier.color} ${tier.border}`}
           >
-            {membershipTier === "gold" && (
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: tier.accent }}
-              />
-            )}
-            {membershipTier === "elite" && (
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: tier.accent }}
-              />
-            )}
             {tier.label}
           </div>
 
@@ -146,7 +125,9 @@ export function AccountSidebar({
           <div className="mt-3 flex items-center gap-3 text-[11px] text-gray-400">
             <span>Since {memberSince}</span>
             <span className="w-px h-3 bg-gray-200" />
-            <span>{totalOrders} orders</span>
+            <span>
+              {totalOrders} order{totalOrders !== 1 ? "s" : ""}
+            </span>
           </div>
         </div>
       </div>
@@ -169,13 +150,12 @@ export function AccountSidebar({
                   }
                 `}
               >
-                {/* Active indicator bar */}
                 {active && (
                   <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-gray-900" />
                 )}
                 <span>{label}</span>
                 {active && (
-                  <span className="text-[10px] text-gray-400 font-normal">
+                  <span className="text-gray-300 text-lg leading-none">
                     &#8250;
                   </span>
                 )}
@@ -184,7 +164,6 @@ export function AccountSidebar({
           })}
         </nav>
 
-        {/* Sign Out */}
         <div className="border-t border-gray-100 px-2 py-2">
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
