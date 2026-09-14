@@ -3,18 +3,6 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import {
-  Package,
-  Heart,
-  MapPin,
-  Phone,
-  ShoppingBag,
-  TrendingUp,
-  Clock,
-  ArrowRight,
-  Sparkles,
-  CreditCard,
-} from "lucide-react";
 import { FlashMessage } from "@/components/account/FlashMessage";
 import { formatDateIST } from "@/lib/utils";
 
@@ -89,124 +77,77 @@ export default async function AccountDashboardPage() {
       <FlashMessage />
 
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#b76e79] via-[#c98a93] to-[#d4a0a8] rounded-2xl p-6 sm:p-8 text-white shadow-lg">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-[0.07]">
-          <svg className="w-full h-full" viewBox="0 0 600 200">
-            <defs>
-              <pattern
-                id="grid"
-                x="0"
-                y="0"
-                width="40"
-                height="40"
-                patternUnits="userSpaceOnUse"
-              >
-                <circle cx="20" cy="20" r="1" fill="white" />
-              </pattern>
-            </defs>
-            <rect width="600" height="200" fill="url(#grid)" />
-          </svg>
-        </div>
-
-        {/* Decorative blob */}
-        <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -left-8 -bottom-12 w-32 h-32 rounded-full bg-white/10 blur-xl" />
+      <div className="relative overflow-hidden bg-gray-900 rounded-2xl p-6 sm:p-8 text-white">
+        <div className="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-white/[0.03] blur-xl" />
+        <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-white/[0.03] blur-lg" />
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-1">
-            <Sparkles className="w-5 h-5 text-yellow-200" />
-            <span className="text-sm font-medium text-white/80">
-              Welcome back
-            </span>
-          </div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">
+            Welcome back
+          </p>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold mb-2">
-            Hello, {user.firstName || "there"}!
+            Hello, {user.firstName || "there"}
           </h1>
-          <p className="text-white/80 text-sm sm:text-base max-w-lg">
+          <p className="text-gray-400 text-sm max-w-lg">
             Manage your orders, track shipments, and update your personal
-            details — all in one place.
+            details.
           </p>
         </div>
       </div>
 
       {/* Quick Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-              <Package className="w-5 h-5 text-blue-600" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
-          <p className="text-xs text-gray-500 mt-0.5">Total Orders</p>
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[3px] bg-gray-900" />
+          <p className="text-2xl font-bold text-gray-900 mt-1">{totalOrders}</p>
+          <p className="text-xs text-gray-500 mt-1 font-medium">Total Orders</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-emerald-600" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{deliveredOrders}</p>
-          <p className="text-xs text-gray-500 mt-0.5">Delivered</p>
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[3px] bg-emerald-500" />
+          <p className="text-2xl font-bold text-gray-900 mt-1">{deliveredOrders}</p>
+          <p className="text-xs text-gray-500 mt-1 font-medium">Delivered</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center">
-              <Heart className="w-5 h-5 text-pink-600" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{wishlistCount}</p>
-          <p className="text-xs text-gray-500 mt-0.5">Wishlist Items</p>
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[3px] bg-rose-400" />
+          <p className="text-2xl font-bold text-gray-900 mt-1">{wishlistCount}</p>
+          <p className="text-xs text-gray-500 mt-1 font-medium">Wishlist Items</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
-              <CreditCard className="w-5 h-5 text-amber-600" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">
-            ₹{totalSpent.toLocaleString("en-IN")}
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[3px] bg-amber-400" />
+          <p className="text-2xl font-bold text-gray-900 mt-1">
+            {String.fromCharCode(8377)}{totalSpent.toLocaleString("en-IN")}
           </p>
-          <p className="text-xs text-gray-500 mt-0.5">Total Spent</p>
+          <p className="text-xs text-gray-500 mt-1 font-medium">Total Spent</p>
         </div>
       </div>
 
       {/* Recent Orders */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-gray-400" />
-            <h3 className="font-serif text-lg font-bold text-gray-900">
-              Recent Orders
-            </h3>
-          </div>
+          <h3 className="font-serif text-lg font-bold text-gray-900">
+            Recent Orders
+          </h3>
           <Link
             href="/account/orders"
-            className="inline-flex items-center gap-1 text-sm font-medium text-[#b76e79] hover:text-[#9c5a63] transition-colors"
+            className="text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors"
           >
             View all
-            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         {user.orders.length === 0 ? (
           <div className="p-10 text-center">
-            <div className="w-16 h-16 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-4">
-              <ShoppingBag className="w-8 h-8 text-gray-300" />
-            </div>
             <p className="text-gray-500 font-medium mb-1">No orders yet</p>
             <p className="text-gray-400 text-sm mb-5">
               Start shopping to see your orders here.
             </p>
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-full hover:bg-gray-800 transition-colors"
+              className="inline-flex px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-full hover:bg-gray-800 transition-colors"
             >
-              <ShoppingBag className="w-4 h-4" />
               Browse Shop
             </Link>
           </div>
@@ -279,9 +220,9 @@ export default async function AccountDashboardPage() {
                       </span>
                       <Link
                         href={`/account/orders/${order.id}`}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
+                        className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700 text-sm"
                       >
-                        <ArrowRight className="w-4 h-4" />
+                        &#8250;
                       </Link>
                     </div>
                   </div>
@@ -297,15 +238,12 @@ export default async function AccountDashboardPage() {
         {/* Saved Address */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100">
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-gray-400" />
-              <h3 className="font-serif text-lg font-bold text-gray-900">
-                Default Address
-              </h3>
-            </div>
+            <h3 className="font-serif text-lg font-bold text-gray-900">
+              Default Address
+            </h3>
             <Link
               href="/account/settings"
-              className="text-xs font-semibold text-[#b76e79] hover:text-[#9c5a63] transition-colors uppercase tracking-wider"
+              className="text-xs font-semibold text-gray-900 hover:text-gray-600 transition-colors uppercase tracking-wider"
             >
               Edit
             </Link>
@@ -328,10 +266,9 @@ export default async function AccountDashboardPage() {
                       <br />
                       {address.country}
                     </p>
-                    <div className="flex items-center gap-2 text-sm text-gray-500 pt-1">
-                      <Phone className="w-3.5 h-3.5" />
+                    <p className="text-sm text-gray-500 pt-1">
                       {address.phone}
-                    </div>
+                    </p>
                   </div>
                 ))}
               {user.addresses.filter((a) => a.isDefault).length === 0 && (
@@ -350,17 +287,14 @@ export default async function AccountDashboardPage() {
             </div>
           ) : (
             <div className="p-8 text-center">
-              <div className="w-12 h-12 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-3">
-                <MapPin className="w-6 h-6 text-gray-300" />
-              </div>
               <p className="text-sm text-gray-500 mb-3">
                 No saved addresses yet.
               </p>
               <Link
                 href="/account/settings"
-                className="text-sm font-medium text-[#b76e79] hover:text-[#9c5a63]"
+                className="text-sm font-medium text-gray-900 hover:text-gray-600"
               >
-                Add your first address →
+                Add your first address
               </Link>
             </div>
           )}
@@ -369,18 +303,14 @@ export default async function AccountDashboardPage() {
         {/* Wishlist Preview */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100">
-            <div className="flex items-center gap-2">
-              <Heart className="w-4 h-4 text-gray-400" />
-              <h3 className="font-serif text-lg font-bold text-gray-900">
-                Wishlist
-              </h3>
-            </div>
+            <h3 className="font-serif text-lg font-bold text-gray-900">
+              Wishlist
+            </h3>
             <Link
               href="/account/wishlist"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-[#b76e79] hover:text-[#9c5a63] transition-colors uppercase tracking-wider"
+              className="text-xs font-semibold text-gray-900 hover:text-gray-600 transition-colors uppercase tracking-wider"
             >
               View all
-              <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
           {(user.wishlist?.items?.length ?? 0) > 0 ? (
@@ -421,17 +351,14 @@ export default async function AccountDashboardPage() {
             </div>
           ) : (
             <div className="p-8 text-center">
-              <div className="w-12 h-12 mx-auto bg-pink-50 rounded-full flex items-center justify-center mb-3">
-                <Heart className="w-6 h-6 text-pink-300" />
-              </div>
               <p className="text-sm text-gray-500 mb-3">
                 Your wishlist is empty.
               </p>
               <Link
                 href="/shop"
-                className="text-sm font-medium text-[#b76e79] hover:text-[#9c5a63]"
+                className="text-sm font-medium text-gray-900 hover:text-gray-600"
               >
-                Discover products →
+                Discover products
               </Link>
             </div>
           )}
