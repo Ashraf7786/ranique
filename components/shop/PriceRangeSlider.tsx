@@ -61,36 +61,31 @@ export function PriceRangeSlider({
   );
 
   // ── pointer drag ──────────────────────────────────────────────────────────
-  const handlePointerMove = useCallback(
-    (e: PointerEvent) => {
-      if (!dragging.current) return;
-      const val = valueFromClientX(e.clientX);
-      if (dragging.current === "min") {
-        const next = Math.min(val, clampToSlider(localMax) - step);
-        setLocalMin(next);
-        setMinText(String(next));
-      } else {
-        const next = Math.max(val, clampToSlider(localMin) + step);
-        setLocalMax(next);
-        setMaxText(String(next));
-      }
-    },
-    [valueFromClientX, localMin, localMax, step] // eslint-disable-line
-  );
+  const handlePointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (!dragging.current) return;
+    const val = valueFromClientX(e.clientX);
+    if (dragging.current === "min") {
+      const next = Math.min(val, clampToSlider(localMax) - step);
+      setLocalMin(next);
+      setMinText(String(next));
+    } else {
+      const next = Math.max(val, clampToSlider(localMin) + step);
+      setLocalMax(next);
+      setMaxText(String(next));
+    }
+  };
 
-  const handlePointerUp = useCallback(() => {
+  const handlePointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
     if (!dragging.current) return;
     onChange(localMin, localMax);
     dragging.current = null;
-    window.removeEventListener("pointermove", handlePointerMove);
-    window.removeEventListener("pointerup", handlePointerUp);
-  }, [handlePointerMove, localMin, localMax, onChange]);
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  };
 
-  const startDrag = (handle: "min" | "max") => (e: React.PointerEvent) => {
+  const startDrag = (handle: "min" | "max") => (e: React.PointerEvent<HTMLButtonElement>) => {
     e.preventDefault();
     dragging.current = handle;
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", handlePointerUp);
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   // ── text input handlers ───────────────────────────────────────────────────
@@ -189,6 +184,9 @@ export function PriceRangeSlider({
           type="button"
           aria-label={`Minimum price ${formatLabel(localMin)}`}
           onPointerDown={startDrag("min")}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
           style={{ left: `${minPct}%` }}
           className={cn(
             "absolute top-1/2 -translate-y-1/2 -translate-x-1/2",
@@ -203,6 +201,9 @@ export function PriceRangeSlider({
           type="button"
           aria-label={`Maximum price ${formatLabel(localMax)}`}
           onPointerDown={startDrag("max")}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
           style={{ left: `${maxPct}%` }}
           className={cn(
             "absolute top-1/2 -translate-y-1/2 -translate-x-1/2",

@@ -151,7 +151,7 @@ function SearchBar({ className }: { className?: string }) {
     <form
       role="search"
       onSubmit={handleSubmit}
-      className={cn("relative flex items-center", className)}
+      className={cn("relative flex items-center w-full", className)}
     >
       <label htmlFor="header-search" className="sr-only">
         Search products
@@ -465,7 +465,7 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
                 <Link
                   key={cat.id}
                   href={`/shop?category=${cat.slug}`}
-                  className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-[#b76e79] transition-all duration-150 capitalize"
+                  className="hidden xl:flex px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-[#b76e79] transition-all duration-150 capitalize"
                 >
                   {cat.name}
                 </Link>
@@ -473,7 +473,7 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
             </nav>
 
             {/* Search (Desktop) */}
-            <SearchBar className="hidden md:flex flex-1 max-w-md mx-4 lg:mx-8" />
+            <SearchBar className="hidden md:flex flex-1 w-full max-w-md min-w-[200px] mx-4 lg:mx-8" />
 
             {/* Right icons */}
             <div className="flex items-center gap-0">
