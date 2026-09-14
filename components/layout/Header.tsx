@@ -379,7 +379,7 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
 
             {/* Left Section: Menu & Logo */}
-            <div className="flex items-center">
+            <div className="flex items-center shrink-0">
               {/* Mobile hamburger */}
               <button
                 id="mobile-menu-btn"
@@ -403,22 +403,22 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
             </div>
 
             {/* Desktop nav */}
-            <nav className="hidden lg:flex items-center gap-2 ml-6 relative">
+            <nav className="hidden lg:flex items-center gap-2 xl:gap-4 ml-4 xl:ml-6 relative shrink-0">
               {/* Clothing Hub / Store Hub Link */}
               {isClothingContext ? (
                 <Link
                   href="/shop"
-                  className="px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-150 inline-flex items-center gap-1.5 border border-gray-200 text-gray-700 hover:border-[#b76e79] hover:text-[#b76e79]"
+                  className="px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-150 inline-flex items-center gap-1.5 border border-gray-200 text-gray-700 hover:border-[#b76e79] hover:text-[#b76e79] whitespace-nowrap"
                 >
-                  <ShoppingBagIcon className="w-3.5 h-3.5" />
+                  <ShoppingBagIcon className="w-3.5 h-3.5 shrink-0" />
                   Ranique Store
                 </Link>
               ) : (
                 <Link
                   href="/clothing"
-                  className="px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-150 inline-flex items-center gap-1.5 border border-gray-200 text-gray-700 hover:border-[#b76e79] hover:text-[#b76e79]"
+                  className="px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-150 inline-flex items-center gap-1.5 border border-gray-200 text-gray-700 hover:border-[#b76e79] hover:text-[#b76e79] whitespace-nowrap"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0">
                     <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
                   </svg>
                   Clothing Hub
@@ -428,10 +428,10 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
               <div className="group relative">
                 <Link
                   href="/shop"
-                  className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-gray-700 hover:text-[#b76e79] hover:bg-gray-50 transition-all duration-150 inline-flex items-center gap-1"
+                  className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-gray-700 hover:text-[#b76e79] hover:bg-gray-50 transition-all duration-150 inline-flex items-center gap-1 whitespace-nowrap"
                 >
                   Shop All
-                  <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+                  <svg className="w-3 h-3 text-gray-400 group-hover:rotate-180 transition-transform duration-200 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
                 </Link>
                 
                 {/* Mega Menu Dropdown */}
@@ -461,11 +461,11 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
                 </div>
               </div>
 
-              {displayCategories.slice(0, 5).map((cat: any) => (
+              {displayCategories.slice(0, 3).map((cat: any) => (
                 <Link
                   key={cat.id}
                   href={`/shop?category=${cat.slug}`}
-                  className="hidden xl:flex px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-[#b76e79] transition-all duration-150 capitalize"
+                  className="hidden xl:flex px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-[#b76e79] transition-all duration-150 capitalize whitespace-nowrap"
                 >
                   {cat.name}
                 </Link>
@@ -473,10 +473,10 @@ export function Header({ categories = [], announcement }: { categories?: any[], 
             </nav>
 
             {/* Search (Desktop) */}
-            <SearchBar className="hidden md:flex flex-1 w-full max-w-md min-w-[200px] mx-4 lg:mx-8" />
+            <SearchBar className="hidden md:flex flex-1 w-full max-w-md min-w-[120px] mx-2 lg:mx-6" />
 
             {/* Right icons */}
-            <div className="flex items-center gap-0">
+            <div className="flex items-center gap-0 shrink-0">
               {/* Google Translate */}
               <div className="hidden sm:block mr-2">
                 <GoogleTranslate />
