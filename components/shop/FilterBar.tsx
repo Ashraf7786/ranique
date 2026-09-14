@@ -148,18 +148,13 @@ function ToggleSwitch({
   checked,
   onChange,
   label,
-  id,
 }: {
   checked: boolean;
   onChange: (v: boolean) => void;
   label: string;
-  id: string;
 }) {
   return (
-    <label
-      htmlFor={id}
-      className="flex items-center justify-between py-2 cursor-pointer group"
-    >
+    <label className="flex items-center justify-between py-2 cursor-pointer group">
       <span className="font-sans text-sm text-brand-ink group-hover:text-brand-rose transition-colors">
         {label}
       </span>
@@ -177,7 +172,6 @@ function ToggleSwitch({
           )}
         />
         <input
-          id={id}
           type="checkbox"
           className="sr-only"
           checked={checked}
@@ -201,6 +195,12 @@ function CheckRow({
 }) {
   return (
     <label className="flex items-center gap-3 py-2 cursor-pointer group">
+      <input
+        type="checkbox"
+        className="sr-only"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+      />
       <div
         className={cn(
           "w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-all",
@@ -292,13 +292,11 @@ function FilterPanelContent({
         >
           <div className="space-y-1">
             <ToggleSwitch
-              id="filter-in-stock"
               label="In Stock Only"
               checked={draft.inStock}
               onChange={(v) => setDraft({ inStock: v })}
             />
             <ToggleSwitch
-              id="filter-on-sale"
               label="On Sale"
               checked={draft.onSale}
               onChange={(v) => setDraft({ onSale: v })}
