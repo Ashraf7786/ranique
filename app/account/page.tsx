@@ -3,10 +3,20 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Package, Heart, Settings, User, MapPin, Phone } from "lucide-react";
-import { LogoutButton } from "@/components/account/LogoutButton";
-import { formatDateIST } from "@/lib/utils";
+import {
+  Package,
+  Heart,
+  MapPin,
+  Phone,
+  ShoppingBag,
+  TrendingUp,
+  Clock,
+  ArrowRight,
+  Sparkles,
+  CreditCard,
+} from "lucide-react";
 import { FlashMessage } from "@/components/account/FlashMessage";
+import { formatDateIST } from "@/lib/utils";
 
 export default async function AccountDashboardPage() {
   const session = await getServerSession(authOptions);
@@ -15,8 +25,7 @@ export default async function AccountDashboardPage() {
     redirect("/login");
   }
 
-  // Admins should use the Admin Panel, not the frontend customer dashboard
-  if ((session.user as any).role === 'ADMIN') {
+  if ((session.user as any).role === "ADMIN") {
     redirect("/admin");
   }
 
@@ -25,7 +34,13 @@ export default async function AccountDashboardPage() {
     include: {
       orders: {
         orderBy: { createdAt: "desc" },
-        take: 3,
+        take: 5,
+        include: {
+          items: {
+            include: { product: { include: { images: true } } },
+            take: 2,
+          },
+        },
       },
       addresses: true,
       wishlist: {
@@ -42,160 +57,429 @@ export default async function AccountDashboardPage() {
         },
         orderBy: { viewedAt: "desc" },
         take: 4,
-      }
-    }
+      },
+    },
   });
 
   if (!user) {
     redirect("/login");
   }
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex flex-col md:flex-row gap-8">
-        
-        {/* Sidebar */}
-        <div className="w-full md:w-64 shrink-0 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
-            <div className="w-20 h-20 bg-brand-rose text-white rounded-full flex items-center justify-center text-3xl font-serif font-bold mb-4 shadow-sm overflow-hidden">
-              {user.image ? (
-                <img src={user.image} alt={user.firstName || "Profile"} className="w-full h-full object-cover" />
-              ) : (
-                user.firstName?.[0] || user.email[0].toUpperCase()
-              )}
-            </div>
-            <h2 className="font-serif font-bold text-lg text-brand-ink">
-              {user.firstName} {user.lastName}
-            </h2>
-            <p className="text-sm text-gray-500 mb-4">{user.email}</p>
-            <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wider rounded-full">
-              Verified User
-            </span>
-          </div>
+  const totalOrders = user.orders.length;
+  const wishlistCount = user.wishlist?.items?.length ?? 0;
+  const deliveredOrders = user.orders.filter(
+    (o) => o.status === "DELIVERED"
+  ).length;
+  const totalSpent = user.orders
+    .filter((o) => o.status !== "CANCELLED")
+    .reduce((sum, o) => sum + Number(o.totalAmount), 0);
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <nav className="flex flex-col">
-              <Link href="/account" className="flex items-center gap-3 px-6 py-4 bg-gray-50 border-l-2 border-brand-rose text-brand-rose font-medium transition-colors">
-                <User className="w-5 h-5" />
-                Dashboard
-              </Link>
-              <Link href="/account/orders" className="flex items-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 hover:text-brand-ink transition-colors">
-                <Package className="w-5 h-5" />
-                My Orders
-              </Link>
-              <Link href="/account/wishlist" className="flex items-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 hover:text-brand-ink transition-colors">
-                <Heart className="w-5 h-5" />
-                Wishlist
-              </Link>
-              <Link href="/account/settings" className="flex items-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 hover:text-brand-ink transition-colors border-t border-gray-100">
-                <Settings className="w-5 h-5" />
-                Settings
-              </Link>
-              <LogoutButton />
-            </nav>
-          </div>
+  const statusColors: Record<string, string> = {
+    PENDING: "bg-amber-50 text-amber-700 border-amber-200",
+    CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200",
+    PROCESSING: "bg-indigo-50 text-indigo-700 border-indigo-200",
+    SHIPPED: "bg-cyan-50 text-cyan-700 border-cyan-200",
+    DELIVERED: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    CANCELLED: "bg-red-50 text-red-600 border-red-200",
+    RETURNED: "bg-gray-50 text-gray-600 border-gray-200",
+  };
+
+  return (
+    <div className="space-y-6 pb-20 lg:pb-0">
+      <FlashMessage />
+
+      {/* Welcome Banner */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#b76e79] via-[#c98a93] to-[#d4a0a8] rounded-2xl p-6 sm:p-8 text-white shadow-lg">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-[0.07]">
+          <svg className="w-full h-full" viewBox="0 0 600 200">
+            <defs>
+              <pattern
+                id="grid"
+                x="0"
+                y="0"
+                width="40"
+                height="40"
+                patternUnits="userSpaceOnUse"
+              >
+                <circle cx="20" cy="20" r="1" fill="white" />
+              </pattern>
+            </defs>
+            <rect width="600" height="200" fill="url(#grid)" />
+          </svg>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 space-y-8">
-          
-          <FlashMessage />
+        {/* Decorative blob */}
+        <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
+        <div className="absolute -left-8 -bottom-12 w-32 h-32 rounded-full bg-white/10 blur-xl" />
 
-          {/* Welcome Banner */}
-          <div className="bg-gradient-to-r from-brand-sand to-brand-blush rounded-2xl p-8 border border-brand-rose-light">
-            <h1 className="font-serif text-3xl font-bold text-brand-ink mb-2">
-              Welcome to your dashboard, {user.firstName}!
-            </h1>
-            <p className="text-gray-700">
-              Manage your orders, view your wishlist, and update your personal details here.
-            </p>
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-1">
+            <Sparkles className="w-5 h-5 text-yellow-200" />
+            <span className="text-sm font-medium text-white/80">
+              Welcome back
+            </span>
           </div>
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold mb-2">
+            Hello, {user.firstName || "there"}!
+          </h1>
+          <p className="text-white/80 text-sm sm:text-base max-w-lg">
+            Manage your orders, track shipments, and update your personal
+            details — all in one place.
+          </p>
+        </div>
+      </div>
 
-          {/* Recent Orders */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-serif text-xl font-bold text-brand-ink">Recent Orders</h3>
-              <Link href="/account/orders" className="text-sm font-medium text-brand-rose hover:underline">View all</Link>
+      {/* Quick Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+              <Package className="w-5 h-5 text-blue-600" />
             </div>
-            {user.orders.length === 0 ? (
-              <div className="bg-white rounded-xl border border-gray-100 p-8 text-center text-gray-500 shadow-sm">
-                You haven't placed any orders yet.
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {user.orders.map(order => (
-                  <div key={order.id} className="bg-white rounded-xl border border-gray-100 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-                    <div>
-                      <p className="font-semibold text-brand-ink text-lg">Order #{order.id.slice(-8).toUpperCase()}</p>
-                      <p className="text-sm text-gray-500">{formatDateIST(order.createdAt, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
+          <p className="text-xs text-gray-500 mt-0.5">Total Orders</p>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-emerald-600" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">{deliveredOrders}</p>
+          <p className="text-xs text-gray-500 mt-0.5">Delivered</p>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center">
+              <Heart className="w-5 h-5 text-pink-600" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">{wishlistCount}</p>
+          <p className="text-xs text-gray-500 mt-0.5">Wishlist Items</p>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+              <CreditCard className="w-5 h-5 text-amber-600" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">
+            ₹{totalSpent.toLocaleString("en-IN")}
+          </p>
+          <p className="text-xs text-gray-500 mt-0.5">Total Spent</p>
+        </div>
+      </div>
+
+      {/* Recent Orders */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-gray-400" />
+            <h3 className="font-serif text-lg font-bold text-gray-900">
+              Recent Orders
+            </h3>
+          </div>
+          <Link
+            href="/account/orders"
+            className="inline-flex items-center gap-1 text-sm font-medium text-[#b76e79] hover:text-[#9c5a63] transition-colors"
+          >
+            View all
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {user.orders.length === 0 ? (
+          <div className="p-10 text-center">
+            <div className="w-16 h-16 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-4">
+              <ShoppingBag className="w-8 h-8 text-gray-300" />
+            </div>
+            <p className="text-gray-500 font-medium mb-1">No orders yet</p>
+            <p className="text-gray-400 text-sm mb-5">
+              Start shopping to see your orders here.
+            </p>
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-full hover:bg-gray-800 transition-colors"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              Browse Shop
+            </Link>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-50">
+            {user.orders.map((order) => {
+              const statusClass =
+                statusColors[order.status] ||
+                "bg-gray-50 text-gray-600 border-gray-200";
+              return (
+                <div
+                  key={order.id}
+                  className="px-5 sm:px-6 py-4 hover:bg-gray-50/50 transition-colors"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      {/* Product thumbnails */}
+                      <div className="flex -space-x-2 shrink-0">
+                        {order.items.slice(0, 2).map((item, i) => (
+                          <div
+                            key={item.id}
+                            className="w-11 h-11 rounded-xl bg-gray-100 overflow-hidden border-2 border-white shadow-sm"
+                            style={{ zIndex: 2 - i }}
+                          >
+                            <img
+                              src={
+                                item.product.images.find(
+                                  (img) => img.isCover
+                                )?.url ||
+                                item.product.images[0]?.url ||
+                                ""
+                              }
+                              alt={item.product.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ))}
+                        {order.items.length > 2 && (
+                          <div className="w-11 h-11 rounded-xl bg-gray-100 border-2 border-white shadow-sm flex items-center justify-center text-xs font-bold text-gray-500">
+                            +{order.items.length - 2}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="font-semibold text-gray-900 text-sm">
+                          Order #{order.id.slice(-8).toUpperCase()}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {formatDateIST(order.createdAt, {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                          {" · "}
+                          {order.items.length} item
+                          {order.items.length !== 1 ? "s" : ""}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-brand-ink text-lg">₹{order.totalAmount.toLocaleString('en-IN')}</p>
-                      <span className="inline-block mt-1 px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider rounded-full">
+
+                    <div className="flex items-center gap-3 sm:gap-4 sm:shrink-0">
+                      <span
+                        className={`inline-flex px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border ${statusClass}`}
+                      >
                         {order.status}
                       </span>
+                      <span className="font-bold text-gray-900 text-sm tabular-nums">
+                        ₹{Number(order.totalAmount).toLocaleString("en-IN")}
+                      </span>
+                      <Link
+                        href={`/account/orders/${order.id}`}
+                        className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Row: Address + Wishlist Preview */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        {/* Saved Address */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-gray-400" />
+              <h3 className="font-serif text-lg font-bold text-gray-900">
+                Default Address
+              </h3>
+            </div>
+            <Link
+              href="/account/settings"
+              className="text-xs font-semibold text-[#b76e79] hover:text-[#9c5a63] transition-colors uppercase tracking-wider"
+            >
+              Edit
+            </Link>
+          </div>
+          {user.addresses && user.addresses.length > 0 ? (
+            <div className="p-5 sm:p-6">
+              {user.addresses
+                .filter((a) => a.isDefault)
+                .slice(0, 1)
+                .map((address) => (
+                  <div key={address.id} className="space-y-2">
+                    <p className="font-semibold text-gray-900">
+                      {address.name}
+                    </p>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {address.line1}
+                      {address.line2 ? `, ${address.line2}` : ""}
+                      <br />
+                      {address.city}, {address.state} — {address.zip}
+                      <br />
+                      {address.country}
+                    </p>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 pt-1">
+                      <Phone className="w-3.5 h-3.5" />
+                      {address.phone}
                     </div>
                   </div>
                 ))}
-              </div>
-            )}
-          </div>
-
-          {/* Saved Address */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-serif text-xl font-bold text-brand-ink">Saved Address</h3>
-              <Link href="/account/settings" className="text-sm font-medium text-brand-rose hover:underline">Edit profile</Link>
+              {user.addresses.filter((a) => a.isDefault).length === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-sm text-gray-500">
+                    No default address set.
+                  </p>
+                  <Link
+                    href="/account/settings"
+                    className="text-sm text-[#b76e79] font-medium mt-1 inline-block"
+                  >
+                    Set one now →
+                  </Link>
+                </div>
+              )}
             </div>
-            {user.addresses && user.addresses.length > 0 ? (
-              <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-                {user.addresses.map(address => (
-                  <div key={address.id} className="mb-4 last:mb-0">
-                    <p className="font-semibold text-brand-ink text-lg">{address.name}</p>
-                    <p className="text-gray-600 text-sm mt-1">{address.line1}{address.line2 ? `, ${address.line2}` : ""}</p>
-                    <p className="text-gray-600 text-sm">{address.city}, {address.state} - {address.zip}</p>
-                    <p className="text-gray-600 text-sm">{address.country}</p>
-                    <p className="text-gray-600 text-sm mt-2 flex items-center gap-2"><Phone className="w-4 h-4" /> {address.phone}</p>
-                  </div>
-                ))}
+          ) : (
+            <div className="p-8 text-center">
+              <div className="w-12 h-12 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-3">
+                <MapPin className="w-6 h-6 text-gray-300" />
               </div>
-            ) : (
-              <div className="bg-white rounded-xl border border-gray-100 p-8 text-center text-gray-500 shadow-sm flex flex-col items-center gap-3">
-                <MapPin className="w-8 h-8 text-gray-300" />
-                <p>No saved addresses.</p>
-                <Link href="/account/settings" className="px-5 py-2 bg-brand-ink text-white rounded-lg text-sm font-medium hover:bg-gray-900 transition-colors">Add Address</Link>
-              </div>
-            )}
-          </div>
+              <p className="text-sm text-gray-500 mb-3">
+                No saved addresses yet.
+              </p>
+              <Link
+                href="/account/settings"
+                className="text-sm font-medium text-[#b76e79] hover:text-[#9c5a63]"
+              >
+                Add your first address →
+              </Link>
+            </div>
+          )}
+        </div>
 
-          {/* Recently Viewed */}
-          {user.recentlyViewed.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-serif text-xl font-bold text-brand-ink">Recently Viewed</h3>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {user.recentlyViewed.map(rv => (
-                  <Link key={rv.id} href={`/product/${rv.product.slug}`} className="group block bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all">
-                    <div className="aspect-[4/5] bg-gray-100 relative">
-                      <img 
-                        src={rv.product.images.find(img => img.isCover)?.url || rv.product.images[0]?.url || ''} 
-                        alt={rv.product.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        {/* Wishlist Preview */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <Heart className="w-4 h-4 text-gray-400" />
+              <h3 className="font-serif text-lg font-bold text-gray-900">
+                Wishlist
+              </h3>
+            </div>
+            <Link
+              href="/account/wishlist"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-[#b76e79] hover:text-[#9c5a63] transition-colors uppercase tracking-wider"
+            >
+              View all
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          {(user.wishlist?.items?.length ?? 0) > 0 ? (
+            <div className="p-4 sm:p-5">
+              <div className="grid grid-cols-2 gap-3">
+                {user.wishlist!.items.slice(0, 4).map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/product/${item.product.slug}`}
+                    className="group flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+                      <img
+                        src={
+                          item.product.images.find((img) => img.isCover)
+                            ?.url ||
+                          item.product.images[0]?.url ||
+                          ""
+                        }
+                        alt={item.product.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />
                     </div>
-                    <div className="p-4">
-                      <h4 className="font-serif font-medium text-brand-ink truncate text-sm">{rv.product.title}</h4>
-                      <p className="text-brand-rose font-bold text-sm mt-1">₹{rv.product.sellingPrice.toLocaleString('en-IN')}</p>
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-gray-900 truncate">
+                        {item.product.title}
+                      </p>
+                      <p className="text-xs font-bold text-[#b76e79]">
+                        ₹
+                        {Number(item.product.sellingPrice).toLocaleString(
+                          "en-IN"
+                        )}
+                      </p>
                     </div>
                   </Link>
                 ))}
               </div>
             </div>
+          ) : (
+            <div className="p-8 text-center">
+              <div className="w-12 h-12 mx-auto bg-pink-50 rounded-full flex items-center justify-center mb-3">
+                <Heart className="w-6 h-6 text-pink-300" />
+              </div>
+              <p className="text-sm text-gray-500 mb-3">
+                Your wishlist is empty.
+              </p>
+              <Link
+                href="/shop"
+                className="text-sm font-medium text-[#b76e79] hover:text-[#9c5a63]"
+              >
+                Discover products →
+              </Link>
+            </div>
           )}
-
         </div>
       </div>
+
+      {/* Recently Viewed */}
+      {user.recentlyViewed.length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-5 sm:px-6 py-4 border-b border-gray-100">
+            <h3 className="font-serif text-lg font-bold text-gray-900">
+              Recently Viewed
+            </h3>
+          </div>
+          <div className="p-4 sm:p-5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+              {user.recentlyViewed.map((rv) => (
+                <Link
+                  key={rv.id}
+                  href={`/product/${rv.product.slug}`}
+                  className="group block bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-all duration-300"
+                >
+                  <div className="aspect-square bg-gray-100 overflow-hidden">
+                    <img
+                      src={
+                        rv.product.images.find((img) => img.isCover)?.url ||
+                        rv.product.images[0]?.url ||
+                        ""
+                      }
+                      alt={rv.product.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <h4 className="text-xs font-medium text-gray-900 truncate">
+                      {rv.product.title}
+                    </h4>
+                    <p className="text-xs font-bold text-[#b76e79] mt-1">
+                      ₹
+                      {Number(rv.product.sellingPrice).toLocaleString("en-IN")}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

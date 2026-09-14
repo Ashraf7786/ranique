@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { User, MapPin, Loader2, Save, ArrowLeft } from "lucide-react";
+import { User, MapPin, Loader2, Save, CheckCircle2, AlertCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 export default function SettingsPage() {
@@ -109,7 +108,7 @@ export default function SettingsPage() {
       }
       
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      setTimeout(() => setSuccess(false), 4000);
     } catch (err: any) {
       setError(err.message || "An error occurred");
     } finally {
@@ -118,118 +117,253 @@ export default function SettingsPage() {
   };
 
   if (loading) {
-    return <div className="min-h-[50vh] flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-brand-rose" /></div>;
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-[#b76e79]" />
+          <p className="text-sm text-gray-500">Loading your profile…</p>
+        </div>
+      </div>
+    );
   }
 
-  const inputClass = "w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-rose focus:border-transparent transition-all";
+  const inputClass =
+    "w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b76e79]/30 focus:border-[#b76e79] transition-all duration-200";
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <Link href="/account" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-brand-ink mb-6 transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-      </Link>
-      
-      <div className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-brand-ink">Profile Settings</h1>
-        <p className="text-gray-500 mt-2">Manage your personal information and default shipping address.</p>
+    <div className="space-y-6 pb-20 lg:pb-0">
+      {/* Page Header */}
+      <div>
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900">
+          Profile Settings
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Manage your personal information and default shipping address.
+        </p>
       </div>
 
+      {/* Success / Error Toast */}
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-green-500" />
-          Profile saved successfully!
+        <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl animate-fade-in">
+          <CheckCircle2 className="w-5 h-5 shrink-0" />
+          <span className="text-sm font-medium">Profile saved successfully!</span>
         </div>
       )}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">{error}</div>
+        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl animate-fade-in">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <span className="text-sm font-medium">{error}</span>
+        </div>
       )}
 
-      <form onSubmit={handleSave} className="space-y-8">
+      <form onSubmit={handleSave} className="space-y-6">
         {/* Personal Details */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
-          <h2 className="flex items-center gap-2 font-serif text-xl font-bold text-brand-ink mb-6">
-            <User className="w-5 h-5 text-brand-rose" /> Personal Information
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">First Name</label>
-              <input name="firstName" value={form.firstName} onChange={handleChange} className={inputClass} placeholder="Jane" />
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-5 sm:px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+              <User className="w-4 h-4 text-blue-600" />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Last Name</label>
-              <input name="lastName" value={form.lastName} onChange={handleChange} className={inputClass} placeholder="Doe" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Mobile Number</label>
-              <input name="mobileNumber" value={form.mobileNumber} onChange={handleChange} className={inputClass} placeholder="+91 9288467633" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Date of Birth</label>
-              <input type="date" name="dob" value={form.dob} onChange={handleChange} className={inputClass} />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Gender</label>
-              <select name="gender" value={form.gender} onChange={handleChange} className={inputClass}>
-                <option value="">Select Gender</option>
-                <option value="FEMALE">Female</option>
-                <option value="MALE">Male</option>
-                <option value="OTHER">Other</option>
-                <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Email Address</label>
-              <input value={session?.user?.email || ""} readOnly className={`${inputClass} bg-gray-50 text-gray-500 cursor-not-allowed`} />
-              <p className="text-xs text-gray-400 mt-1">Email cannot be changed.</p>
+            <h2 className="font-serif text-lg font-bold text-gray-900">
+              Personal Information
+            </h2>
+          </div>
+          <div className="p-5 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                  First Name
+                </label>
+                <input
+                  name="firstName"
+                  value={form.firstName}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Jane"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                  Last Name
+                </label>
+                <input
+                  name="lastName"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Doe"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                  Mobile Number
+                </label>
+                <input
+                  name="mobileNumber"
+                  value={form.mobileNumber}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="9288467633"
+                />
+                <p className="text-[11px] text-gray-400 mt-1">10 digits, without country code</p>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                  Date of Birth
+                </label>
+                <input
+                  type="date"
+                  name="dob"
+                  value={form.dob}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                  Gender
+                </label>
+                <select
+                  name="gender"
+                  value={form.gender}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="FEMALE">Female</option>
+                  <option value="MALE">Male</option>
+                  <option value="OTHER">Other</option>
+                  <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                  Email Address
+                </label>
+                <input
+                  value={session?.user?.email || ""}
+                  readOnly
+                  className={`${inputClass} !bg-gray-50 !text-gray-400 cursor-not-allowed`}
+                />
+                <p className="text-[11px] text-gray-400 mt-1">Email cannot be changed.</p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Saved Address */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
-          <h2 className="flex items-center gap-2 font-serif text-xl font-bold text-brand-ink mb-6">
-            <MapPin className="w-5 h-5 text-brand-rose" /> Default Shipping Address
-          </h2>
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Recipient Name</label>
-                <input name="address.name" value={form.address.name} onChange={handleChange} className={inputClass} placeholder="Jane Doe" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Contact Phone</label>
-                <input name="address.phone" value={form.address.phone} onChange={handleChange} className={inputClass} placeholder="Phone for delivery" />
-              </div>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-5 sm:px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+              <MapPin className="w-4 h-4 text-emerald-600" />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Address Line 1</label>
-              <input name="address.line1" value={form.address.line1} onChange={handleChange} className={inputClass} placeholder="House/Flat No., Building, Street" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Address Line 2 (Optional)</label>
-              <input name="address.line2" value={form.address.line2} onChange={handleChange} className={inputClass} placeholder="Landmark, Area, Colony" />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">City</label>
-                <input name="address.city" value={form.address.city} onChange={handleChange} className={inputClass} />
+            <h2 className="font-serif text-lg font-bold text-gray-900">
+              Default Shipping Address
+            </h2>
+          </div>
+          <div className="p-5 sm:p-6">
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Recipient Name
+                  </label>
+                  <input
+                    name="address.name"
+                    value={form.address.name}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="Jane Doe"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Contact Phone
+                  </label>
+                  <input
+                    name="address.phone"
+                    value={form.address.phone}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="Phone for delivery"
+                  />
+                </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">State</label>
-                <input name="address.state" value={form.address.state} onChange={handleChange} className={inputClass} />
+                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                  Address Line 1
+                </label>
+                <input
+                  name="address.line1"
+                  value={form.address.line1}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="House/Flat No., Building, Street"
+                />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">PIN Code</label>
-                <input name="address.zip" value={form.address.zip} onChange={handleChange} className={inputClass} />
+                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                  Address Line 2 (Optional)
+                </label>
+                <input
+                  name="address.line2"
+                  value={form.address.line2}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Landmark, Area, Colony"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    City
+                  </label>
+                  <input
+                    name="address.city"
+                    value={form.address.city}
+                    onChange={handleChange}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    State
+                  </label>
+                  <input
+                    name="address.state"
+                    value={form.address.state}
+                    onChange={handleChange}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    PIN Code
+                  </label>
+                  <input
+                    name="address.zip"
+                    value={form.address.zip}
+                    onChange={handleChange}
+                    className={inputClass}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end pt-4">
-          <button type="submit" disabled={saving} className="px-8 py-3.5 bg-brand-ink text-white font-bold rounded-xl hover:bg-gray-900 transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-60 min-w-[200px]">
-            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-            {saving ? "Saving..." : "Save Changes"}
+        {/* Save Button */}
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={saving}
+            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed min-w-[200px]"
+          >
+            {saving ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Save className="w-5 h-5" />
+            )}
+            {saving ? "Saving…" : "Save Changes"}
           </button>
         </div>
       </form>

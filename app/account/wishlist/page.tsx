@@ -3,8 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Package, Heart, Settings, User, ShoppingBag } from "lucide-react";
-import { LogoutButton } from "@/components/account/LogoutButton";
+import { Heart, ShoppingBag, Eye } from "lucide-react";
 
 export default async function AccountWishlistPage() {
   const session = await getServerSession(authOptions);
@@ -13,7 +12,7 @@ export default async function AccountWishlistPage() {
     redirect("/login");
   }
 
-  if ((session.user as any).role === 'ADMIN') {
+  if ((session.user as any).role === "ADMIN") {
     redirect("/admin");
   }
 
@@ -24,13 +23,13 @@ export default async function AccountWishlistPage() {
         include: {
           items: {
             include: {
-              product: { include: { images: true } }
+              product: { include: { images: true } },
             },
-            orderBy: { createdAt: "desc" }
-          }
-        }
-      }
-    }
+            orderBy: { createdAt: "desc" },
+          },
+        },
+      },
+    },
   });
 
   if (!user) {
@@ -40,130 +39,138 @@ export default async function AccountWishlistPage() {
   const wishlistItems = user.wishlist?.items ?? [];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex flex-col md:flex-row gap-8">
-
-        {/* Sidebar */}
-        <div className="w-full md:w-64 shrink-0 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
-            <div className="w-20 h-20 bg-brand-rose text-white rounded-full flex items-center justify-center text-3xl font-serif font-bold mb-4 shadow-sm overflow-hidden">
-              {user.image ? (
-                <img src={user.image} alt={user.firstName || "Profile"} className="w-full h-full object-cover" />
-              ) : (
-                user.firstName?.[0] || user.email[0].toUpperCase()
-              )}
-            </div>
-            <h2 className="font-serif font-bold text-lg text-brand-ink">
-              {user.firstName} {user.lastName}
-            </h2>
-            <p className="text-sm text-gray-500 mb-4">{user.email}</p>
-            <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wider rounded-full">
-              Verified User
-            </span>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <nav className="flex flex-col">
-              <Link href="/account" className="flex items-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 hover:text-brand-ink transition-colors">
-                <User className="w-5 h-5" />
-                Dashboard
-              </Link>
-              <Link href="/account/orders" className="flex items-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 hover:text-brand-ink transition-colors">
-                <Package className="w-5 h-5" />
-                My Orders
-              </Link>
-              <Link href="/account/wishlist" className="flex items-center gap-3 px-6 py-4 bg-gray-50 border-l-2 border-brand-rose text-brand-rose font-medium transition-colors">
-                <Heart className="w-5 h-5" />
-                Wishlist
-              </Link>
-              <Link href="/account/settings" className="flex items-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 hover:text-brand-ink transition-colors border-t border-gray-100">
-                <Settings className="w-5 h-5" />
-                Settings
-              </Link>
-              <LogoutButton />
-            </nav>
-          </div>
+    <div className="space-y-6 pb-20 lg:pb-0">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900">
+            My Wishlist
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {wishlistItems.length} item{wishlistItems.length !== 1 ? "s" : ""} saved
+          </p>
         </div>
+        {wishlistItems.length > 0 && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 text-[#b76e79] text-xs font-bold rounded-full border border-pink-100">
+            <Heart className="w-3 h-3" />
+            {wishlistItems.length}
+          </span>
+        )}
+      </div>
 
-        {/* Main Content */}
-        <div className="flex-1 space-y-8">
-          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-            <h1 className="font-serif text-3xl font-bold text-brand-ink">My Wishlist</h1>
-            {wishlistItems.length > 0 && (
-              <span className="px-3 py-1 bg-brand-mist text-brand-rose text-sm font-semibold rounded-full border border-brand-rose/20">
-                {wishlistItems.length} item{wishlistItems.length !== 1 ? "s" : ""}
-              </span>
-            )}
+      {wishlistItems.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-sm">
+          <div className="w-20 h-20 mx-auto bg-pink-50 rounded-full flex items-center justify-center mb-5">
+            <Heart className="w-10 h-10 text-pink-300" strokeWidth={1.5} />
           </div>
+          <h3 className="font-serif text-2xl font-bold text-gray-900 mb-2">
+            Your wishlist is empty
+          </h3>
+          <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+            Save your favorite products here by clicking the heart icon. Come back anytime to view or order them!
+          </p>
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-800 transition-colors shadow-sm"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            Start Shopping
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+          {wishlistItems.map((item) => {
+            const product = item.product;
+            const coverImage =
+              product.images.find((img) => img.isCover) || product.images[0];
+            const hasDiscount =
+              product.originalPrice &&
+              Number(product.originalPrice) > Number(product.sellingPrice);
+            const discountPercent = hasDiscount
+              ? Math.round(
+                  ((Number(product.originalPrice) -
+                    Number(product.sellingPrice)) /
+                    Number(product.originalPrice)) *
+                    100
+                )
+              : 0;
 
-          {wishlistItems.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-sm flex flex-col items-center">
-              <div className="w-20 h-20 bg-brand-blush rounded-full flex items-center justify-center mb-4">
-                <Heart className="w-10 h-10 text-brand-rose" strokeWidth={1.5} />
-              </div>
-              <h3 className="font-serif text-2xl font-bold text-brand-ink mb-2">Your wishlist is empty</h3>
-              <p className="text-gray-500 mb-6 max-w-sm">
-                Save your favorite products here by clicking the heart icon. Come back anytime to view or order them!
-              </p>
-              <Link
-                href="/shop"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-brand-ink text-white font-medium rounded-full hover:bg-gray-900 transition-colors shadow-sm"
+            return (
+              <div
+                key={item.id}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
               >
-                <ShoppingBag className="w-4 h-4" />
-                Start Shopping
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {wishlistItems.map(item => {
-                const product = item.product;
-                const coverImage = product.images.find(img => img.isCover) || product.images[0];
-                return (
-                  <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
-                    <div className="aspect-[4/5] bg-gray-100 relative overflow-hidden">
-                      {coverImage ? (
-                        <img
-                          src={coverImage.url}
-                          alt={product.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-brand-mist/50">
-                          <ShoppingBag className="w-12 h-12 text-brand-rose opacity-50" />
-                        </div>
-                      )}
-                      {product.badge && (
-                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-brand-rose text-white text-[10px] font-bold uppercase">
-                          {product.badge}
-                        </div>
-                      )}
+                <div className="aspect-[3/4] bg-gray-100 relative overflow-hidden">
+                  {coverImage ? (
+                    <img
+                      src={coverImage.url}
+                      alt={product.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                      <ShoppingBag className="w-12 h-12 text-gray-200" />
                     </div>
-                    <div className="p-3">
-                      <h3 className="font-sans font-semibold text-sm text-brand-ink line-clamp-2 mb-1">
-                        {product.title}
-                      </h3>
-                      <p className="font-bold text-brand-rose text-sm mb-3">
-                        ₹{product.sellingPrice.toLocaleString("en-IN")}
-                        {product.originalPrice && product.originalPrice > product.sellingPrice && (
-                          <span className="text-gray-400 line-through text-xs ml-1 font-normal">
-                            ₹{product.originalPrice.toLocaleString("en-IN")}
-                          </span>
-                        )}
-                      </p>
-                      <Link
-                        href={`/product/${product.slug}`}
-                        className="flex items-center justify-center w-full h-8 rounded-full bg-brand-ink text-white text-xs font-semibold hover:bg-gray-900 transition-colors"
-                      >
-                        View Product
-                      </Link>
+                  )}
+
+                  {/* Discount badge */}
+                  {hasDiscount && discountPercent > 0 && (
+                    <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-[#b76e79] text-white text-[10px] font-bold shadow-sm">
+                      {discountPercent}% OFF
+                    </div>
+                  )}
+
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
+                    <Link
+                      href={`/product/${product.slug}`}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 inline-flex items-center gap-1.5 px-4 py-2 bg-white/95 backdrop-blur-sm text-gray-900 text-xs font-semibold rounded-full shadow-md hover:bg-white"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      Quick View
+                    </Link>
+                  </div>
+
+                  {/* Wishlist heart */}
+                  <div className="absolute top-2.5 right-2.5">
+                    <div className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm">
+                      <Heart
+                        className="w-4 h-4 text-[#b76e79] fill-[#b76e79]"
+                        strokeWidth={2}
+                      />
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
+                </div>
+
+                <div className="p-3.5">
+                  <Link href={`/product/${product.slug}`}>
+                    <h3 className="font-medium text-sm text-gray-900 line-clamp-2 hover:text-[#b76e79] transition-colors leading-snug">
+                      {product.title}
+                    </h3>
+                  </Link>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="font-bold text-[#b76e79] text-sm">
+                      ₹{Number(product.sellingPrice).toLocaleString("en-IN")}
+                    </span>
+                    {hasDiscount && (
+                      <span className="text-gray-400 line-through text-xs">
+                        ₹
+                        {Number(product.originalPrice).toLocaleString("en-IN")}
+                      </span>
+                    )}
+                  </div>
+                  <Link
+                    href={`/product/${product.slug}`}
+                    className="mt-3 flex items-center justify-center w-full h-9 rounded-full bg-gray-900 text-white text-xs font-semibold hover:bg-gray-800 transition-colors"
+                  >
+                    View Product
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </div>
+      )}
     </div>
   );
 }

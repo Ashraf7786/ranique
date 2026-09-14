@@ -3,9 +3,8 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Package, Heart, Settings, User, ShoppingBag } from "lucide-react";
+import { ShoppingBag, ArrowRight, Filter, Package } from "lucide-react";
 import { formatDateIST } from "@/lib/utils";
-import { LogoutButton } from "@/components/account/LogoutButton";
 
 export default async function OrdersPage() {
   const session = await getServerSession(authOptions);
@@ -14,7 +13,7 @@ export default async function OrdersPage() {
     redirect("/login");
   }
 
-  if ((session.user as any).role === 'ADMIN') {
+  if ((session.user as any).role === "ADMIN") {
     redirect("/admin");
   }
 
@@ -25,137 +24,182 @@ export default async function OrdersPage() {
         orderBy: { createdAt: "desc" },
         include: {
           items: {
-            include: { product: { include: { images: true } } }
-          }
-        }
+            include: { product: { include: { images: true } } },
+          },
+        },
       },
-    }
+    },
   });
 
   if (!user) {
     redirect("/login");
   }
 
+  const statusColors: Record<string, string> = {
+    PENDING: "bg-amber-50 text-amber-700 border-amber-200",
+    CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200",
+    PROCESSING: "bg-indigo-50 text-indigo-700 border-indigo-200",
+    SHIPPED: "bg-cyan-50 text-cyan-700 border-cyan-200",
+    DELIVERED: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    CANCELLED: "bg-red-50 text-red-600 border-red-200",
+    RETURNED: "bg-gray-50 text-gray-600 border-gray-200",
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex flex-col md:flex-row gap-8">
-        
-        {/* Sidebar */}
-        <div className="w-full md:w-64 shrink-0 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
-            <div className="w-20 h-20 bg-brand-rose text-white rounded-full flex items-center justify-center text-3xl font-serif font-bold mb-4 shadow-sm overflow-hidden">
-              {user.image ? (
-                <img src={user.image} alt={user.firstName || "Profile"} className="w-full h-full object-cover" />
-              ) : (
-                user.firstName?.[0] || user.email[0].toUpperCase()
-              )}
-            </div>
-            <h2 className="font-serif font-bold text-lg text-brand-ink">
-              {user.firstName} {user.lastName}
-            </h2>
-            <p className="text-sm text-gray-500 mb-4">{user.email}</p>
-            <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wider rounded-full">
-              Verified User
-            </span>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <nav className="flex flex-col">
-              <Link href="/account" className="flex items-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 hover:text-brand-ink transition-colors">
-                <User className="w-5 h-5" />
-                Dashboard
-              </Link>
-              <Link href="/account/orders" className="flex items-center gap-3 px-6 py-4 bg-gray-50 border-l-2 border-brand-rose text-brand-rose font-medium transition-colors">
-                <Package className="w-5 h-5" />
-                My Orders
-              </Link>
-              <Link href="/account/wishlist" className="flex items-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 hover:text-brand-ink transition-colors">
-                <Heart className="w-5 h-5" />
-                Wishlist
-              </Link>
-              <Link href="/account/settings" className="flex items-center gap-3 px-6 py-4 text-gray-600 hover:bg-gray-50 hover:text-brand-ink transition-colors border-t border-gray-100">
-                <Settings className="w-5 h-5" />
-                Settings
-              </Link>
-              <LogoutButton />
-            </nav>
-          </div>
+    <div className="space-y-6 pb-20 lg:pb-0">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900">
+            My Orders
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {user.orders.length} order{user.orders.length !== 1 ? "s" : ""} placed
+          </p>
         </div>
+      </div>
 
-        {/* Main Content */}
-        <div className="flex-1 space-y-8">
-          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-            <h1 className="font-serif text-3xl font-bold text-brand-ink">My Orders</h1>
+      {user.orders.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-sm">
+          <div className="w-20 h-20 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-5">
+            <ShoppingBag className="w-10 h-10 text-gray-300" />
           </div>
-
-          {user.orders.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-sm flex flex-col items-center">
-              <div className="w-20 h-20 bg-brand-mist rounded-full flex items-center justify-center mb-4">
-                <ShoppingBag className="w-10 h-10 text-brand-rose" />
-              </div>
-              <h3 className="font-serif text-2xl font-bold text-brand-ink mb-2">Your orders are empty</h3>
-              <p className="text-gray-500 mb-6">Looks like you haven't made your first purchase yet.</p>
-              <Link href="/shop" className="px-6 py-3 bg-brand-ink text-white font-medium rounded-full hover:bg-gray-900 transition-colors shadow-sm">
-                Start Shopping
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {user.orders.map(order => (
-                <div key={order.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                  <div className="bg-gray-50 p-4 sm:px-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div className="flex flex-wrap gap-x-8 gap-y-2 text-sm">
+          <h3 className="font-serif text-2xl font-bold text-gray-900 mb-2">
+            No orders yet
+          </h3>
+          <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+            Looks like you haven&apos;t made your first purchase yet. Explore our collection to find something you love!
+          </p>
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-800 transition-colors shadow-sm"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            Start Shopping
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {user.orders.map((order) => {
+            const statusClass =
+              statusColors[order.status] ||
+              "bg-gray-50 text-gray-600 border-gray-200";
+            return (
+              <div
+                key={order.id}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300"
+              >
+                {/* Order Header */}
+                <div className="bg-gray-50/80 px-5 sm:px-6 py-4 border-b border-gray-100">
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                       <div>
-                        <p className="text-sm text-gray-500">Date</p>
-                        <p className="font-semibold text-brand-ink">{formatDateIST(order.createdAt, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">
+                          Order ID
+                        </p>
+                        <p className="font-bold text-gray-900 text-sm">
+                          #{order.id.slice(-10).toUpperCase()}
+                        </p>
                       </div>
+                      <div className="hidden sm:block w-px h-8 bg-gray-200" />
                       <div>
-                        <p className="text-gray-500 font-medium">Total</p>
-                        <p className="font-semibold text-brand-ink">₹{order.totalAmount.toLocaleString('en-IN')}</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">
+                          Date
+                        </p>
+                        <p className="font-medium text-gray-700 text-sm">
+                          {formatDateIST(order.createdAt, {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </p>
                       </div>
+                      <div className="hidden sm:block w-px h-8 bg-gray-200" />
                       <div>
-                        <p className="text-gray-500 font-medium">Order ID</p>
-                        <p className="font-semibold text-brand-ink">#{order.id.slice(-10).toUpperCase()}</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">
+                          Total
+                        </p>
+                        <p className="font-bold text-gray-900 text-sm">
+                          ₹{Number(order.totalAmount).toLocaleString("en-IN")}
+                        </p>
+                      </div>
+                      <div className="hidden sm:block w-px h-8 bg-gray-200" />
+                      <div>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">
+                          Payment
+                        </p>
+                        <p className="font-medium text-gray-700 text-sm">
+                          {order.paymentMethod}
+                        </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <span className="px-3 py-1.5 bg-brand-mist text-brand-rose text-xs font-bold uppercase tracking-wider rounded-full border border-brand-rose/20">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`inline-flex px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-full border ${statusClass}`}
+                      >
                         {order.status}
                       </span>
-                      <Link href={`/account/orders/${order.id}`} className="px-4 py-1.5 bg-white border border-gray-200 text-brand-ink text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                      <Link
+                        href={`/account/orders/${order.id}`}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-semibold rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all"
+                      >
                         View Details
+                        <ArrowRight className="w-3 h-3" />
                       </Link>
                     </div>
                   </div>
-                  
-                  <div className="p-4 sm:px-6 divide-y divide-gray-100">
-                    {order.items.map(item => (
-                      <div key={item.id} className="py-4 first:pt-0 last:pb-0 flex items-center gap-4">
-                        <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-200">
-                           <img 
-                              src={item.product.images.find(img => img.isCover)?.url || item.product.images[0]?.url || ''} 
-                              alt={item.product.title} 
-                              className="w-full h-full object-cover"
-                           />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <Link href={`/product/${item.product.slug}`} className="font-serif font-medium text-brand-ink text-lg hover:text-brand-rose transition-colors line-clamp-1">
-                            {item.product.title}
-                          </Link>
-                          <p className="text-sm text-gray-500 mt-1">Qty: {item.quantity}</p>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <p className="font-bold text-brand-ink">₹{item.price.toLocaleString('en-IN')}</p>
+                </div>
+
+                {/* Order Items */}
+                <div className="px-5 sm:px-6 divide-y divide-gray-50">
+                  {order.items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="py-4 flex items-center gap-4"
+                    >
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-xl overflow-hidden shrink-0 border border-gray-100">
+                        <img
+                          src={
+                            item.product.images.find((img) => img.isCover)
+                              ?.url ||
+                            item.product.images[0]?.url ||
+                            ""
+                          }
+                          alt={item.product.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <Link
+                          href={`/product/${item.product.slug}`}
+                          className="font-medium text-gray-900 text-sm sm:text-base hover:text-[#b76e79] transition-colors line-clamp-2"
+                        >
+                          {item.product.title}
+                        </Link>
+                        <div className="flex items-center gap-3 mt-1.5">
+                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
+                            Qty: {item.quantity}
+                          </span>
+                          {item.size && (
+                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
+                              Size: {item.size}
+                            </span>
+                          )}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                      <div className="text-right shrink-0">
+                        <p className="font-bold text-gray-900 text-sm sm:text-base">
+                          ₹{Number(item.price).toLocaleString("en-IN")}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            );
+          })}
         </div>
-      </div>
+      )}
     </div>
   );
 }
