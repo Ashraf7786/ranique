@@ -81,13 +81,33 @@ export default function SettingsPage() {
     setSuccess(false);
     setError("");
 
+    // Clean up payload
+    const payload: any = { ...form };
+    if (!payload.mobileNumber) payload.mobileNumber = null;
+    if (!payload.gender) payload.gender = null;
+    if (!payload.dob) payload.dob = null;
+    
+    const addr = payload.address;
+    if (!addr.name && !addr.phone && !addr.line1 && !addr.city && !addr.state && !addr.zip) {
+      payload.address = null;
+    }
+
     try {
       const res = await fetch("/api/user/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+        body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error("Failed to save profile");
+      
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        if (data?.details) {
+          const firstError = Object.values(data.details).flat()[0];
+          throw new Error(String(firstError) || "Validation failed");
+        }
+        throw new Error(data?.error || "Failed to save profile");
+      }
+      
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
